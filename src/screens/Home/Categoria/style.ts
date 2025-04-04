@@ -26,32 +26,30 @@ export const styles = StyleSheet.create({
     fontWeight: "bold"
  },
  
- categoryCard: {
-    width: "45%", 
-    margin: "2.5%", 
-    padding: 15,
-    borderRadius: 10,
-    alignItems: "center",
-    elevation: 2, 
-    shadowColor: "#000", 
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 1 },
+ cardContent: {
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "center",
+  borderRadius: 10,
+  padding: 10,
+  margin: 2, 
+  width: "45%",
+  alignSelf: "center", 
+ 
+ },
+ categoryImage: {
+   width: 200, 
+   height:64,
+   resizeMode: "contain",
  },
 
  
-
-
- categoryText: {
-    fontSize: 15,
-    color: "#FFF",
-    fontWeight: "bold",
- },
 
  menu:{
     backgroundColor: "#fff",
     flexDirection: "row",
     justifyContent: "space-around",
-   paddingVertical: 80,
+   paddingVertical: 85,
 
  },
 
