@@ -66,13 +66,6 @@ const styles = StyleSheet.create({
     color: '#333',
     textAlign: 'center'
   },
-  subtitle: {
-    fontFamily: 'Montserrat-Medium',
-    fontSize: 16,
-    color: '#666',
-    marginTop: 5,
-    textAlign: 'center'
-  },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -81,7 +74,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     height: 45,
     marginHorizontal: 16,
-    marginBottom: 20,
+    marginBottom: 30, // Aumentado o espaçamento inferior
     borderWidth: 1,
     borderColor: '#e0e0e0',
   },
@@ -104,19 +97,19 @@ const styles = StyleSheet.create({
     marginTop: 0,
     paddingBottom: 0,
   },
-  agendamentosContainer: {
+  servicosContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingBottom: 20,
-    marginTop: 10
   },
-  agendamentoCard: {
+  servicoCard: {
+    width: '48%',
+    marginBottom: 16,
     backgroundColor: '#F8F8F8',
     borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -124,57 +117,40 @@ const styles = StyleSheet.create({
     elevation: 3,
     borderWidth: 1,
     borderColor: '#EEE',
-    overflow: 'hidden'
   },
-  agendamentoContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1
-  },
-  agendamentoImage: {
-    width: 120,
-    height: 140,
-    borderRadius: 10,
-    marginRight: 16,
-    overflow: 'hidden',
-  },
-  agendamentoImageStyle: {
-    resizeMode: 'cover',
+  cardContent: {
     width: '100%',
-    height: '100%',
   },
-  imageOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.1)'
+  servicoImage: {
+    width: '100%',
+    height: 120,
+    resizeMode: 'cover',
   },
-  agendamentoInfo: {
-    flex: 1,
-    paddingVertical: 5
+  servicoInfo: {
+    padding: 12,
   },
-  agendamentoLabel: {
+  servicoNome: {
     fontFamily: 'Montserrat-Bold',
     fontSize: 14,
-    color: '#666',
-    marginBottom: 2
-  },
-  agendamentoValue: {
-    fontFamily: 'Montserrat-Medium',
-    fontSize: 13,
     color: '#333',
-    marginBottom: 10
+    marginBottom: 12,
+    height: 40, // Altura fixa para alinhar os preços
   },
-  agendamentoActions: {
-    flexDirection: 'row',
-    marginLeft: 10
+  precoContainer: {
+    marginTop: 'auto' // Alinha no fundo do card
   },
-  actionIcon: {
-    width: 50,
-    height: 50,
-    resizeMode: 'contain'
+  precoLabel: {
+    fontFamily: 'Montserrat-Medium',
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 2,
+    textAlign: 'left',
+  },
+  servicoPreco: {
+    fontFamily: 'Montserrat-Bold',
+    fontSize: 16,
+    color: '#4CAF50',
+    textAlign: 'left',
   },
   bottomNavigation: {
     flexDirection: 'row',

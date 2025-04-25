@@ -1,48 +1,46 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, TextInput, ImageBackground } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, TextInput } from 'react-native';
 import styles from './style';
 
-type AgendamentoType = {
+type ServicoType = {
   id: number;
-  servico: string;
-  valor: string;
-  horario: string;
-  data: string;
+  nome: string;
+  preco: string;
   imagem: any;
 };
 
-const Agendamentos = ({ titulo = "   AGENDAMENTOS" }: { titulo?: string }) => {
-  const [activeTab, setActiveTab] = useState('home');
+const VerServicos = ({ titulo = "   SERVIÇOS" }: { titulo?: string }) => {
+  const [activeTab, setActiveTab] = useState('servicos');
   const [searchText, setSearchText] = useState('');
-  const [agendamentos] = useState<AgendamentoType[]>([
+  const [servicos] = useState<ServicoType[]>([
     { 
       id: 1, 
-      servico: 'Banho e Tosa', 
-      valor: 'R$ 25,50', 
-      horario: '14:00',
-      data: '08/04/2025',
-      imagem: require('../../assets/images/tosa.png')
+      nome: 'Vacinação em Cães e Gatos', 
+      preco: '29,99',
+      imagem: require('../../assets/images/vacinacao.jpg')
     },
     { 
       id: 2, 
-      servico: 'Corte de Unhas', 
-      valor: 'R$ 35,00', 
-      horario: '10:30',
-      data: '15/04/2025',
-      imagem: require('../../assets/images/corte.jpg')
+      nome: 'Banho e Tosa', 
+      preco: '49,99',
+      imagem: require('../../assets/images/tosa.png')
     },
     { 
       id: 3, 
-      servico: 'Vacinação', 
-      valor: 'R$ 120,00', 
-      horario: '16:45',
-      data: '30/04/2025',
-      imagem: require('../../assets/images/vacinacao.jpg')
+      nome: 'Corte de Unhas', 
+      preco: '19,99',
+      imagem: require('../../assets/images/corte.jpg')
+    },
+    { 
+      id: 4, 
+      nome: 'Banho Completo', 
+      preco: '39,99',
+      imagem: require('../../assets/images/banho-tosa.jpg')
     },
   ]);
 
-  const filteredAgendamentos = agendamentos.filter(agendamento =>
-    agendamento.servico.toLowerCase().includes(searchText.toLowerCase())
+  const filteredServicos = servicos.filter(servico =>
+    servico.nome.toLowerCase().includes(searchText.toLowerCase())
   );
 
   return (
@@ -63,7 +61,7 @@ const Agendamentos = ({ titulo = "   AGENDAMENTOS" }: { titulo?: string }) => {
           <View style={styles.titleContainer}>
             <Text style={styles.title}>{titulo}</Text>
             <Image 
-              source={require('../../assets/images/agenda.png')} 
+              source={require('../../assets/images/cachorro.png')} 
               style={styles.menuIcon} 
             />
           </View>
@@ -71,8 +69,7 @@ const Agendamentos = ({ titulo = "   AGENDAMENTOS" }: { titulo?: string }) => {
 
         {/* Greeting */}
         <View style={styles.greetingContainer}>
-          <Text style={styles.greetingText}>Olá, Ana!</Text>
-          <Text style={styles.subtitle}>Seus agendamentos</Text>
+          <Text style={styles.greetingText}>Nossos Serviços</Text>
         </View>
 
         {/* Search Input */}
@@ -83,48 +80,29 @@ const Agendamentos = ({ titulo = "   AGENDAMENTOS" }: { titulo?: string }) => {
           />
           <TextInput
             style={styles.searchInput}
-            placeholder="Pesquisar agendamento"
+            placeholder="Buscar serviço"
             placeholderTextColor="#999"
             value={searchText}
             onChangeText={setSearchText}
           />
         </View>
 
-        {/* Lista de Agendamentos */}
-        <View style={styles.agendamentosContainer}>
-          {filteredAgendamentos.map((agendamento) => (
-            <View key={agendamento.id} style={styles.agendamentoCard}>
-              <View style={styles.agendamentoContent}>
-                <ImageBackground 
-                  source={agendamento.imagem} 
-                  style={styles.agendamentoImage}
-                  imageStyle={styles.agendamentoImageStyle}
-                >
-                  <View style={styles.imageOverlay} />
-                </ImageBackground>
-                
-                <View style={styles.agendamentoInfo}>
-                  <Text style={styles.agendamentoLabel}>Serviço</Text>
-                  <Text style={styles.agendamentoValue}>{agendamento.servico}</Text>
-                  
-                  <Text style={styles.agendamentoLabel}>Data</Text>
-                  <Text style={styles.agendamentoValue}>{agendamento.data}</Text>
-                  
-                  <Text style={styles.agendamentoLabel}>Horário</Text>
-                  <Text style={styles.agendamentoValue}>{agendamento.horario}</Text>
-                  
-                  <Text style={styles.agendamentoLabel}>Valor</Text>
-                  <Text style={styles.agendamentoValue}>{agendamento.valor}</Text>
+        {/* Lista de Serviços */}
+        <View style={styles.servicosContainer}>
+          {filteredServicos.map((servico) => (
+            <View key={servico.id} style={styles.servicoCard}>
+              <View style={styles.cardContent}>
+                <Image 
+                  source={servico.imagem} 
+                  style={styles.servicoImage}
+                />
+                <View style={styles.servicoInfo}>
+                  <Text style={styles.servicoNome} numberOfLines={2}>{servico.nome}</Text>
+                  <View style={styles.precoContainer}>
+                    <Text style={styles.precoLabel}>A partir de</Text>
+                    <Text style={styles.servicoPreco}>R$ {servico.preco}</Text>
+                  </View>
                 </View>
-              </View>
-              
-              <View style={styles.agendamentoActions}>
-                <TouchableOpacity>
-                  <Image 
-                    source={require('../../assets/images/olhos.png')} 
-                    style={styles.actionIcon} 
-                  />
-                </TouchableOpacity>
               </View>
             </View>
           ))}
@@ -193,4 +171,4 @@ const Agendamentos = ({ titulo = "   AGENDAMENTOS" }: { titulo?: string }) => {
   );
 };
 
-export default Agendamentos;
+export default VerServicos;
