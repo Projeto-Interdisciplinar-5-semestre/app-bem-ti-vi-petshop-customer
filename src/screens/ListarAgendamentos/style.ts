@@ -10,8 +10,11 @@ const styles = StyleSheet.create({
     marginBottom: 70
   },
   scrollContent: {
-    paddingBottom: 40
+    paddingBottom: 30,
+    paddingHorizontal: 16
   },
+  
+  // Header
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -38,9 +41,8 @@ const styles = StyleSheet.create({
   titleContainer: {
     flex: 1,
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'center',
-    paddingTop: 4
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   title: {
     fontFamily: 'Montserrat-Black',
@@ -52,130 +54,140 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     resizeMode: 'contain',
-    marginTop: 2
+    marginBottom: 5
   },
-  greetingContainer: {
-    paddingHorizontal: 16,
-    marginTop: 20,
-    marginBottom: 10,
-    alignItems: 'center'
+  
+  // Seção "Meus Serviços"
+  sectionHeader: {
+    paddingTop: 35,
+    paddingBottom: 6,
+    alignItems: 'center',
+    marginBottom: 8
   },
-  greetingText: {
+  sectionTitle: {
     fontFamily: 'Montserrat-Bold',
-    fontSize: 22,
-    color: '#333',
-    textAlign: 'center'
-  },
-  subtitle: {
-    fontFamily: 'Montserrat-Medium',
     fontSize: 16,
-    color: '#666',
-    marginTop: 5,
+    color: '#333',
     textAlign: 'center'
   },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-    borderRadius: 20,
-    paddingHorizontal: 15,
-    height: 45,
-    marginHorizontal: 16,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
+  divider: {
+    height: 3,
+    backgroundColor: '#000',
+    width: 160,
+    marginBottom: 10
   },
-  searchIcon: {
-    width: 20,
-    height: 20,
-    marginRight: 10,
-    tintColor: '#666',
-  },
-  searchInput: {
-    flex: 1,
-    height: '100%',
-    fontFamily: 'Montserrat-Medium',
-    fontSize: 14,
-    color: '#333',
-    paddingVertical: 0,
-    paddingTop: 0,
-    includeFontPadding: false,
-    textAlignVertical: 'center',
-    marginTop: 0,
-    paddingBottom: 0,
-  },
-  agendamentosContainer: {
-    paddingHorizontal: 16,
-    paddingBottom: 20,
-    marginTop: 10
-  },
-  agendamentoCard: {
+  
+  // Card do Serviço
+  card: {
     backgroundColor: '#F8F8F8',
-    borderRadius: 12,
+    borderRadius: 20,
     padding: 16,
-    marginBottom: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
-    borderWidth: 1,
-    borderColor: '#EEE',
-    overflow: 'hidden'
+    marginBottom: 20
   },
-  agendamentoContent: {
+  servicoImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 20,
+    marginBottom: 16
+  },
+  servicoNome: {
+    fontFamily: 'Montserrat-Bold',
+    fontSize: 18,
+    color: '#333',
+    marginBottom: 12,
+    textAlign: 'center'
+  },
+  
+  // Container de Horário centralizado com ícone à esquerda
+  horarioContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 30,
+    height: 48,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderWidth: 2,
+    borderColor: '#256489',
+    marginBottom: 20,
+    alignSelf: 'center'
   },
-  agendamentoImage: {
-    width: 120,
-    height: 140,
-    borderRadius: 10,
-    marginRight: 16,
-    overflow: 'hidden',
+  relogioIcon: {
+    width: 20,
+    height: 20,
+    tintColor: '#256489',
+    marginRight: 8
   },
-  agendamentoImageStyle: {
-    resizeMode: 'cover',
-    width: '100%',
-    height: '100%',
-  },
-  imageOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.1)'
-  },
-  agendamentoInfo: {
-    flex: 1,
-    paddingVertical: 5
-  },
-  agendamentoLabel: {
+  horarioText: {
     fontFamily: 'Montserrat-Bold',
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 2
+    fontSize: 16,
+    color: '#256489'
   },
-  agendamentoValue: {
-    fontFamily: 'Montserrat-Medium',
-    fontSize: 13,
-    color: '#333',
+  
+  // Tabela de Descrição
+  descricaoTable: {
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderRadius: 30,
+    overflow: 'hidden',
     marginBottom: 10
   },
-  agendamentoActions: {
-    flexDirection: 'row',
-    marginLeft: 10
+  tableHeader: {
+    backgroundColor: '#256489',
+    padding: 12,
+    alignItems: 'center'
   },
-  actionIcon: {
-    width: 50,
-    height: 50,
-    resizeMode: 'contain'
+  tableHeaderText: {
+    color: '#FFFFFF',
+    fontFamily: 'Montserrat-Bold',
+    fontSize: 16
   },
+  tableBody: {
+    backgroundColor: '#FFFFFF',
+    padding: 12
+  },
+  descricaoText: {
+    fontFamily: 'Montserrat-Regular',
+    fontSize: 14,
+    color: '#666',
+    lineHeight: 20
+  },
+  
+  // Container do Botão
+  buttonContainer: {
+    alignItems: 'center',
+    marginBottom: 20
+  },
+  
+  // Botão Cancelar estilizado
+  deleteButton: {
+    backgroundColor: '#B40000',
+    borderRadius: 35,
+    width: 200,
+    height: 55,
+    padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4
+  },
+  deleteButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontFamily: 'Montserrat-Bold',
+    letterSpacing: 0.5
+  },
+  
+  // Navegação Inferior
   bottomNavigation: {
     flexDirection: 'row',
     justifyContent: 'space-around',
