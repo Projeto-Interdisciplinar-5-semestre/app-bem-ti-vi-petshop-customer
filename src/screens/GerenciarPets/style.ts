@@ -40,7 +40,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    
   },
   title: {
     fontFamily: 'Montserrat-Black',
@@ -95,52 +94,6 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat-Medium',
     marginTop: 4
   },
-  pickerWrapper: {
-    borderWidth: 1,
-    borderColor: '#DDD',
-    borderRadius: 8,
-    backgroundColor: 'rgba(236, 234, 234, 0.4)',
-    overflow: 'hidden',
-    justifyContent: 'center',
-    marginTop: 4
-  },
-  picker: {
-    height: 55,
-    width: '100%',
-    color: '#333',
-    paddingVertical: 10,
-    backgroundColor: 'transparent'
-  },
-  pickerPlaceholder: {
-    position: 'absolute',
-    left: 16,
-    zIndex: 1,
-    fontFamily: 'Montserrat-Medium',
-    fontSize: 14,
-    color: '#999',
-    top: 16
-  },
-  toggleButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-    marginHorizontal: 16,
-    marginVertical: 12,
-    backgroundColor: '#256489',
-    borderRadius: 8,
-    justifyContent: 'center'
-  },
-  toggleIcon: {
-    width: 20,
-    height: 20,
-    tintColor: '#FFFFFF',
-    marginRight: 8
-  },
-  toggleText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontFamily: 'Montserrat-SemiBold'
-  },
   porteGroup: {
     paddingHorizontal: 16,
     marginTop: 16,
@@ -180,16 +133,31 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#333'
   },
-  submitButtonWrapper: {
+  submitButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
     marginTop: 32,
     marginBottom: 30,
-    alignItems: 'center'
   },
   submitButton: {
     backgroundColor: '#006516',
     borderRadius: 35,
-    width: 205,
+    width: '48%',
+    height: 55,
+    padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4
+  },
+  deleteButton: {
+    backgroundColor: '#B40000',
+    borderRadius: 35,
+    width: '48%',
     height: 55,
     padding: 16,
     alignItems: 'center',
