@@ -73,6 +73,36 @@ const styles = StyleSheet.create({
     marginTop: 5,
     textAlign: 'center'
   },
+  cadastrarButton: {
+    backgroundColor: '#256489',
+    borderRadius: 30,
+    padding: 16,
+    width: 250,
+    height: 58,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    alignSelf: 'center',
+    marginBottom: 20
+  },
+  cadastrarButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontFamily: 'Montserrat-Bold',
+    letterSpacing: 0.5,
+    marginLeft: 8
+  },
+  cadastrarButtonIcon: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
+    tintColor: '#fff'
+  },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -104,12 +134,12 @@ const styles = StyleSheet.create({
     marginTop: 0,
     paddingBottom: 0,
   },
-  agendamentosContainer: {
+  petsContainer: {
     paddingHorizontal: 16,
     paddingBottom: 20,
     marginTop: 10
   },
-  agendamentoCard: {
+  petCard: {
     backgroundColor: '#F8F8F8',
     borderRadius: 12,
     padding: 16,
@@ -126,19 +156,20 @@ const styles = StyleSheet.create({
     borderColor: '#EEE',
     overflow: 'hidden'
   },
-  agendamentoContent: {
+  petContent: {
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1
+    flex: 1,
+    flexShrink: 1
   },
-  agendamentoImage: {
-    width: 120,
-    height: 140,
+  petImage: {
+    width: 100,
+    height: 100,
     borderRadius: 10,
     marginRight: 16,
     overflow: 'hidden',
   },
-  agendamentoImageStyle: {
+  petImageStyle: {
     resizeMode: 'cover',
     width: '100%',
     height: '100%',
@@ -151,29 +182,38 @@ const styles = StyleSheet.create({
     bottom: 0,
     backgroundColor: 'rgba(0,0,0,0.1)'
   },
-  agendamentoInfo: {
+  petInfo: {
     flex: 1,
-    paddingVertical: 5
+    paddingVertical: 0,
+    flexShrink: 1,
+    minWidth: 0
   },
-  agendamentoLabel: {
+  petLabel: {
     fontFamily: 'Montserrat-Bold',
-    fontSize: 14,
+    fontSize: 13,
     color: '#666',
     marginBottom: 2
   },
-  agendamentoValue: {
+  petValue: {
     fontFamily: 'Montserrat-Medium',
-    fontSize: 13,
+    fontSize: 12,
     color: '#333',
-    marginBottom: 10
+    marginBottom: 10,
+    flexShrink: 1,
+    minWidth: 0
   },
-  agendamentoActions: {
+  petActions: {
     flexDirection: 'row',
-    marginLeft: 10
+    marginLeft: 8,
+    alignItems: 'center'
+  },
+  actionButton: {
+    padding: 2.5,
+    marginHorizontal: 2
   },
   actionIcon: {
-    width: 50,
-    height: 50,
+    width: 40,
+    height: 40,
     resizeMode: 'contain'
   },
   bottomNavigation: {

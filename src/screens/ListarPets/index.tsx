@@ -2,47 +2,44 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, TextInput, ImageBackground } from 'react-native';
 import styles from './style';
 
-type AgendamentoType = {
+type PetType = {
   id: number;
-  servico: string;
-  valor: string;
-  horario: string;
-  data: string;
+  nome: string;
+  raca: string;
+  telefone: string;
   imagem: any;
 };
 
-const Agendamentos = ({ titulo = "   AGENDAMENTOS" }: { titulo?: string }) => {
+const ListarPets = ({ titulo = "   CLIENTES" }: { titulo?: string }) => {
   const [activeTab, setActiveTab] = useState('home');
   const [searchText, setSearchText] = useState('');
-  const [agendamentos] = useState<AgendamentoType[]>([
+  const [pets] = useState<PetType[]>([
     { 
       id: 1, 
-      servico: 'Banho e Tosa', 
-      valor: 'R$ 25,50', 
-      horario: '14:00',
-      data: '08/04/2025',
-      imagem: require('../../assets/images/tosa.png')
+      nome: 'Bolinha', 
+      raca: 'Siamês', 
+      telefone: '(11) 9999-8888',
+      imagem: require('../../assets/images/gato.jpg')
     },
     { 
       id: 2, 
-      servico: 'Corte de Unhas', 
-      valor: 'R$ 35,00', 
-      horario: '10:30',
-      data: '15/04/2025',
-      imagem: require('../../assets/images/corte.jpg')
+      nome: 'Thor', 
+      raca: 'Husky Siberiano', 
+      telefone: '(11) 9876-5432',
+      imagem: require('../../assets/images/husky.jpg')
     },
     { 
       id: 3, 
-      servico: 'Vacinação', 
-      valor: 'R$ 120,00', 
-      horario: '16:45',
-      data: '30/04/2025',
-      imagem: require('../../assets/images/vacinacao.jpg')
+      nome: 'Minnie', 
+      raca: 'Sírio', 
+      telefone: '(11) 9123-4567',
+      imagem: require('../../assets/images/hamster.jpg')
     },
   ]);
 
-  const filteredAgendamentos = agendamentos.filter(agendamento =>
-    agendamento.servico.toLowerCase().includes(searchText.toLowerCase())
+  const filteredPets = pets.filter(pet =>
+    pet.nome.toLowerCase().includes(searchText.toLowerCase()) ||
+    pet.raca.toLowerCase().includes(searchText.toLowerCase())
   );
 
   return (
@@ -63,7 +60,7 @@ const Agendamentos = ({ titulo = "   AGENDAMENTOS" }: { titulo?: string }) => {
           <View style={styles.titleContainer}>
             <Text style={styles.title}>{titulo}</Text>
             <Image 
-              source={require('../../assets/images/agenda.png')} 
+              source={require('../../assets/images/pet.png')} 
               style={styles.menuIcon} 
             />
           </View>
@@ -72,8 +69,17 @@ const Agendamentos = ({ titulo = "   AGENDAMENTOS" }: { titulo?: string }) => {
         {/* Greeting */}
         <View style={styles.greetingContainer}>
           <Text style={styles.greetingText}>Olá, Ana!</Text>
-          <Text style={styles.subtitle}>Seus agendamentos</Text>
+          <Text style={styles.subtitle}>Seus Pets Cadastrados</Text>
         </View>
+
+        {/* Botão Cadastrar */}
+        <TouchableOpacity style={styles.cadastrarButton}>
+          <Image 
+            source={require('../../assets/images/adicionar.png')} 
+            style={styles.cadastrarButtonIcon} 
+          />
+          <Text style={styles.cadastrarButtonText}>CADASTRAR</Text>
+        </TouchableOpacity>
 
         {/* Search Input */}
         <View style={styles.searchContainer}>
@@ -83,45 +89,48 @@ const Agendamentos = ({ titulo = "   AGENDAMENTOS" }: { titulo?: string }) => {
           />
           <TextInput
             style={styles.searchInput}
-            placeholder="Pesquisar agendamento"
+            placeholder="Pesquisar pet"
             placeholderTextColor="#999"
             value={searchText}
             onChangeText={setSearchText}
           />
         </View>
 
-        {/* Lista de Agendamentos */}
-        <View style={styles.agendamentosContainer}>
-          {filteredAgendamentos.map((agendamento) => (
-            <View key={agendamento.id} style={styles.agendamentoCard}>
-              <View style={styles.agendamentoContent}>
+        {/* Lista de Pets */}
+        <View style={styles.petsContainer}>
+          {filteredPets.map((pet) => (
+            <View key={pet.id} style={styles.petCard}>
+              <View style={styles.petContent}>
                 <ImageBackground 
-                  source={agendamento.imagem} 
-                  style={styles.agendamentoImage}
-                  imageStyle={styles.agendamentoImageStyle}
+                  source={pet.imagem} 
+                  style={styles.petImage}
+                  imageStyle={styles.petImageStyle}
                 >
                   <View style={styles.imageOverlay} />
                 </ImageBackground>
                 
-                <View style={styles.agendamentoInfo}>
-                  <Text style={styles.agendamentoLabel}>Serviço</Text>
-                  <Text style={styles.agendamentoValue}>{agendamento.servico}</Text>
+                <View style={styles.petInfo}>
+                  <Text style={styles.petLabel}>Nome</Text>
+                  <Text style={styles.petValue} numberOfLines={1} ellipsizeMode="tail">{pet.nome}</Text>
                   
-                  <Text style={styles.agendamentoLabel}>Data</Text>
-                  <Text style={styles.agendamentoValue}>{agendamento.data}</Text>
+                  <Text style={styles.petLabel}>Raça</Text>
+                  <Text style={styles.petValue} numberOfLines={1} ellipsizeMode="tail">{pet.raca}</Text>
                   
-                  <Text style={styles.agendamentoLabel}>Horário</Text>
-                  <Text style={styles.agendamentoValue}>{agendamento.horario}</Text>
-                  
-                  <Text style={styles.agendamentoLabel}>Valor</Text>
-                  <Text style={styles.agendamentoValue}>{agendamento.valor}</Text>
+                  <Text style={styles.petLabel}>Telefone</Text>
+                  <Text style={styles.petValue} numberOfLines={1} ellipsizeMode="tail">{pet.telefone}</Text>
                 </View>
               </View>
               
-              <View style={styles.agendamentoActions}>
-                <TouchableOpacity>
+              <View style={styles.petActions}>
+                <TouchableOpacity style={styles.actionButton}>
                   <Image 
                     source={require('../../assets/images/olhos.png')} 
+                    style={styles.actionIcon} 
+                  />
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.actionButton}>
+                  <Image 
+                    source={require('../../assets/images/configuracao.png')} 
                     style={styles.actionIcon} 
                   />
                 </TouchableOpacity>
@@ -193,4 +202,4 @@ const Agendamentos = ({ titulo = "   AGENDAMENTOS" }: { titulo?: string }) => {
   );
 };
 
-export default Agendamentos;
+export default ListarPets;
