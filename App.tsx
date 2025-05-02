@@ -10,7 +10,7 @@ import {
 import * as SplashScreen from 'expo-splash-screen';
 import { useCallback, useEffect } from 'react';
 import { View } from 'react-native';
-import Agendamentos from './src/screens/GerenciarPets';
+import Agendamentos from './src/screens/InformaçõesPerfil';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
