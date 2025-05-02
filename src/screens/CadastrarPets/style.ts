@@ -5,6 +5,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff'
   },
+  scrollView: {
+    flex: 1,
+    marginBottom: 70
+  },
+  scrollContent: {
+    paddingBottom: 40
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -87,6 +94,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat-Medium',
     marginTop: 4
   },
+  multilineInput: {
+    minHeight: 100,
+    textAlignVertical: 'top'
+  },
   porteGroup: {
     paddingHorizontal: 16,
     marginTop: 16,
@@ -125,6 +136,81 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat-Medium',
     fontSize: 14,
     color: '#333'
+  },
+  generoGroup: {
+    paddingHorizontal: 16,
+    marginTop: 16,
+    marginBottom: 8
+  },
+  generoContainer: {
+    flexDirection: 'row',
+    marginTop: 8,
+    justifyContent: 'flex-start',
+    gap: 10 // Espaço menor entre os botões
+  },
+  generoButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 8
+  },
+  generoButtonActive: {
+    // Estilo adicional quando selecionado
+  },
+  generoRadio: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 1,
+    borderColor: '#999',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 4 // Espaço menor entre o radio e o texto
+  },
+  generoRadioSelected: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+    backgroundColor: '#6200EE'
+  },
+  generoLabel: {
+    fontFamily: 'Montserrat-Medium',
+    fontSize: 14,
+    color: '#333'
+  },
+  imagePicker: {
+    borderWidth: 1,
+    borderColor: '#DDD',
+    borderRadius: 8,
+    padding: 14,
+    backgroundColor: 'rgba(236, 234, 234, 0.4)',
+    justifyContent: 'center',
+    marginTop: 4
+  },
+  imagePickerActive: {
+    borderColor: '#6200EE',
+    backgroundColor: 'rgba(243, 237, 252, 0.7)'
+  },
+  imagePickerText: {
+    color: '#999',
+    fontSize: 14,
+    fontFamily: 'Montserrat-Medium',
+    paddingVertical: 2
+  },
+  imagePickerTextActive: {
+    color: '#6200EE',
+    fontFamily: 'Montserrat-Medium'
+  },
+  imagePreviewContainer: {
+    marginTop: 16,
+    alignItems: 'center'
+  },
+  imagePreview: {
+    width: 150,
+    height: 150,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#DDD',
+    resizeMode: 'cover'
   },
   submitButtonWrapper: {
     paddingHorizontal: 16,
