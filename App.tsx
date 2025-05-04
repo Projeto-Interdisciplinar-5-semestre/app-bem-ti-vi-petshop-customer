@@ -1,12 +1,19 @@
-import { StatusBar } from 'expo-status-bar';
-import { TelaPrincipal }  from './src/screens/Home/TelaPrincipal';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import Agendamentos from './src/screens/Agendamentos';
+import DetalheAgendamento from './src/screens/DetalheAgendamento';
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <>
-      <TelaPrincipal />
-      <StatusBar style="auto" />
-    </>
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Agendamentos">
+        <Stack.Screen name="Agendamentos" component={Agendamentos} />
+        <Stack.Screen name="DetalheAgendamento" component={DetalheAgendamento} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
