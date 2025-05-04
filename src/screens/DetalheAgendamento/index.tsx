@@ -1,15 +1,15 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+
 import { FontAwesome } from '@expo/vector-icons';
 import styles from './style';
 
 export default function DetalheAgendamento() {
-  const navigation = useNavigation();
+
 
   return (
     <ScrollView style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.voltar}>
+      <TouchableOpacity style={styles.voltar}>
         <FontAwesome name="arrow-left" size={20} color="#000" />
         <Text style={styles.voltarTexto}>Voltar</Text>
       </TouchableOpacity>

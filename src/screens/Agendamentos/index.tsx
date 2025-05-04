@@ -1,6 +1,5 @@
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
-import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons';
 import styles from './style';
 
@@ -11,11 +10,11 @@ type RootStackParamList = {
 };
 
 export default function Agendamentos() {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.voltar}>
+      <TouchableOpacity style={styles.voltar}>
         <FontAwesome name="arrow-left" size={20} color="#000" />
         <Text style={styles.voltarTexto}>Voltar</Text>
       </TouchableOpacity>
@@ -30,7 +29,6 @@ export default function Agendamentos() {
         <Text style={styles.data}>Serviço agendado para: 31/03/2025</Text>
         <TouchableOpacity
           style={styles.verItem}
-          onPress={() => navigation.navigate('DetalheAgendamento')}
         >
           <Text style={styles.verItemTexto}>Ver item</Text>
           <FontAwesome name="arrow-right" size={16} color="#1985A1" />
