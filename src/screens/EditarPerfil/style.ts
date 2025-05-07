@@ -46,13 +46,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#333',
     marginLeft: 20,
-    marginRight: 8
+    marginRight: 4
   },
   menuIcon: {
     width: 24,
     height: 24,
     resizeMode: 'contain',
-    marginBottom: 5
+    marginBottom: 4
   },
   sectionHeader: {
     paddingTop: 35,
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
   divider: {
     height: 3,
     backgroundColor: '#000',
-    width: '65%',
+    width: '60%',
     marginBottom: 10
   },
   formGroup: {
@@ -93,89 +93,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(236, 234, 234, 0.4)',
     fontFamily: 'Montserrat-Medium',
     marginTop: 4
-  },
-  multilineInput: {
-    minHeight: 100,
-    textAlignVertical: 'top'
-  },
-  porteGroup: {
-    paddingHorizontal: 16,
-    marginTop: 16,
-    marginBottom: 8
-  },
-  porteContainer: {
-    flexDirection: 'row',
-    marginTop: 8,
-    justifyContent: 'space-between'
-  },
-  porteButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 8
-  },
-  porteButtonActive: {
-    // Estilo adicional quando selecionado
-  },
-  porteRadio: {
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    borderWidth: 1,
-    borderColor: '#999',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 8
-  },
-  porteRadioSelected: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: '#6200EE'
-  },
-  porteLabel: {
-    fontFamily: 'Montserrat-Medium',
-    fontSize: 14,
-    color: '#333'
-  },
-  generoGroup: {
-    paddingHorizontal: 16,
-    marginTop: 16,
-    marginBottom: 8
-  },
-  generoContainer: {
-    flexDirection: 'row',
-    marginTop: 8,
-    justifyContent: 'flex-start',
-    gap: 10 // Espaço menor entre os botões
-  },
-  generoButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 8
-  },
-  generoButtonActive: {
-    // Estilo adicional quando selecionado
-  },
-  generoRadio: {
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    borderWidth: 1,
-    borderColor: '#999',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 4 // Espaço menor entre o radio e o texto
-  },
-  generoRadioSelected: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: '#6200EE'
-  },
-  generoLabel: {
-    fontFamily: 'Montserrat-Medium',
-    fontSize: 14,
-    color: '#333'
   },
   imagePicker: {
     borderWidth: 1,
@@ -212,6 +129,46 @@ const styles = StyleSheet.create({
     borderColor: '#DDD',
     resizeMode: 'cover'
   },
+  estadoSelector: {
+    borderWidth: 1,
+    borderColor: '#DDD',
+    borderRadius: 8,
+    padding: 14,
+    fontSize: 14,
+    backgroundColor: 'rgba(236, 234, 234, 0.4)',
+    fontFamily: 'Montserrat-Medium',
+    marginTop: 4
+  },
+  estadoPlaceholder: {
+    color: '#999',
+    fontFamily: 'Montserrat-Medium'
+  },
+  estadoSelecionado: {
+    color: '#333',
+    fontFamily: 'Montserrat-Medium'
+  },
+  estadosListaContainer: {
+    maxHeight: 200,
+    borderWidth: 1,
+    borderColor: '#DDD',
+    borderRadius: 8,
+    marginTop: 8,
+    backgroundColor: '#FFF'
+  },
+  estadosLista: {
+    padding: 8
+  },
+  estadoItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#EEE'
+  },
+  estadoItemText: {
+    fontFamily: 'Montserrat-Medium',
+    fontSize: 14,
+    color: '#333'
+  },
   submitButtonWrapper: {
     paddingHorizontal: 16,
     marginTop: 15,
@@ -221,9 +178,8 @@ const styles = StyleSheet.create({
   submitButton: {
     backgroundColor: '#006516',
     borderRadius: 35,
-    width: 205,
+    width: 190,
     height: 55,
-    padding: 16,
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 3,
@@ -236,7 +192,9 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontFamily: 'Montserrat-Bold',
-    letterSpacing: 0.5
+    letterSpacing: 0.5,
+    textAlign: 'center',
+    width: '100%'
   },
   bottomNavigation: {
     flexDirection: 'row',
