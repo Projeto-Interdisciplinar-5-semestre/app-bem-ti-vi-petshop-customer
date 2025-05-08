@@ -70,74 +70,15 @@ const styles = StyleSheet.create({
     color: '#333',
     textAlign: 'center'
   },
-  cadastrarButton: {
-    backgroundColor: '#256489',
-    borderRadius: 30,
-    padding: 16,
-    width: 250,
-    height: 58,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 3,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    alignSelf: 'center',
-    marginBottom: 20
+  divider: {
+    height: 3,
+    backgroundColor: '#000',
+    width: 160,
+    marginBottom: 10
   },
-  cadastrarButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontFamily: 'Montserrat-Bold',
-    letterSpacing: 0.5,
-    marginLeft: 8
-  },
-  cadastrarButtonIcon: {
-    width: 24,
-    height: 24,
-    resizeMode: 'contain',
-    tintColor: '#fff'
-  },
-  searchContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
-    borderRadius: 20,
-    paddingHorizontal: 15,
-    height: 45,
-    marginHorizontal: 16,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: '#e0e0e0',
-  },
-  searchIcon: {
-    width: 20,
-    height: 20,
-    marginRight: 10,
-    tintColor: '#666',
-  },
-  searchInput: {
-    flex: 1,
-    height: '100%',
-    fontFamily: 'Montserrat-Medium',
-    fontSize: 14,
-    color: '#333',
-    paddingVertical: 0,
-    paddingTop: 0,
-    includeFontPadding: false,
-    textAlignVertical: 'center',
-    marginTop: 0,
-    paddingBottom: 0,
-  },
-  petsContainer: {
-    paddingHorizontal: 16,
-    paddingBottom: 20,
-    marginTop: 10
-  },
-  petCard: {
-
+  
+  // Card do Serviço
+  card: {
     backgroundColor: '#F8F8F8',
     borderRadius: 20,
     padding: 16,
@@ -148,66 +89,64 @@ const styles = StyleSheet.create({
     elevation: 3,
     marginBottom: 20
   },
-  petContent: {
+  servicoImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 20,
+    marginBottom: 16
+  },
+  servicoNome: {
+    fontFamily: 'Montserrat-Bold',
+    fontSize: 18,
+    color: '#333',
+    marginBottom: 12,
+    textAlign: 'center'
+  },
+  
+  // Container de Horário centralizado com ícone à esquerda
+  horarioContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    flex: 1,
-    flexShrink: 1
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 30,
+    height: 48,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderWidth: 2,
+    borderColor: '#256489',
+    marginBottom: 20,
+    alignSelf: 'center'
   },
-  petImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 10,
-    marginRight: 16,
-    overflow: 'hidden',
+  relogioIcon: {
+    width: 20,
+    height: 20,
+    tintColor: '#256489',
+    marginRight: 8
   },
-  petImageStyle: {
-    resizeMode: 'cover',
-    width: '100%',
-    height: '100%',
-  },
-  imageOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.1)'
-  },
-  petInfo: {
-    flex: 1,
-    paddingVertical: 0,
-    flexShrink: 1,
-    minWidth: 0
-  },
-  petLabel: {
+  horarioText: {
     fontFamily: 'Montserrat-Bold',
-    fontSize: 13,
-    color: '#666',
-    marginBottom: 2
+    fontSize: 16,
+    color: '#256489'
   },
-  petValue: {
-    fontFamily: 'Montserrat-Medium',
-    fontSize: 12,
-    color: '#333',
-    marginBottom: 10,
-    flexShrink: 1,
-    minWidth: 0
+  
+  // Tabela de Descrição
+  descricaoTable: {
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    borderRadius: 30,
+    overflow: 'hidden',
+    marginBottom: 10
   },
-  petActions: {
-    flexDirection: 'row',
-    marginLeft: 8,
+  tableHeader: {
+    backgroundColor: '#256489',
+    padding: 12,
     alignItems: 'center'
   },
-  actionButton: {
-    padding: 2.5,
-    marginHorizontal: 2
-  },
-  actionIcon: {
-    width: 40,
-    height: 40,
-    resizeMode: 'contain'
-
+  tableHeaderText: {
+    color: '#FFFFFF',
+    fontFamily: 'Montserrat-Bold',
+    fontSize: 16
   },
   tableBody: {
     backgroundColor: '#FFFFFF',
