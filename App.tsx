@@ -11,7 +11,6 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useCallback, useEffect } from 'react';
 import { View } from 'react-native';
 
-
 export default function App() {
   const [fontsLoaded] = useFonts({
     'Montserrat-Regular': Montserrat_400Regular,
@@ -46,7 +45,6 @@ export default function App() {
   return (
     <>
         <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      <Categoria />
       <StatusBar style="auto" />
     </View>
     </>
