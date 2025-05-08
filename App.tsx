@@ -3,6 +3,7 @@ import { Home } from './src/screens/Home';
 import { Product } from './src/screens/Product'
 import { useFonts } from 'expo-font';
 import {ActivityIndicator } from 'react-native';
+import { TelaPrincipal } from './src/screens/Home/TelaPrincipal';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -20,6 +21,7 @@ export default function App() {
   return (
     <>
       <Product />
+      <TelaPrincipal />
       <StatusBar style="auto" />
     </>
   );
