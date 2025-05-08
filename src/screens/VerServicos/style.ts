@@ -66,100 +66,95 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontFamily: 'Montserrat-Bold',
-    fontSize: 16,
+    fontSize: 22,
     color: '#333',
     textAlign: 'center'
   },
-  divider: {
-    height: 3,
-    backgroundColor: '#000',
-    width: 160,
-    marginBottom: 10
-  },
-  
-  // Card do Serviço
-  card: {
-    backgroundColor: '#F8F8F8',
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
     borderRadius: 20,
-    padding: 16,
+    paddingHorizontal: 15,
+    height: 45,
+    marginHorizontal: 16,
+    marginBottom: 30, // Aumentado o espaçamento inferior
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  searchIcon: {
+    width: 20,
+    height: 20,
+    marginRight: 10,
+    tintColor: '#666',
+  },
+  searchInput: {
+    flex: 1,
+    height: '100%',
+    fontFamily: 'Montserrat-Medium',
+    fontSize: 14,
+    color: '#333',
+    paddingVertical: 0,
+    paddingTop: 0,
+    includeFontPadding: false,
+    textAlignVertical: 'center',
+    marginTop: 0,
+    paddingBottom: 0,
+  },
+  servicosContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingBottom: 20,
+  },
+  servicoCard: {
+    width: '48%',
+    marginBottom: 16,
+    backgroundColor: '#F8F8F8',
+    borderRadius: 12,
+    overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
-    marginBottom: 20,
-    overflow: 'hidden'
+    borderWidth: 1,
+    borderColor: '#EEE',
+  },
+  cardContent: {
+    width: '100%',
   },
   servicoImage: {
     width: '100%',
-    height: 200,
-    borderRadius: 20,
-    marginBottom: 16
+    height: 120,
+    resizeMode: 'cover',
   },
-  
-  // Container de Horário
-  horarioContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 30,
-    height: 48,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderWidth: 2,
-    borderColor: '#256489',
-    marginBottom: 20,
-    alignSelf: 'center',
-    width: '100%',
-    maxWidth: 200
+  servicoInfo: {
+    padding: 12,
   },
-  horarioText: {
+  servicoNome: {
+    fontFamily: 'Montserrat-Bold',
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 12,
+    height: 40, // Altura fixa para alinhar os preços
+  },
+  precoContainer: {
+    marginTop: 'auto' // Alinha no fundo do card
+  },
+  precoLabel: {
+    fontFamily: 'Montserrat-Medium',
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 2,
+    textAlign: 'left',
+  },
+  servicoPreco: {
     fontFamily: 'Montserrat-Bold',
     fontSize: 16,
-    color: '#256489'
-  },
-  
-  // Tabela de Descrição
-  descricaoTable: {
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
-    borderRadius: 30,
-    overflow: 'hidden',
-    marginBottom: 10
-  },
-  tableHeader: {
-    backgroundColor: '#256489',
-    padding: 12,
-    alignItems: 'center'
-  },
-  tableHeaderText: {
-    color: '#FFFFFF',
-    fontFamily: 'Montserrat-Bold',
-    fontSize: 16
-  },
-  tableBody: {
-    backgroundColor: '#FFFFFF',
-    padding: 12
-  },
-  descricaoText: {
-    fontFamily: 'Montserrat-Regular',
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 20
-  },
-
-  // Rating Section
-  ratingContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 15,
-    marginBottom: 10,
-    paddingHorizontal: 10,
-  },
-  ratingStarsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    color: '#4CAF50',
+    textAlign: 'left',
   },
   starIcon: {
     width: 16,

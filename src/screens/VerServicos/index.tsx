@@ -1,50 +1,47 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, TextInput } from 'react-native';
 import styles from './style';
 
-type TabType = 'home' | 'loja' | 'servicos' | 'perfil';
+type ServicoType = {
+  id: number;
+  nome: string;
+  preco: string;
+  imagem: any;
+};
 
-const VisualizarServico = () => {
-  const [activeTab, setActiveTab] = useState<TabType>('servicos');
-  const [showComments, setShowComments] = useState<boolean>(false);
+const VerServicos = ({ titulo = "   SERVIÇOS" }: { titulo?: string }) => {
+  const [activeTab, setActiveTab] = useState('servicos');
+  const [searchText, setSearchText] = useState('');
+  const [servicos] = useState<ServicoType[]>([
+    { 
+      id: 1, 
+      nome: 'Vacinação em Cães e Gatos', 
+      preco: '29,99',
+      imagem: require('../../assets/images/vacinacao.jpg')
+    },
+    { 
+      id: 2, 
+      nome: 'Banho e Tosa', 
+      preco: '49,99',
+      imagem: require('../../assets/images/tosa.png')
+    },
+    { 
+      id: 3, 
+      nome: 'Corte de Unhas', 
+      preco: '19,99',
+      imagem: require('../../assets/images/corte.jpg')
+    },
+    { 
+      id: 4, 
+      nome: 'Banho Completo', 
+      preco: '39,99',
+      imagem: require('../../assets/images/banho-tosa.jpg')
+    },
+  ]);
 
-  const handleAgendar = () => {
-    Alert.alert(
-      "Agendar Serviço",
-      "Deseja agendar o serviço de Banho e Tosa?",
-      [
-        {
-          text: "Cancelar",
-          style: "cancel"
-        },
-        { 
-          text: "Agendar", 
-          onPress: () => console.log("Serviço agendado") 
-        }
-      ]
-    );
-  };
-
-  const toggleComments = () => {
-    setShowComments(!showComments);
-  };
-
-  const renderStars = (rating: number) => {
-    const stars = [];
-    for (let i = 1; i <= 5; i++) {
-      stars.push(
-        <Image
-          key={i}
-          source={require('../../assets/images/estrela.png')}
-          style={[
-            styles.starIcon,
-            i <= rating ? styles.filledStar : styles.emptyStar
-          ]}
-        />
-      );
-    }
-    return stars;
-  };
+  const filteredServicos = servicos.filter(servico =>
+    servico.nome.toLowerCase().includes(searchText.toLowerCase())
+  );
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -125,35 +122,55 @@ const VisualizarServico = () => {
             </Text>
           </TouchableOpacity>
 
-          {/* Comments Section */}
-          {showComments && (
-            <View style={styles.commentsContainer}>
-              {/* Comment 1 */}
-              <View style={styles.commentCard}>
-                <View style={styles.commentHeader}>
-                  <Text style={styles.commentAuthor}>Cairos Saira</Text>
-                  <View style={styles.commentRating}>
-                    {renderStars(5)}
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>{titulo}</Text>
+            <Image 
+              source={require('../../assets/images/cachorro.png')} 
+              style={styles.menuIcon} 
+            />
+          </View>
+        </View>
+
+        {/* Greeting */}
+        <View style={styles.greetingContainer}>
+          <Text style={styles.greetingText}>Nossos Serviços</Text>
+        </View>
+
+        {/* Search Input */}
+        <View style={styles.searchContainer}>
+          <Image 
+            source={require('../../assets/images/busca.png')} 
+            style={styles.searchIcon} 
+          />
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Buscar serviço"
+            placeholderTextColor="#999"
+            value={searchText}
+            onChangeText={setSearchText}
+          />
+        </View>
+
+        {/* Lista de Serviços */}
+        <View style={styles.servicosContainer}>
+          {filteredServicos.map((servico) => (
+            <View key={servico.id} style={styles.servicoCard}>
+              <View style={styles.cardContent}>
+                <Image 
+                  source={servico.imagem} 
+                  style={styles.servicoImage}
+                />
+                <View style={styles.servicoInfo}>
+                  <Text style={styles.servicoNome} numberOfLines={2}>{servico.nome}</Text>
+                  <View style={styles.precoContainer}>
+                    <Text style={styles.precoLabel}>A partir de</Text>
+                    <Text style={styles.servicoPreco}>R$ {servico.preco}</Text>
                   </View>
                 </View>
                 <Text style={styles.commentText}>
                   O serviço de banho e tosa simples foi excelente! Meu pet ficou muito mais limpo e confortável, e a tosa higiênica foi feita com cuidado. Ele está muito mais feliz e cheiroso agora!
                 </Text>
                 <Text style={styles.commentDate}>12/05/2023</Text>
-              </View>
-
-              {/* Comment 2 */}
-              <View style={styles.commentCard}>
-                <View style={styles.commentHeader}>
-                  <Text style={styles.commentAuthor}>Laudo Norris</Text>
-                  <View style={styles.commentRating}>
-                    {renderStars(4)}
-                  </View>
-                </View>
-                <Text style={styles.commentText}>
-                  Fiquei muito satisfeito com o banho e tosa simples. O atendimento foi atencioso e o banho muito cuidado. A tosa ficou perfeita.
-                </Text>
-                <Text style={styles.commentDate}>05/05/2023</Text>
               </View>
             </View>
           )}
@@ -236,4 +253,4 @@ const VisualizarServico = () => {
   );
 };
 
-export default VisualizarServico;
+export default VerServicos;
