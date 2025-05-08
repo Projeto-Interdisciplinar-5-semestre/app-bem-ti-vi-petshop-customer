@@ -10,7 +10,6 @@ import {
 import * as SplashScreen from 'expo-splash-screen';
 import { useCallback, useEffect } from 'react';
 import { View } from 'react-native';
-import Agendamentos from './src/screens/ListarPets';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -45,7 +44,6 @@ export default function App() {
 
   return (
     <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-      <Agendamentos />
       <StatusBar style="auto" />
     </View>
   );
