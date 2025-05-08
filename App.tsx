@@ -10,7 +10,7 @@ import {
 import * as SplashScreen from 'expo-splash-screen';
 import { useCallback, useEffect } from 'react';
 import { View } from 'react-native';
-import Agendamentos from './src/screens/ListarAgendamentos';
+import Agendamentos from './src/screens/VerServicos';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
