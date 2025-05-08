@@ -212,7 +212,10 @@ const styles = StyleSheet.create({
     borderColor: '#DDD',
     resizeMode: 'cover'
   },
-  submitButtonWrapper: {
+
+  submitButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     paddingHorizontal: 16,
     marginTop: 15,
     marginBottom: 30,
