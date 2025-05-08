@@ -88,7 +88,7 @@ export const styles = StyleSheet.create({
   },
   productCard: {
     width: 120,
-    backgroundColor: '#fff',
+    backgroundColor: '#ECEAEA',
     marginRight: 16,
     padding: 8,
     borderRadius: 8,
@@ -103,12 +103,13 @@ export const styles = StyleSheet.create({
   },
   productName: {
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: 'semibold',
     textAlign: 'center',
   },
   productPrice: {
-    fontSize: 12,
-    color: 'green',
+    fontSize: 15,
+    color: '#000000',
+    fontWeight: "bold",
     marginTop: 4,
   },
 
@@ -117,6 +118,19 @@ export const styles = StyleSheet.create({
     height: 100,
     borderRadius: 8,
   },
+
+
+  ratingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 4,
+  },
+  ratingText: {
+    marginRight: 4,
+    fontSize: 12,
+    fontWeight: "semibold",
+  },
+  
   
   
      menu:{
