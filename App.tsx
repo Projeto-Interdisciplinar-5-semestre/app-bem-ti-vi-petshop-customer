@@ -1,4 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
+import DetalheAgendamento from './src/screens/DetalheAgendamento';
+
 import { 
   useFonts, 
   Montserrat_400Regular,
@@ -44,6 +46,7 @@ export default function App() {
 
   return (
     <>
+
         <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
       <StatusBar style="auto" />
     </View>
