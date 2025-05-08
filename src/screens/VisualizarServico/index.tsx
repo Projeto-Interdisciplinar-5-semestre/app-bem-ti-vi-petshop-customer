@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, Alert } from 'react-native';
+
 import styles from './style';
 
 type TabType = 'home' | 'loja' | 'servicos' | 'perfil';

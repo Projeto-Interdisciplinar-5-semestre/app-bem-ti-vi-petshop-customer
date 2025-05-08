@@ -329,7 +329,107 @@ const styles = StyleSheet.create({
     color: '#333',
     fontFamily: 'Montserrat-Medium',
     marginTop: 2
-  }
+  },
+
+
+    divider: {
+      height: 3,
+      backgroundColor: '#000',
+      width: 160,
+      marginBottom: 10
+    },
+    
+    // Card do Serviço
+    card: {
+      backgroundColor: '#F8F8F8',
+      borderRadius: 20,
+      padding: 16,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
+      marginBottom: 20,
+      overflow: 'hidden'
+    },
+
+    // Container de Horário
+    horarioContainer: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#FFFFFF',
+      borderRadius: 30,
+      height: 48,
+      paddingVertical: 10,
+      paddingHorizontal: 15,
+      borderWidth: 2,
+      borderColor: '#256489',
+      marginBottom: 20,
+      alignSelf: 'center',
+      width: '100%',
+      maxWidth: 200
+    },
+    horarioText: {
+      fontFamily: 'Montserrat-Bold',
+      fontSize: 16,
+      color: '#256489'
+    },
+    
+    // Tabela de Descrição
+    descricaoTable: {
+      borderWidth: 1,
+      borderColor: '#E0E0E0',
+      borderRadius: 30,
+      overflow: 'hidden',
+      marginBottom: 10
+    },
+    tableHeader: {
+      backgroundColor: '#256489',
+      padding: 12,
+      alignItems: 'center'
+    },
+    tableHeaderText: {
+      color: '#FFFFFF',
+      fontFamily: 'Montserrat-Bold',
+      fontSize: 16
+    },
+    tableBody: {
+      backgroundColor: '#FFFFFF',
+      padding: 12
+    },
+    descricaoText: {
+      fontFamily: 'Montserrat-Regular',
+      fontSize: 14,
+      color: '#666',
+      lineHeight: 20
+    },
+  
+    // Rating Section
+    ratingContainer: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: 15,
+      marginBottom: 10,
+      paddingHorizontal: 10,
+    },
+    ratingStarsContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    greetingContainer: {
+      paddingHorizontal: 16,
+      marginTop: 20,
+      marginBottom: 10,
+      alignItems: 'center'
+    },
+    greetingText: {
+      fontFamily: 'Montserrat-Bold',
+      fontSize: 22,
+      color: '#333',
+      textAlign: 'center'
+    },
+    
 });
 
 export default styles;

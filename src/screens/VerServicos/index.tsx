@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, TextInput } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, TextInput, Alert } from 'react-native';
 import styles from './style';
 
 type ServicoType = {
@@ -12,6 +12,7 @@ type ServicoType = {
 const VerServicos = ({ titulo = "   SERVIÇOS" }: { titulo?: string }) => {
   const [activeTab, setActiveTab] = useState('servicos');
   const [searchText, setSearchText] = useState('');
+  const [showComments, setShowComments] = useState<boolean>(false);
   const [servicos] = useState<ServicoType[]>([
     { 
       id: 1, 
@@ -38,6 +39,44 @@ const VerServicos = ({ titulo = "   SERVIÇOS" }: { titulo?: string }) => {
       imagem: require('../../assets/images/banho-tosa.jpg')
     },
   ]);
+
+  const handleAgendar = () => {
+    Alert.alert(
+      "Agendar Serviço",
+      "Deseja agendar o serviço de Banho e Tosa?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel"
+        },
+        { 
+          text: "Agendar", 
+          onPress: () => console.log("Serviço agendado") 
+        }
+      ]
+    );
+  };
+
+  const toggleComments = () => {
+    setShowComments(!showComments);
+  };
+
+  const renderStars = (rating: number) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <Image
+          key={i}
+          source={require('../../assets/images/estrela.png')}
+          style={[
+            styles.starIcon,
+            i <= rating ? styles.filledStar : styles.emptyStar
+          ]}
+        />
+      );
+    }
+    return stars;
+  };
 
   const filteredServicos = servicos.filter(servico =>
     servico.nome.toLowerCase().includes(searchText.toLowerCase())
@@ -173,7 +212,7 @@ const VerServicos = ({ titulo = "   SERVIÇOS" }: { titulo?: string }) => {
                 <Text style={styles.commentDate}>12/05/2023</Text>
               </View>
             </View>
-          )}
+          ))}
         </View>
 
         {/* Botão Agendar Serviço */}
