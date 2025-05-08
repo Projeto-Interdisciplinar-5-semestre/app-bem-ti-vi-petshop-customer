@@ -10,10 +10,7 @@ import {
 import * as SplashScreen from 'expo-splash-screen';
 import { useCallback, useEffect } from 'react';
 import { View } from 'react-native';
-<<<<<<< HEAD
-=======
-import Agendamentos from './src/screens/VerServicos';
->>>>>>> tela-comprar-servicos
+
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -47,8 +44,11 @@ export default function App() {
   }
 
   return (
-    <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+    <>
+        <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+      <Categoria />
       <StatusBar style="auto" />
     </View>
+    </>
   );
 }
