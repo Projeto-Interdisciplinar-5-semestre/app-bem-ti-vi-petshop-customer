@@ -19,6 +19,11 @@ import { DetailsProduct } from "../screens/DetailsProduct";
 import SearchAppointment2 from "../screens/SearchAppointment2";
 import { ShowServices } from "../screens/ShowServices";
 import { DetailsService } from "../screens/DetailsService";
+import DetailsAdm from "../screens/DetailsAdm";
+import DetailsAppointmentAdm from "../screens/DetailsAppointmentAdm";
+
+
+
 
 type RootStackParamList = {
     Home: undefined;
@@ -36,6 +41,9 @@ type RootStackParamList = {
     ShowServices: undefined;
     ShowCategories: undefined;
     ProductsByCategory: undefined;
+    DetailsAdm: undefined; 
+    DetailsAppointmentAdm: undefined;
+    
 };
 
 export type NavigationProps = NativeStackNavigationProp<RootStackParamList, "Home">;
@@ -166,6 +174,25 @@ export default function AppRoute() {
                         header: () => <Header activateBackButton={true} title="SERVIÇO" icon={require('../assets/images/cachorro.png') }/>
                     })} 
                 />
+
+              <Stack.Screen 
+                    name="DetailsAdm" 
+                    component={DetailsAdm} 
+                    options={() => ({ 
+                       header: () => <Header activateBackButton={true} title="AGENDAMENTOS ADMIN" icon={require('../assets/images/agenda.png')} />
+                    })}
+                />
+
+                <Stack.Screen 
+                 name="DetailsAppointmentAdm" 
+                component={DetailsAppointmentAdm} 
+                 options={() => ({ 
+                    header: () =>  <Header  activateBackButton={true}  title="DETALHES DO AGENDAMENTO"  icon={require('../assets/images/agenda.png')} />
+                     })}
+                />
+
+
+
 
             </Stack.Navigator>
         </NavigationContainer>
