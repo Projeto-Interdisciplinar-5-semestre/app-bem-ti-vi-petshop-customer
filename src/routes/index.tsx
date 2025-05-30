@@ -19,7 +19,6 @@ import { DetailsProduct } from "../screens/DetailsProduct";
 import SearchAppointment2 from "../screens/SearchAppointment2";
 import { ShowServices } from "../screens/ShowServices";
 import { DetailsService } from "../screens/DetailsService";
-import DetailsAdm from "../screens/DetailsAdm";
 import DetailsAppointmentAdm from "../screens/DetailsAppointmentAdm";
 
 
@@ -175,13 +174,6 @@ export default function AppRoute() {
                     })} 
                 />
 
-              <Stack.Screen 
-                    name="DetailsAdm" 
-                    component={DetailsAdm} 
-                    options={() => ({ 
-                       header: () => <Header activateBackButton={true} title="AGENDAMENTOS ADMIN" icon={require('../assets/images/agenda.png')} />
-                    })}
-                />
 
                 <Stack.Screen 
                  name="DetailsAppointmentAdm" 
