@@ -1,0 +1,95 @@
+import { StyleSheet } from 'react-native';
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#D3EFFF',
+    paddingHorizontal: 20,
+    justifyContent: 'flex-start',
+    paddingTop: 10,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginTop: 8,
+    marginBottom: 10,
+  },
+  logo: {
+    width: 500,
+    height: 300,
+  },
+  logoSubText: {
+    fontSize: 22,
+    fontFamily: 'Montserrat-Black',
+    color: '#256489',
+    marginBottom: 2,
+  },
+  instructionText: {
+    color: '#256489',
+    fontSize: 14,
+    fontFamily: 'Montserrat-Medium',
+    textAlign: 'center',
+    marginBottom: 30,
+    paddingHorizontal: 20,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#C9EBFF',
+    borderRadius: 30,
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    marginBottom: 20,
+    borderWidth: 2,
+    borderColor: 'rgba(37, 100, 137, 0.3)',
+    height: 48,
+  },
+  inputIcon: {
+    width: 28,
+    height: 28,
+    marginRight: 10,
+    opacity: 0.65,
+  },
+  input: {
+    flex: 1,
+    fontSize: 15,
+    color: '#333',
+    fontFamily: 'Montserrat-Medium',
+    paddingVertical: 0,
+  },
+  loginButton: {
+    backgroundColor: '#256489',
+    borderRadius: 30,
+    padding: 12,
+    width: 250,
+    height: 58,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    alignSelf: 'center',
+    marginBottom: 8,
+  },
+  loginButtonText: {
+    color: 'white',
+    fontSize: 20,
+    fontFamily: 'Montserrat-Bold',
+    letterSpacing: 0.5,
+    textAlign: 'center',
+    width: '100%',
+  },
+  backButton: {
+    alignSelf: 'center',
+    marginTop: 20,
+  },
+  backButtonText: {
+    color: '#256489',
+    fontSize: 14,
+    fontFamily: 'Montserrat-Bold',
+    textDecorationLine: 'underline',
+  },
+});
+
+export default styles;
