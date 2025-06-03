@@ -1,35 +1,27 @@
 import { StyleSheet } from 'react-native';
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#D3EFFF',
     paddingHorizontal: 20,
-    justifyContent: 'flex-start',
-    paddingTop: 10,
-  },
-  logoContainer: {
+    justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 8,
-    marginBottom: 10,
   },
   logo: {
-    width: 500,
-    height: 300,
-  },
-  logoSubText: {
-    fontSize: 22,
-    fontFamily: 'Montserrat-Black',
-    color: '#256489',
-    marginBottom: 2,
+    width: 300,  
+    height: 250,
+    marginTop: 50,
+    resizeMode: 'contain',
   },
   instructionText: {
     color: '#256489',
-    fontSize: 14,
+    fontSize: 16, 
     fontFamily: 'Montserrat-Medium',
     textAlign: 'center',
     marginBottom: 30,
     paddingHorizontal: 20,
+    lineHeight: 24,
   },
   inputContainer: {
     flexDirection: 'row',
@@ -42,6 +34,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'rgba(37, 100, 137, 0.3)',
     height: 48,
+    width: '100%',
   },
   inputIcon: {
     width: 28,
@@ -69,7 +62,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
-    alignSelf: 'center',
     marginBottom: 8,
   },
   loginButtonText: {
@@ -81,7 +73,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   backButton: {
-    alignSelf: 'center',
     marginTop: 20,
   },
   backButtonText: {
@@ -91,5 +82,3 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
 });
-
-export default styles;
