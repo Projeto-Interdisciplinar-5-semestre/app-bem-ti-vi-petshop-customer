@@ -20,6 +20,9 @@ import SearchAppointment2 from "../screens/SearchAppointment2";
 import { ShowServices } from "../screens/ShowServices";
 import { DetailsService } from "../screens/DetailsService";
 import DetailsAppointmentAdm from "../screens/DetailsAppointmentAdm";
+import ClientLogin from "../screens/ClientLogin";
+import ClientRegister from "../screens/ClientRegister";
+
 
 
 
@@ -42,6 +45,8 @@ type RootStackParamList = {
     ProductsByCategory: undefined;
     DetailsAdm: undefined; 
     DetailsAppointmentAdm: undefined;
+    ClientLogin: undefined;
+    ClientRegister: undefined;
     
 };
 
@@ -52,7 +57,7 @@ const Stack = createNativeStackNavigator();
 export default function AppRoute() {
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName="Home">
+           <Stack.Navigator initialRouteName="Home">
                 <Stack.Screen 
                     name="Home" 
                     component={Home} 
@@ -182,6 +187,19 @@ export default function AppRoute() {
                     header: () =>  <Header  activateBackButton={true}  title="DETALHES DO AGENDAMENTO"  icon={require('../assets/images/agenda.png')} />
                      })}
                 />
+
+                <Stack.Screen 
+                name="ClientLogin" 
+                component={ClientLogin} 
+                   options={{ headerShown: false }} 
+                />
+
+             <Stack.Screen 
+            name="ClientRegister" 
+            component={ClientRegister} 
+                options={{ headerShown: false }} 
+                />
+
 
 
 
