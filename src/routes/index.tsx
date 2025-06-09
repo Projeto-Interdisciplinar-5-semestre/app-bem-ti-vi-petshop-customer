@@ -20,8 +20,10 @@ import SearchAppointment2 from "../screens/SearchAppointment2";
 import { ShowServices } from "../screens/ShowServices";
 import { DetailsService } from "../screens/DetailsService";
 import { ResetPassword } from "../screens/ResetPassword";
+import { ReceivePassword } from "../screens/ReceivePassword";
 
 type RootStackParamList = {
+    ReceivePassword: undefined;
     Home: undefined;
     CreatePet: undefined;
     ManagePet: undefined;
@@ -55,13 +57,22 @@ const headerIcons = {
 export default function AppRoute() {
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName="ResetPassword">
+            <Stack.Navigator initialRouteName="ReceivePassword">
+                {/* Tela de Receive Password sem Header */}
+                <Stack.Screen 
+                    name="ReceivePassword" 
+                    component={ReceivePassword} 
+                    options={{ 
+                        headerShown: false
+                    }} 
+                />
+
                 {/* Tela de Reset Password sem Header */}
                 <Stack.Screen 
                     name="ResetPassword" 
                     component={ResetPassword} 
                     options={{ 
-                        headerShown: false // Isso remove o header completamente
+                        headerShown: false
                     }} 
                 />
 
