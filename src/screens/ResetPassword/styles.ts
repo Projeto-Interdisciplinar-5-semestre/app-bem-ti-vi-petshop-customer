@@ -9,19 +9,20 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo: {
-    width: 300,  
-    height: 250,
-    marginTop: 50,
+    width: 280,  // Largura reduzida
+    height: 200, // Altura reduzida significativamente
     resizeMode: 'contain',
+    marginBottom: 25,  // Espaço reduzido abaixo da logo
   },
   instructionText: {
     color: '#256489',
     fontSize: 16, 
     fontFamily: 'Montserrat-Medium',
     textAlign: 'center',
-    marginBottom: 30,
+    marginBottom: 25,  // Margem reduzida
     paddingHorizontal: 20,
     lineHeight: 24,
+    marginTop: -5,  // Adicionado para subir o texto
   },
   inputContainer: {
     flexDirection: 'row',
@@ -54,7 +55,7 @@ export const styles = StyleSheet.create({
     borderRadius: 30,
     padding: 12,
     width: 250,
-    height: 58,
+    height: 50,  // Altura reduzida
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 3,
@@ -66,14 +67,14 @@ export const styles = StyleSheet.create({
   },
   loginButtonText: {
     color: 'white',
-    fontSize: 20,
+    fontSize: 18,  // Fonte um pouco menor
     fontFamily: 'Montserrat-Bold',
     letterSpacing: 0.5,
     textAlign: 'center',
     width: '100%',
   },
   backButton: {
-    marginTop: 20,
+    marginTop: 15,  // Espaço reduzido
   },
   backButtonText: {
     color: '#256489',
