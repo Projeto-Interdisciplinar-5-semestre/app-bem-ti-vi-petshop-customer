@@ -21,9 +21,12 @@ import { ShowServices } from "../screens/ShowServices";
 import { DetailsService } from "../screens/DetailsService";
 import { ResetPassword } from "../screens/ResetPassword";
 import { ReceivePassword } from "../screens/ReceivePassword";
+import { NowPassword } from "../screens/NowPassword";
 
 type RootStackParamList = {
+    NowPassword: undefined;
     ReceivePassword: undefined;
+    ResetPassword: undefined;
     Home: undefined;
     CreatePet: undefined;
     ManagePet: undefined;
@@ -38,7 +41,6 @@ type RootStackParamList = {
     ShowProfile: undefined;
     ShowServices: undefined;
     ShowCategories: undefined;
-    ResetPassword: undefined;
     ProductsByCategory: { categoryId: string };
 };
 
@@ -57,8 +59,17 @@ const headerIcons = {
 export default function AppRoute() {
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName="ReceivePassword">
-                {/* Tela de Receive Password sem Header */}
+            <Stack.Navigator initialRouteName="NowPassword">
+                {/* Tela NowPassword como primeira tela */}
+                <Stack.Screen 
+                    name="NowPassword" 
+                    component={NowPassword} 
+                    options={{ 
+                        headerShown: false
+                    }} 
+                />
+
+                {/* Tela de Receive Password */}
                 <Stack.Screen 
                     name="ReceivePassword" 
                     component={ReceivePassword} 
@@ -67,7 +78,7 @@ export default function AppRoute() {
                     }} 
                 />
 
-                {/* Tela de Reset Password sem Header */}
+                {/* Tela de Reset Password */}
                 <Stack.Screen 
                     name="ResetPassword" 
                     component={ResetPassword} 
@@ -85,7 +96,7 @@ export default function AppRoute() {
                     }} 
                 />
 
-                {/* ... (mantenha todas as outras telas exatamente como estão) ... */}
+                {/* ... outras telas ... */}
                 
             </Stack.Navigator>
         </NavigationContainer>
