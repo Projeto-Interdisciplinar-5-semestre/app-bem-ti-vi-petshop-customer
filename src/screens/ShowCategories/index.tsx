@@ -1,26 +1,39 @@
-import React from "react";
-import { View, Text, Image, TouchableOpacity, FlatList } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, Image, TouchableOpacity, FlatList, Alert } from "react-native";
 
 import { NavigationBar } from "../../components/NavigationBar";
 
 import { styles } from "./style";
 
-const categorias = [
-  { id: "1", Image: require("../../assets/images/cat-alimentos.png") },
-  { id: "2", Image: require("../../assets/images/cat-brinquedos.png") },
-  { id: "3", Image: require("../../assets/images/cat-limpeza.png") },
-  { id: "4", Image: require("../../assets/images/cat-beleza.png") },
-  { id: "5", Image: require("../../assets/images/cat-farmacia.png") },
-  { id: "6", Image: require("../../assets/images/cat-transporte.png") },
-  { id: "7", Image: require("../../assets/images/cat-casinhas.png") },
-  { id: "8", Image: require("../../assets/images/cat-alimentos.png") },
-  { id: "9", Image: require("../../assets/images/cat-brinquedos.png") },
-  { id: "10", Image: require("../../assets/images/cat-limpeza.png") },
-];
+import { useNavigation } from '@react-navigation/native';
+import { NavigationProps } from "../../routes/AppRoute";
+import { search } from "../../api/category/search/search";
+import { Category } from "../../utils/Types";
+
 
 export const ShowCategories = () => {
+  const { navigate } = useNavigation<NavigationProps>();
+  const [categorias, setCategorias] = useState<Category[]>();
+  
+  useEffect(() => {
+    const buscarCategorias = async () => {
+      try {
+        const data = await search();
+        if (!data) {
+          throw new Error("Erro ao buscar dados do usuário");
+        }
+        setCategorias(data)
+      } catch (erro) {
+        console.error("Erro ao buscar categorias:", erro);
+        Alert.alert("Erro", "Não foi possível carregar os dados das categorias.");
+      }
+    };
+
+    buscarCategorias();
+  }, []);
+
   return (
-    <View>
+    <View style={styles.container}>
 
       <Text style={styles.subtitle}>Nossas Categorias</Text>
 
@@ -29,9 +42,9 @@ export const ShowCategories = () => {
         numColumns={2}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <TouchableOpacity>
+          <TouchableOpacity onPress={()=> navigate('ProductsByCategory', { id:item.id })}>
             <View style={styles.cardContent}>
-              <Image source={item.Image} style={styles.categoryImage} />
+              <Image source={{uri : item.pathImage}} style={styles.categoryImage} />
             </View>
           </TouchableOpacity>
         )}
@@ -39,7 +52,7 @@ export const ShowCategories = () => {
 
 
       {/* Menu Inferior */}
-      <NavigationBar />
+      <NavigationBar initialTab='loja'/>
     </View>
   );
 };

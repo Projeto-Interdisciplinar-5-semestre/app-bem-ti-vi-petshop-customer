@@ -1,10 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, TextInput, SafeAreaView, Alert, ScrollView } from 'react-native';
 import ImagePicker from 'expo-image-picker';
 
 import { NavigationBar } from '../../components/NavigationBar';
 
 import styles from './style';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { NavigationProps } from '../../routes/AppRoute';
+import { findById } from '../../api/pet/search/findById';
+import { selectImageFromGalery } from '../../utils/selectImageFromGalery/selectImageFromGalery';
+import { Pet } from '../../utils/Types';
+import { deleteById } from '../../api/pet/delete/deleteById';
+import { update } from '../../api/pet/update/update';
 
 type PorteType = {
   label: string;
@@ -17,44 +24,122 @@ type GeneroType = {
 };
 
 export const ManagePet = () => {
+  const { navigate, goBack } = useNavigation<NavigationProps>();
+  const route = useRoute();
+  const { id: petId } = route.params as { id: string };
   const [nomePet, setNomePet] = useState<string>('');
   const [racaPet, setRacaPet] = useState<string>('');
   const [idadePet, setIdadePet] = useState<string>('');
   const [portePet, setPortePet] = useState<string>('');
   const [generoPet, setGeneroPet] = useState<string>('');
   const [notasPet, setNotasPet] = useState<string>('');
+  const [especiePet, setEspeciePet] = useState<string>('');
+  const [donoPet, setDonoPet] = useState<string>('');
   const [imagemPet, setImagemPet] = useState<string | null>(null);
 
+    useEffect(() => {
+      const buscarPets = async () => {
+        if(!petId) return
+        try {
+          const data = await findById(petId);
+          if (!data) {
+            throw new Error("Erro ao buscar dados do pet");
+          }
+          setNomePet(data.name)
+          setRacaPet(data.race)
+          setIdadePet(data.birthDate)
+          setPortePet(data.size)
+          setGeneroPet(data.gender)
+          setNotasPet(data.note)
+          setImagemPet(data.pathImage)
+          setDonoPet(data.owner.id)
+        } catch (erro) {
+          console.error("Erro ao buscar pet:", erro);
+          Alert.alert("Erro", "Não foi possível carregar os dados do pet.");
+        }
+      };
+  
+      buscarPets();
+    }, [petId]);
+
+    const handleUpdate = async () => {
+      if (!nomePet || !racaPet || !idadePet || !portePet || !generoPet || !notasPet || !imagemPet) {
+        Alert.alert(
+          "Campos obrigatórios",
+          "Preencha todos os campos antes de atualizar."
+        );
+        return;
+      }
+
+      const pet = {
+        name:nomePet,
+        race:racaPet,
+        birthDate:idadePet,
+        size:portePet,
+        gender:generoPet,
+        note:notasPet,
+        species: especiePet ,
+      };
+
+      try {
+        const success = await update(pet, imagemPet, petId);
+
+        if (success) {
+          Alert.alert("Sucesso!", "O pet foi atualizado.");
+          goBack();
+        }
+      } catch (error) {
+        console.error("UPDATE request failed:", error);
+        Alert.alert("Erro!", "Falha ao atualizar o pet.");
+      }
+    };
+
+    const handleDelete = async () => {
+      Alert.alert(
+        "Confirmação",
+        "Tem certeza que deseja excluir este pet?",
+        [
+          { text: "Cancelar", style: "cancel" },
+          {
+            text: "Excluir",
+            style: "destructive",
+            onPress: () => confirmDelete(petId),
+          },
+        ]
+      );
+    };
+
+    const confirmDelete = async (petId: string) => {
+      try {
+        const success = await deleteById(petId);
+
+        if (success) {
+          Alert.alert("Sucesso!", "O pet foi excluído.");
+          goBack()
+        }
+      } catch (error) {
+        console.error("Erro ao excluir:", error);
+        Alert.alert("Erro", "Não foi possível excluir o pet.");
+      }
+    };
+
   const portes: PorteType[] = [
-    { label: 'Pequeno', value: 'pequeno' },
-    { label: 'Médio', value: 'medio' },
-    { label: 'Grande', value: 'grande' },
+    { label: 'Pequeno', value: 'SMALL' },
+    { label: 'Médio', value: 'MEDIUM' },
+    { label: 'Grande', value: 'LARGE' },
   ];
 
   const generos: GeneroType[] = [
-    { label: 'Macho', value: 'macho' },
-    { label: 'Fêmea', value: 'femea' },
+    { label: 'Macho', value: 'MASCULINE' },
+    { label: 'Fêmea', value: 'FEMININE' },
   ];
-
-  const selecionarImagem = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
-    if (status !== 'granted') {
-      Alert.alert('Permissão necessária', 'Precisamos da permissão para acessar suas fotos!');
-      return;
-    }
-
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 0.8,
-    });
-
-    if (!result.canceled) {
-      setImagemPet(result.assets[0].uri);
-    }
-  };
+  
+    const selecionarImagem = async () => {
+      const imageSelected = await selectImageFromGalery();
+      if (imageSelected) {
+        setImagemPet(imageSelected);
+      }
+    };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -189,18 +274,18 @@ export const ManagePet = () => {
 
         {/* Submit Buttons */}
         <View style={styles.submitButtonsContainer}>
-          <TouchableOpacity style={styles.deleteButton}>
+          <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>
             <Text style={styles.submitButtonText}>DELETAR</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.submitButton}>
+          <TouchableOpacity style={styles.submitButton} onPress={handleUpdate}>
             <Text style={styles.submitButtonText}>ATUALIZAR</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
 
       {/* Fixed Bottom Navigation */}
-      <NavigationBar />
+      <NavigationBar initialTab='perfil'/>
     </SafeAreaView>
   );
 };

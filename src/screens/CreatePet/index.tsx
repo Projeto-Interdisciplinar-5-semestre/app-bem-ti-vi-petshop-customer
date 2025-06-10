@@ -5,6 +5,11 @@ import ImagePicker from 'expo-image-picker';
 import { NavigationBar } from '../../components/NavigationBar';
 
 import { styles } from './style';
+import { NavigationProps } from '../../routes/AppRoute';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { selectImageFromGalery } from '../../utils/selectImageFromGalery/selectImageFromGalery';
+import { Pet } from '../../utils/Types';
+import { create } from '../../api/pet/create/create';
 
 
 type PorteType = {
@@ -18,44 +23,67 @@ type GeneroType = {
 };
 
 const portes: PorteType[] = [
-  { label: 'Pequeno', value: 'pequeno' },
-  { label: 'Médio', value: 'medio' },
-  { label: 'Grande', value: 'grande' },
+  { label: 'Pequeno', value: 'SMALL' },
+  { label: 'Médio', value: 'MEDIUM' },
+  { label: 'Grande', value: 'LARGE' },
 ];
 
 const generos: GeneroType[] = [
-  { label: 'Macho', value: 'macho' },
-  { label: 'Fêmea', value: 'femea' },
+  { label: 'Macho', value: 'MASCULINE' },
+  { label: 'Fêmea', value: 'FEMININE' },
 ];
 
 export const CreatePet = () => {
+  const { navigate } = useNavigation<NavigationProps>();
+  const route = useRoute();
+  const { id: customerId } = route.params as { id: string };
   const [nomePet, setNomePet] = useState<string>('');
   const [racaPet, setRacaPet] = useState<string>('');
   const [idadePet, setIdadePet] = useState<string>('');
   const [portePet, setPortePet] = useState<string>('');
   const [generoPet, setGeneroPet] = useState<string>('');
   const [notasPet, setNotasPet] = useState<string>('');
-  const [imagemPet, setImagemPet] = useState<string | null>(null);
+  const [especiePet, setEspeciePet] = useState<string>('');
+  const [imagemPet, setImagemPet] = useState<string>('');
 
-  const selecionarImagem = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
-    if (status !== 'granted') {
-      Alert.alert('Permissão necessária', 'Precisamos da permissão para acessar suas fotos!');
-      return;
-    }
+    const selecionarImagem = async () => {
+      const imageSelected = await selectImageFromGalery();
+      if (imageSelected) {
+        setImagemPet(imageSelected);
+      }
+    };
 
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 0.8,
-    });
+	const sendRequestCreate = async () => {
+		const pet: Pet = {
+			name: nomePet,
+			race:racaPet,
+			owner: {id:customerId},
+      birthDate:idadePet,
+      gender:generoPet,
+      note:notasPet,
+      size: portePet,
+      species:especiePet,
+		};
 
-    if (!result.canceled) {
-      setImagemPet(result.assets[0].uri);
-    }
-  };
+		try {
+			const success = await create(pet, imagemPet);
+			if (success) {
+        setNomePet('')
+        setRacaPet('')
+        setIdadePet('')
+        setPortePet('')
+        setGeneroPet('')
+        setNotasPet('')
+        setEspeciePet('')
+        setImagemPet('')
+
+				Alert.alert('Sucesso!', 'O pet foi cadastrado.');
+			}
+		} catch (error) {
+			console.error('POST request failed:', error);
+			Alert.alert('Erro', 'Não foi possível cadastrar o pet.');
+		}
+	};
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -190,13 +218,13 @@ export const CreatePet = () => {
         </View>
 
         <View style={styles.submitButtonWrapper}>
-          <TouchableOpacity style={styles.submitButton}>
+          <TouchableOpacity style={styles.submitButton} onPress={sendRequestCreate}>
             <Text style={styles.submitButtonText}>SALVAR</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
 
-      <NavigationBar />
+      <NavigationBar initialTab='perfil'/>
     </SafeAreaView>
   );
 };

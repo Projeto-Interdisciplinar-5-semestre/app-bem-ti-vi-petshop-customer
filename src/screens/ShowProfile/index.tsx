@@ -1,10 +1,33 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, Image, SafeAreaView, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TouchableOpacity, Image, SafeAreaView, ScrollView, Alert } from 'react-native';
 import { styles } from './style';
 import { NavigationBar } from '../../components/NavigationBar';
+import { useRoute, useNavigation } from '@react-navigation/native';
+import { NavigationProps } from "../../routes/AppRoute";
+import { CustomerId, validateTokenCustomer } from '../../api/auth/validateTokenCustomer/validateTokenCustomer';
 
 export const ShowProfile = () => {
-  const [activeTab, setActiveTab] = React.useState('perfil');
+  const { navigate } = useNavigation<NavigationProps>();
+  const [customerId, setCustomerId] = useState('');
+  const [activeTab, setActiveTab] = useState('perfil');
+
+    useEffect(() => {
+        async function loadCustomerId() {
+            try {
+              
+                const usuarioId: CustomerId | undefined = await validateTokenCustomer();
+                if (usuarioId == undefined) {
+                    Alert.alert("Atenção!", "Você foi deslogado!")
+                    navigate("Teste");
+                } else {
+                    setCustomerId(usuarioId.id)
+                }
+            } catch (error) {
+                console.error('Erro ao carregar o usuário:', error);
+            }
+        }
+        loadCustomerId();
+    }, []);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -31,7 +54,7 @@ export const ShowProfile = () => {
               <Text style={styles.menuItemText}>Ver Meus Dados</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.menuItem} activeOpacity={0.7}>
+            <TouchableOpacity style={styles.menuItem} activeOpacity={0.7} onPress={()=> navigate('UpdateProfile',{id:customerId})}>
               <Image source={require('../../assets/images/editar.png')} style={styles.menuItemIcon} />
               <Text style={styles.menuItemText}>Editar Perfil</Text>
             </TouchableOpacity>
@@ -41,17 +64,17 @@ export const ShowProfile = () => {
               <Text style={styles.menuItemText}>Alterar senha</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.menuItem} activeOpacity={0.7}>
+            <TouchableOpacity style={styles.menuItem} activeOpacity={0.7} onPress={()=> navigate('SearchPet',{id:customerId})}>
               <Image source={require('../../assets/images/pet.png')} style={styles.menuItemIcon} />
               <Text style={styles.menuItemText}>Pets Cadastrados</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.menuItem} activeOpacity={0.7}>
+            <TouchableOpacity style={styles.menuItem} activeOpacity={0.7} onPress={()=> navigate('SearchOrder', {id:customerId})}>
               <Image source={require('../../assets/images/produto.png')} style={styles.menuItemIcon} />
               <Text style={styles.menuItemText}>Histórico de Pedidos</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.menuItem} activeOpacity={0.7}>
+            <TouchableOpacity style={styles.menuItem} activeOpacity={0.7} onPress={()=>navigate('SearchAppointment',{id:customerId})}>
               <Image source={require('../../assets/images/cachorro.png')} style={styles.menuItemIcon} />
               <Text style={styles.menuItemText}>Histórico de Serviços</Text>
             </TouchableOpacity>
@@ -67,7 +90,7 @@ export const ShowProfile = () => {
 
       {/* Bottom Navigation */}
       
-      <NavigationBar />    
+      <NavigationBar initialTab='perfil'/>    
       </SafeAreaView>
   );
 };

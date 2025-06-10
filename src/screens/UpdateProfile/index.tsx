@@ -1,8 +1,28 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image, TextInput, SafeAreaView, Alert, ScrollView, FlatList } from 'react-native';
-import ImagePicker from 'expo-image-picker';
-import { styles } from './style';
-import { NavigationBar } from '../../components/NavigationBar';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  TextInput,
+  SafeAreaView,
+  Alert,
+  ScrollView,
+  FlatList,
+} from "react-native";
+import { styles } from "./style";
+import { NavigationBar } from "../../components/NavigationBar";
+
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { NavigationProps } from "../../routes/AppRoute";
+
+import { findById } from "../../api/customer/search/findById";
+import { update } from "../../api/customer/update/update";
+
+import { useValidateToken } from "../../utils/UseValidateToken/UseValidateToken";
+import { selectImageFromGalery } from "../../utils/selectImageFromGalery/selectImageFromGalery";
+import { Customer } from "../../utils/Types";
+import { CustomerId, validateTokenCustomer } from "../../api/auth/validateTokenCustomer/validateTokenCustomer";
 
 type EstadoType = {
   label: string;
@@ -10,65 +30,145 @@ type EstadoType = {
 };
 
 const estados: EstadoType[] = [
-  { label: 'Acre', value: 'AC' },
-  { label: 'Alagoas', value: 'AL' },
-  { label: 'Amapá', value: 'AP' },
-  { label: 'Amazonas', value: 'AM' },
-  { label: 'Bahia', value: 'BA' },
-  { label: 'Ceará', value: 'CE' },
-  { label: 'Distrito Federal', value: 'DF' },
-  { label: 'Espírito Santo', value: 'ES' },
-  { label: 'Goiás', value: 'GO' },
-  { label: 'Maranhão', value: 'MA' },
-  { label: 'Mato Grosso', value: 'MT' },
-  { label: 'Mato Grosso do Sul', value: 'MS' },
-  { label: 'Minas Gerais', value: 'MG' },
-  { label: 'Pará', value: 'PA' },
-  { label: 'Paraíba', value: 'PB' },
-  { label: 'Paraná', value: 'PR' },
-  { label: 'Pernambuco', value: 'PE' },
-  { label: 'Piauí', value: 'PI' },
-  { label: 'Rio de Janeiro', value: 'RJ' },
-  { label: 'Rio Grande do Norte', value: 'RN' },
-  { label: 'Rio Grande do Sul', value: 'RS' },
-  { label: 'Rondônia', value: 'RO' },
-  { label: 'Roraima', value: 'RR' },
-  { label: 'Santa Catarina', value: 'SC' },
-  { label: 'São Paulo', value: 'SP' },
-  { label: 'Sergipe', value: 'SE' },
-  { label: 'Tocantins', value: 'TO' },
+  { label: "Acre", value: "AC" },
+  { label: "Alagoas", value: "AL" },
+  { label: "Amapá", value: "AP" },
+  { label: "Amazonas", value: "AM" },
+  { label: "Bahia", value: "BA" },
+  { label: "Ceará", value: "CE" },
+  { label: "Distrito Federal", value: "DF" },
+  { label: "Espírito Santo", value: "ES" },
+  { label: "Goiás", value: "GO" },
+  { label: "Maranhão", value: "MA" },
+  { label: "Mato Grosso", value: "MT" },
+  { label: "Mato Grosso do Sul", value: "MS" },
+  { label: "Minas Gerais", value: "MG" },
+  { label: "Pará", value: "PA" },
+  { label: "Paraíba", value: "PB" },
+  { label: "Paraná", value: "PR" },
+  { label: "Pernambuco", value: "PE" },
+  { label: "Piauí", value: "PI" },
+  { label: "Rio de Janeiro", value: "RJ" },
+  { label: "Rio Grande do Norte", value: "RN" },
+  { label: "Rio Grande do Sul", value: "RS" },
+  { label: "Rondônia", value: "RO" },
+  { label: "Roraima", value: "RR" },
+  { label: "Santa Catarina", value: "SC" },
+  { label: "São Paulo", value: "SP" },
+  { label: "Sergipe", value: "SE" },
+  { label: "Tocantins", value: "TO" },
 ];
 
 export const UpdateProfile = () => {
-  const [nomeCliente, setNomeCliente] = useState<string>('');
-  const [telefone, setTelefone] = useState<string>('');
-  const [email, setEmail] = useState<string>('');
-  const [dataNascimento, setDataNascimento] = useState<string>('');
+  const { navigate } = useNavigation<NavigationProps>();
+  const route = useRoute();
+  const { id: customerId } = route.params as { id: string };
+  const [nomeCliente, setNomeCliente] = useState<string>("");
+  const [telefone, setTelefone] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [dataNascimento, setDataNascimento] = useState<string>("");
   const [imagemPerfil, setImagemPerfil] = useState<string | null>(null);
-  const [cep, setCep] = useState<string>('');
-  const [endereco, setEndereco] = useState<string>('');
-  const [bairro, setBairro] = useState<string>('');
-  const [cidade, setCidade] = useState<string>('');
-  const [estado, setEstado] = useState<string>('');
+  const [cep, setCep] = useState<string>("");
+  const [endereco, setEndereco] = useState<string>("");
+  const [bairro, setBairro] = useState<string>("");
+  const [cidade, setCidade] = useState<string>("");
+  const [estado, setEstado] = useState<string>("");
+  const [dadosUsuario, setDadosUsuario] = useState<Customer>();
+  // const [customerId, setCustomerId] = useState<string>('');
   const [mostrarEstados, setMostrarEstados] = useState<boolean>(false);
 
+  // useValidateToken();
+
+  
+  
   const selecionarImagem = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
-    if (status !== 'granted') {
-      Alert.alert('Permissão necessária', 'Precisamos da permissão para acessar suas fotos!');
+    const imageSelected = await selectImageFromGalery();
+    if (imageSelected) {
+      setImagemPerfil(imageSelected);
+    }
+  };
+
+  useEffect(() => {
+    const buscarUsuario = async () => {
+      if(!customerId) return
+      try {
+        const data: Customer | undefined = await findById(customerId);
+        if (!data) {
+          throw new Error("Erro ao buscar dados do usuário");
+        }
+        setDadosUsuario(data)
+        setNomeCliente(data.name);
+        setTelefone(data.telephones.phoneOne);
+        setEmail(data.email);
+        setDataNascimento(data.birthDate);
+        setImagemPerfil(data.pathImage);
+        setCep(data.address.postalCode);
+        setEndereco(data.address.street);
+        setBairro(data.address.neighborhood);
+        setCidade(data.address.city);
+        setEstado(data.address.state);
+      } catch (erro) {
+        console.error("Erro ao buscar usuário:", erro);
+        Alert.alert("Erro", "Não foi possível carregar os dados do usuário.");
+      }
+    };
+
+    buscarUsuario();
+  }, [customerId]);
+
+  const handleUpdate = async () => {
+    if (
+      !nomeCliente ||
+      !telefone ||
+      !email ||
+      !dataNascimento ||
+      !imagemPerfil ||
+      !cep ||
+      !endereco ||
+      !bairro ||
+      !cidade ||
+      !estado
+    ) {
+      Alert.alert(
+        "Campos obrigatórios",
+        "Preencha todos os campos antes de atualizar."
+      );
       return;
     }
+    const customer: Customer = {
+      id: customerId,
+      name: nomeCliente,
+      email: email,
+      birthDate: dataNascimento,
+      pathImage: imagemPerfil,
+      telephones: {
+        id: dadosUsuario?.telephones.id ?? '',
+        phoneOne: telefone,
+        phoneTwo: dadosUsuario?.telephones.phoneTwo ?? '',
+      },
+      address: {
+        id: dadosUsuario?.address.id ?? '',
+        city: cidade,
+        complement: dadosUsuario?.address.complement ?? '',
+        neighborhood: bairro,
+        number: dadosUsuario?.address.number ?? 101,
+        postalCode: cep,
+        state: estado,
+        street: endereco
+      },
+      pets: []
+    };
 
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 0.8,
-    });
+    try {
+      const success = await update(customer, imagemPerfil, customerId);
 
-    if (!result.canceled) {
-      setImagemPerfil(result.assets[0].uri);
+      if (success) {
+        Alert.alert("Sucesso!", "O perfil foi atualizado.");
+        navigate("ShowProfile");
+      }
+    } catch (error) {
+      console.error("UPDATE request failed:", error);
+      Alert.alert("Erro!", "Falha ao atualizar o perfil.");
     }
   };
 
@@ -79,12 +179,11 @@ export const UpdateProfile = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView 
+      <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
-
         {/* Divisor de Informações */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Informações do Perfil</Text>
@@ -141,26 +240,30 @@ export const UpdateProfile = () => {
 
         <View style={styles.formGroup}>
           <Text style={styles.label}>Foto de perfil</Text>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={[
-              styles.imagePicker, 
-              imagemPerfil ? styles.imagePickerActive : null
-            ]} 
+              styles.imagePicker,
+              imagemPerfil ? styles.imagePickerActive : null,
+            ]}
             onPress={selecionarImagem}
           >
-            <Text style={[
-              styles.imagePickerText,
-              imagemPerfil ? styles.imagePickerTextActive : null
-            ]}>
-              {imagemPerfil ? 'Imagem selecionada (clique para alterar)' : 'Selecione uma foto de perfil'}
+            <Text
+              style={[
+                styles.imagePickerText,
+                imagemPerfil ? styles.imagePickerTextActive : null,
+              ]}
+            >
+              {imagemPerfil
+                ? "Imagem selecionada (clique para alterar)"
+                : "Selecione uma foto de perfil"}
             </Text>
           </TouchableOpacity>
-          
+
           {imagemPerfil && (
             <View style={styles.imagePreviewContainer}>
-              <Image 
-                source={{ uri: imagemPerfil }} 
-                style={styles.imagePreview} 
+              <Image
+                source={{ uri: imagemPerfil }}
+                style={styles.imagePreview}
               />
             </View>
           )}
@@ -213,12 +316,16 @@ export const UpdateProfile = () => {
 
         <View style={styles.formGroup}>
           <Text style={styles.label}>Estado</Text>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.estadoSelector}
             onPress={() => setMostrarEstados(!mostrarEstados)}
           >
-            <Text style={estado ? styles.estadoSelecionado : styles.estadoPlaceholder}>
-              {estado || 'Selecione seu estado'}
+            <Text
+              style={
+                estado ? styles.estadoSelecionado : styles.estadoPlaceholder
+              }
+            >
+              {estado || "Selecione seu estado"}
             </Text>
           </TouchableOpacity>
 
@@ -244,14 +351,14 @@ export const UpdateProfile = () => {
 
         {/* Submit Button */}
         <View style={styles.submitButtonWrapper}>
-          <TouchableOpacity style={styles.submitButton}>
+          <TouchableOpacity style={styles.submitButton} onPress={handleUpdate}>
             <Text style={styles.submitButtonText}>SALVAR</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
 
       {/* Fixed Bottom Navigation */}
-      <NavigationBar />
+      <NavigationBar initialTab="perfil"/>
     </SafeAreaView>
   );
 };

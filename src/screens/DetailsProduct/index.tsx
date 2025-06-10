@@ -1,22 +1,18 @@
-import React from 'react';
-import { View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Image, ScrollView, TouchableOpacity, Alert } from 'react-native';
 
 import { StarRatingDisplay } from 'react-native-star-rating-widget';
 
 import { styles } from './style'
 import { NavigationBar } from '../../components/NavigationBar';
-
-const mainProduct = {
-  image: require('../../assets/images/product.jpg'),
-  title: 'Produto Premium',
-  price: 'R$ 199,90',
-  description: 'Indicada para cães;Ajuda no suporte a ossos e articulações que podem ser sobrecarregados pelo peso corporal; Ajudar a manter uma pele saudável; Disponível em embalagem de 15 kg; Ideal para pets de grande porte.'
-};
+import { useRoute, useNavigation } from '@react-navigation/native';
+import { NavigationProps } from "../../routes/AppRoute";
+import { findById } from '../../api/product/search/findById';
 
 const relatedProducts = [
   {
     id: 1,
-    image: require('../../assets/images/product.jpg'),
+    image: require('../../assets/images/produto1.png'),
     title: 'Produto Similar 1',
     rating: 4,
     price: 'R$ 149,90'
@@ -57,17 +53,48 @@ const comments = [
 
 
 export const DetailsProduct = () => {
+    const { navigate } = useNavigation<NavigationProps>();
+    const route = useRoute();
+    const { id: productId } = route.params as { id: string };
+    const [nomeProduto, setNomeProduto] = useState<string>('');
+    const [valorProduto, setValorProduto] = useState<number>(0);
+    const [descricaoProduto, setDescricaoProduto] = useState<string>('');
+    const [imagemProduto, setImagemProduto] = useState<string>('');
+    const [categoriaProduto, setCategoriaProduto] = useState<string>('');
+
+    useEffect(() => {
+      const buscarProdutos = async () => {
+        try {
+          const data = await findById(productId);
+          if (!data) {
+            throw new Error("Erro ao buscar dados do produto");
+          }
+          setNomeProduto(data.name)
+          setValorProduto(data.price)
+          setDescricaoProduto(data.description)
+          setImagemProduto(data.pathImage || '')
+          setCategoriaProduto(data.categories[0].name)
+        } catch (erro) {
+          console.error("Erro ao buscar produto:", erro);
+          Alert.alert("Erro", "Não foi possível carregar os dados do produto.");
+        }
+      };
   
+      buscarProdutos();
+    }, [productId]);
   return (
     <>
     <ScrollView style={styles.container}>
       
-      <Text style={styles.productTitle}>Produto Premium</Text>
+      <Text style={styles.productTitle}>{nomeProduto}</Text>
       
       <View style={styles.productCard}>
-        <Image source={mainProduct.image} style={styles.productImage} />
-        <Text style={styles.cardTitle}>{mainProduct.title}</Text>
-        <Text style={styles.cardPrice}>{mainProduct.price}</Text>
+      <Image
+        source={imagemProduto ? { uri: imagemProduto } : require('../../assets/images/product.jpg')}
+        style={styles.productImage}
+      />
+        <Text style={styles.cardTitle}>{nomeProduto}</Text>
+        <Text style={styles.cardPrice}>{valorProduto}</Text>
         
         <TouchableOpacity style={styles.addButton}>
           <Text style={styles.addButtonText}>Adicionar ao Carrinho</Text>
@@ -75,7 +102,7 @@ export const DetailsProduct = () => {
 
         <View style={styles.descriptionCard}>
           <Text style={styles.descriptionLabel}>Descrição</Text>
-          <Text style={styles.description}>{mainProduct.description}</Text>
+          <Text style={styles.description}>{descricaoProduto}</Text>
         </View>
       </View>
       
@@ -125,7 +152,7 @@ export const DetailsProduct = () => {
       ))}
       </View>
     </ScrollView>
-    <NavigationBar />
+    <NavigationBar initialTab='loja'/>
     </> 
   );
 };

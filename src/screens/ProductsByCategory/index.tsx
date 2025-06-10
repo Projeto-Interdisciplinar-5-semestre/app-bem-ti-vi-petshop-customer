@@ -1,23 +1,43 @@
-import React from "react";
-import { View, Text, FlatList, Image } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, FlatList, Image, Alert, TouchableOpacity } from "react-native";
 
 import { NavigationBar } from "../../components/NavigationBar";
 
 import { styles } from "./style";
 
-
-const produtos = [
-  { id: "1", nome: "Ração Seca Royal Canin Maxi Adult", preco: "R$ 368,99", imagem: "https://cobasi.vteximg.com.br/arquivos/ids/282999/Racao-Royal-Canin-Caes-Maxi-Adulto.jpg?v=638126959440270000" },
-  { id: "2", nome: "Ração Seca Royal Canin Maxi Adult", preco: "R$ 368,99", imagem: "https://cobasi.vteximg.com.br/arquivos/ids/282999/Racao-Royal-Canin-Caes-Maxi-Adulto.jpg?v=638126959440270000" },
-  { id: "3", nome: "Ração Seca Royal Canin Maxi Adult", preco: "R$ 368,99", imagem: "https://cobasi.vteximg.com.br/arquivos/ids/282999/Racao-Royal-Canin-Caes-Maxi-Adulto.jpg?v=638126959440270000" },
-  { id: "4", nome: "Ração Seca Royal Canin Maxi Adult", preco: "R$ 368,99", imagem: "https://cobasi.vteximg.com.br/arquivos/ids/282999/Racao-Royal-Canin-Caes-Maxi-Adulto.jpg?v=638126959440270000" }
-];
+import { useRoute, useNavigation } from '@react-navigation/native';
+import { NavigationProps } from "../../routes/AppRoute";
+import { findByCategory } from '../../api/product/search/findByCategory';
+import { Product } from "../../utils/Types";
 
 export const ProductsByCategory = () => {
+  const { navigate } = useNavigation<NavigationProps>();
+  const route = useRoute();
+  const { id: categoryId } = route.params as { id: string };
+  const [produtos, setProdutos] = useState<Product[]>();
+  const [nomeCategoria, setNomeCategoria] = useState<string>('');
+
+  useEffect(() => {
+    const buscarProdutos = async () => {
+      try {
+        const data = await findByCategory(categoryId);
+        if (!data) {
+          throw new Error("Erro ao buscar dados do usuário");
+        }
+        setProdutos(data.products)
+        setNomeCategoria(data.categoryName)
+      } catch (erro) {
+        console.error("Erro ao buscar produtos:", erro);
+        Alert.alert("Erro", "Não foi possível carregar os dados dos produtos.");
+      }
+    };
+
+    buscarProdutos();
+  }, [categoryId]);
   return (
     <View style={styles.container}>
 
-      <Text style={styles.subtitle}>Categoria: Alimentos</Text>
+      <Text style={styles.subtitle}>Categoria: {nomeCategoria}</Text>
 
       <FlatList
         data={produtos}
@@ -25,16 +45,19 @@ export const ProductsByCategory = () => {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.productCard}>
-            <Image source={{ uri: item.imagem }} style={styles.productImage} />
-            <Text style={styles.productName}>{item.nome}</Text>
+            <Image source={{ uri: item.pathImage }} style={styles.productImage} />
+            <Text style={styles.productName}>{item.name}</Text>
             <Text style={styles.productRating}>5,0 ⭐⭐⭐⭐⭐</Text>
-            <Text style={styles.productPrice}>{item.preco}</Text>
+            <Text style={styles.productPrice}>{item.price}</Text>
+            <TouchableOpacity onPress={()=> navigate('DetailsProduct', { id:item.id })}>
+              <Image source={require('../../assets/images/olhos.png')}/>
+            </TouchableOpacity>
           </View>
         )}
       />
 
       {/* Menu Inferior */}
-      <NavigationBar />
+      <NavigationBar initialTab="loja"/>
     </View>
   );
 };

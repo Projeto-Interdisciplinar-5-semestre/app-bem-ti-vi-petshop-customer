@@ -1,9 +1,9 @@
 import React from 'react';
 import { useCallback, useEffect } from 'react';
-import { View } from 'react-native';
 
 import { StatusBar } from 'expo-status-bar';
 import SplashScreen from 'expo-splash-screen';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import {
     useFonts,
@@ -14,7 +14,7 @@ import {
     Montserrat_900Black // Adicione esta importação
 } from '@expo-google-fonts/montserrat';
 
-import AppRoute from './src/routes';
+import AppRoute from './src/routes/AppRoute';
 
 export default function App() {
     const [fontsLoaded] = useFonts({
@@ -48,11 +48,13 @@ export default function App() {
     }
 
     return (
-        <>
-            <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
-                <AppRoute />
-                <StatusBar style="auto" />
-            </View>
-        </>
+      <>
+        <SafeAreaProvider>
+          <SafeAreaView style={{ flex: 1 }}>
+            <AppRoute />
+            <StatusBar style="auto" />
+          </SafeAreaView>
+        </SafeAreaProvider>
+      </>
     );
 }

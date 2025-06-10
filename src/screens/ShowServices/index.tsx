@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, TextInput, Alert } from 'react-native';
 
 import { NavigationBar } from '../../components/NavigationBar';
 
 import { styles } from './style';
+import { useNavigation } from '@react-navigation/native';
+import { NavigationProps } from '../../routes/AppRoute';
+import { Service } from '../../utils/Types';
+import { search } from '../../api/service/search/search';
+import { PaginationControls } from '../../components/PaginationControls';
 
 const servicos = [
   { 
@@ -33,7 +38,29 @@ const servicos = [
 ]
 
 export const ShowServices = () => {
+  const { navigate } = useNavigation<NavigationProps>();
+  const [pageIndex, setPageIndex] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [servicos, setServicos] = useState<Service[]>([]);
   const [searchText, setSearchText] = useState('');
+
+  useEffect(() => {
+    const buscarCategorias = async () => {
+      try {
+        const data = await search(searchText,pageIndex);
+        if (!data) {
+          throw new Error("Erro ao buscar dados dos serviços");
+        }
+        setServicos(data.content)
+        setTotalPages(data.totalPages)
+      } catch (erro) {
+        console.error("Erro ao buscar serviços:", erro);
+        Alert.alert("Erro", "Não foi possível carregar os dados dos serviços.");
+      }
+    };
+
+    buscarCategorias();
+  }, [searchText,pageIndex]);
 
   const handleAgendar = () => {
     Alert.alert(
@@ -53,7 +80,7 @@ export const ShowServices = () => {
   };
 
   const filteredServicos = servicos.filter(servico =>
-    servico.nome.toLowerCase().includes(searchText.toLowerCase())
+    servico.name.toLowerCase().includes(searchText.toLowerCase())
   );
 
   return (
@@ -91,20 +118,25 @@ export const ShowServices = () => {
             <View key={servico.id} style={styles.servicoCard}>
               <View style={styles.cardContent}>
                 <Image 
-                  source={servico.imagem} 
+                  source={{uri:servico.pathImage}} 
                   style={styles.servicoImage}
                 />
                 <View style={styles.servicoInfo}>
-                  <Text style={styles.servicoNome} numberOfLines={2}>{servico.nome}</Text>
+                  <Text style={styles.servicoNome} numberOfLines={2}>{servico.name}</Text>
                   <View style={styles.precoContainer}>
                     <Text style={styles.precoLabel}>A partir de</Text>
-                    <Text style={styles.servicoPreco}>R$ {servico.preco}</Text>
+                    <Text style={styles.servicoPreco}>R$ {servico.price}</Text>
                   </View>
                 </View>
-                <Text style={styles.commentText}>
-                  O serviço de banho e tosa simples foi excelente! Meu pet ficou muito mais limpo e confortável, e a tosa higiênica foi feita com cuidado. Ele está muito mais feliz e cheiroso agora!
-                </Text>
-                <Text style={styles.commentDate}>12/05/2023</Text>
+                <Text style={styles.commentText}>{servico.description}</Text>
+                <Text style={styles.commentDate}>{new Date(servico.activationStatus.creationDate).toLocaleDateString('pt-BR')}</Text>
+                <TouchableOpacity 
+                onPress={()=> navigate('DetailsService',{id:servico.id})}
+                >
+                <Image 
+                  source={require('../../assets/images/olhos.png')} 
+                />
+                </TouchableOpacity>
               </View>
             </View>
           ))}
@@ -123,10 +155,17 @@ export const ShowServices = () => {
             />
           </TouchableOpacity>
         </View>
+        
+        <PaginationControls 
+            pageIndex={pageIndex}
+            totalPages={totalPages}
+            onNext={()=>setPageIndex(prev => prev + 1)}
+            onPrev={()=>setPageIndex(prev => prev - 1)}
+        />
       </ScrollView>
 
       {/* Navegação Inferior */}
-     <NavigationBar />
+     <NavigationBar initialTab='servicos'/>
     </SafeAreaView>
   );
 };
