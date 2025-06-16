@@ -1,47 +1,42 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, Alert, TextInput, ImageBackground } from 'react-native';
 
 import { NavigationBar } from '../../components/NavigationBar';
 
 import { styles } from './style';
-
-type PetType = {
-  id: number;
-  nome: string;
-  raca: string;
-  telefone: string;
-  imagem: any;
-};
+import { NavigationProps } from '../../routes/AppRoute';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { findByCustomer } from '../../api/pet/search/search';
+import { Pet } from '../../utils/Types';
 
 export const SearchPet = () => {
+  const { navigate } = useNavigation<NavigationProps>();
+  const route = useRoute();
+  const { id: customerId } = route.params as { id: string };
   const [searchText, setSearchText] = useState('');
-  const [pets] = useState<PetType[]>([
-    { 
-      id: 1, 
-      nome: 'Bolinha', 
-      raca: 'Siamês', 
-      telefone: '(11) 9999-8888',
-      imagem: require('../../assets/images/gato.jpg')
-    },
-    { 
-      id: 2, 
-      nome: 'Thor', 
-      raca: 'Husky Siberiano', 
-      telefone: '(11) 9876-5432',
-      imagem: require('../../assets/images/husky.jpg')
-    },
-    { 
-      id: 3, 
-      nome: 'Minnie', 
-      raca: 'Sírio', 
-      telefone: '(11) 9123-4567',
-      imagem: require('../../assets/images/hamster.jpg')
-    },
-  ]);
+  const [pets,setPets] = useState<Pet[]>()
 
-  const filteredPets = pets.filter(pet =>
-    pet.nome.toLowerCase().includes(searchText.toLowerCase()) ||
-    pet.raca.toLowerCase().includes(searchText.toLowerCase())
+  useEffect(() => {
+    const buscarPets = async () => {
+      if(!customerId) return
+      try {
+        const data = await findByCustomer(customerId);
+        if (!data) {
+          throw new Error("Erro ao buscar dados dos pets");
+        }
+        setPets(data.pets)
+      } catch (erro) {
+        console.error("Erro ao buscar pets:", erro);
+        Alert.alert("Erro", "Não foi possível carregar os dados dos pets.");
+      }
+    };
+
+    buscarPets();
+  }, [customerId]);
+
+  const filteredPets = pets?.filter(pet =>
+    pet.name.toLowerCase().includes(searchText.toLowerCase()) ||
+    pet.race.toLowerCase().includes(searchText.toLowerCase())
   );
 
   return (
@@ -60,7 +55,7 @@ export const SearchPet = () => {
         </View>
 
         {/* Botão Cadastrar */}
-        <TouchableOpacity style={styles.cadastrarButton}>
+        <TouchableOpacity style={styles.cadastrarButton} onPress={()=> navigate('CreatePet', {id:customerId})}>
           <Image 
             source={require('../../assets/images/adicionar.png')} 
             style={styles.cadastrarButtonIcon} 
@@ -85,11 +80,11 @@ export const SearchPet = () => {
 
         {/* Lista de Pets */}
         <View style={styles.petsContainer}>
-          {filteredPets.map((pet) => (
+          {filteredPets?.map((pet) => (
             <View key={pet.id} style={styles.petCard}>
               <View style={styles.petContent}>
                 <ImageBackground 
-                  source={pet.imagem} 
+                  source={{uri:pet.pathImage}} 
                   style={styles.petImage}
                   imageStyle={styles.petImageStyle}
                 >
@@ -98,13 +93,13 @@ export const SearchPet = () => {
                 
                 <View style={styles.petInfo}>
                   <Text style={styles.petLabel}>Nome</Text>
-                  <Text style={styles.petValue} numberOfLines={1} ellipsizeMode="tail">{pet.nome}</Text>
+                  <Text style={styles.petValue} numberOfLines={1} ellipsizeMode="tail">{pet.name}</Text>
                   
                   <Text style={styles.petLabel}>Raça</Text>
-                  <Text style={styles.petValue} numberOfLines={1} ellipsizeMode="tail">{pet.raca}</Text>
+                  <Text style={styles.petValue} numberOfLines={1} ellipsizeMode="tail">{pet.race}</Text>
                   
                   <Text style={styles.petLabel}>Telefone</Text>
-                  <Text style={styles.petValue} numberOfLines={1} ellipsizeMode="tail">{pet.telefone}</Text>
+                  <Text style={styles.petValue} numberOfLines={1} ellipsizeMode="tail">telefone??</Text>
                 </View>
               </View>
               
@@ -115,7 +110,7 @@ export const SearchPet = () => {
                     style={styles.actionIcon} 
                   />
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.actionButton}>
+                <TouchableOpacity style={styles.actionButton} onPress={()=> navigate('ManagePet', {id:pet.id})}>
                   <Image 
                     source={require('../../assets/images/configuracao.png')} 
                     style={styles.actionIcon} 
@@ -128,7 +123,7 @@ export const SearchPet = () => {
       </ScrollView>
 
       {/* Navegação Inferior */}
-      <NavigationBar />
+      <NavigationBar initialTab='perfil'/>
     </SafeAreaView>
   );
 };

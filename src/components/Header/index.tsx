@@ -2,13 +2,16 @@ import React from "react"
 import { Image, Text, TouchableOpacity, View } from "react-native"
 
 import { styles } from "./style"
+import { useNavigation } from "@react-navigation/native"
+import { NavigationProps } from "../../routes/AppRoute"
 
 export const Header = (props: any) => {
+    const { goBack } = useNavigation<NavigationProps>()
     return (
         <View style={styles.header}>
 
             {props.activateBackButton && 
-                <TouchableOpacity style={styles.backButton}>
+                <TouchableOpacity style={styles.backButton} onPress={()=> goBack()}>
                     <Image
                         source={require('../../assets/icons/arrow_back.png')}
                         style={styles.backIcon}

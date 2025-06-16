@@ -1,12 +1,38 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, Alert } from 'react-native';
 
 import { NavigationBar } from '../../components/NavigationBar';
 
 import { styles } from './style';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { NavigationProps } from '../../routes/AppRoute';
+import { findById } from '../../api/service/search/findById';
+import { Service } from '../../utils/Types';
 
 export const DetailsService = () => {
+  const { navigate } = useNavigation<NavigationProps>();
+  const route = useRoute();
+  const { id: serviceId } = route.params as { id: string };
+
+
   const [showComments, setShowComments] = useState<boolean>(false);
+  const [servico, setServico] = useState<Service>();
+  useEffect(() => {
+    const buscarServico = async () => {
+      try {
+        const data = await findById(serviceId);
+        if (!data) {
+          throw new Error("Erro ao buscar dados do serviço");
+        }
+        setServico(data)
+      } catch (erro) {
+        console.error("Erro ao buscar categorias:", erro);
+        Alert.alert("Erro", "Não foi possível carregar os dados do serviço.");
+      }
+    };
+
+    buscarServico();
+  }, [serviceId]);
 
   const handleAgendar = () => {
     Alert.alert(
@@ -63,14 +89,14 @@ export const DetailsService = () => {
         <View style={styles.card}>
           {/* Imagem em cima */}
           <Image
-            source={require('../../assets/images/banho-tosa.jpg')}
+            source={{uri:servico?.pathImage}}
             style={styles.servicoImage}
             resizeMode="cover"
           />
           
           {/* Botão Banho e Tosa */}
           <View style={styles.horarioContainer}>
-            <Text style={styles.horarioText}>Banho e Tosa</Text>
+            <Text style={styles.horarioText}>{servico?.name}</Text>
           </View>
           
           {/* Tabela de Descrição */}
@@ -79,12 +105,7 @@ export const DetailsService = () => {
               <Text style={styles.tableHeaderText}>Descrição</Text>
             </View>
             <View style={styles.tableBody}>
-              <Text style={styles.descricaoText}>
-                Oferecemos serviços completos de higiene para seu pet, com banho, secagem, 
-                escovação, corte de unhas e tosa personalizada. Tudo feito com carinho e 
-                por profissionais qualificados, garantindo conforto, bem-estar e aquele 
-                cheirinho gostoso!
-              </Text>
+              <Text style={styles.descricaoText}>{servico?.description}</Text>
             </View>
           </View>
 
@@ -157,7 +178,7 @@ export const DetailsService = () => {
       </ScrollView>
 
       {/* Navegação Inferior */}
-      <NavigationBar />
+      <NavigationBar initialTab='servicos'/>
     </SafeAreaView>
   );
 };
