@@ -2,7 +2,6 @@ import React from "react";
 import { createNativeStackNavigator, NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
 
-
 import { Header } from "../../components/Header";
 
 import { Home } from "../../screens/Home";
@@ -23,7 +22,9 @@ import { DetailsService } from "../../screens/DetailsService";
 import DetailsAppointmentAdm from "../../screens/DetailsAppointmentAdm";
 import ClientLogin from "../../screens/ClientLogin";
 import ClientRegister from "../../screens/ClientRegister";
+import { ResetPassword } from "../../screens/ResetPassword";
 import { Teste } from "../../screens/Teste";
+
 
 type RootStackParamList = {
     Teste: undefined;
@@ -46,12 +47,21 @@ type RootStackParamList = {
     DetailsAppointmentAdm: undefined;
     ClientLogin: undefined;
     ClientRegister: undefined;
+    ResetPassword: undefined;
     
 };
 
-export type NavigationProps = NativeStackNavigationProp<RootStackParamList, "Home">;
+export type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackParamList>();
+
+const headerIcons = {
+    home: require('../assets/icons/home.png'),
+    pet: require('../assets/images/pet.png'),
+    profile: require('../assets/images/perfil.png'),
+    appointment: require('../assets/images/agenda.png'),
+    dog: require('../assets/images/cachorro.png')
+};
 
 export default function AppRoute() {
     return (
@@ -205,12 +215,24 @@ export default function AppRoute() {
             component={ClientRegister} 
                 options={{ headerShown: false }} 
                 />
+                {/* Tela de Reset Password sem Header */}
+                <Stack.Screen 
+                    name="ResetPassword" 
+                    component={ResetPassword} 
+                    options={{ 
+                        headerShown: false // Isso remove o header completamente
+                    }} 
+                />
 
-
-
-
-
+                {/* Demais telas com Header personalizado */}
+                <Stack.Screen 
+                    name="Home" 
+                    component={Home} 
+                    options={{ 
+                        header: () => <Header activateBackButton={false} title="HOME" icon={headerIcons.home}/>
+                    }} 
+                />
             </Stack.Navigator>
         </NavigationContainer>
-    )
+    );
 }

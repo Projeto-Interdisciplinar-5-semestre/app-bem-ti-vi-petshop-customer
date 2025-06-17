@@ -1,10 +1,8 @@
-import React, { useState } from "react"
-import { Image, Text, TouchableOpacity, View } from "react-native"
-
-import { styles } from "./style"
-
-import { useNavigation } from '@react-navigation/native';
+import React, { useState } from "react";
+import { Image, Text, TouchableOpacity, View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 import { NavigationProps } from '../../routes/AppRoute';
+import { styles } from "./style";
 
 type NavigationBarProps = {
   initialTab?: string;

@@ -1,6 +1,7 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
+  // Layout principal
   container: {
     flex: 1,
     backgroundColor: '#F9F9F9',
@@ -8,6 +9,8 @@ export const styles = StyleSheet.create({
   scrollContainer: {
     paddingBottom: 80,
   },
+
+  // Cabeçalho
   greeting: {
     fontSize: 20,
     fontWeight: 'bold',
@@ -20,6 +23,8 @@ export const styles = StyleSheet.create({
     marginTop: 16,
     marginHorizontal: 16,
   },
+
+  // Card de agendamento
   appointmentCard: {
     backgroundColor: '#fff',
     marginHorizontal: 16,
@@ -42,13 +47,21 @@ export const styles = StyleSheet.create({
   },
   appointmentStatus: {
     marginTop: 4,
+    fontWeight: 'bold',
+  },
+  statusPaid: {
     color: '#258952',
+  },
+  statusPending: {
+    color: '#FFA500',
   },
   viewMore: {
     marginTop: 8,
     color: '#007BFF',
     fontWeight: 'bold',
   },
+
+  // Botão azul
   button: {
     backgroundColor: '#256489',
     borderRadius: 14,
@@ -60,6 +73,8 @@ export const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
   },
+
+  // Seção de produtos
   section: {
     marginTop: 20,
   },
@@ -67,6 +82,8 @@ export const styles = StyleSheet.create({
     marginTop: 10,
     paddingHorizontal: 16,
   },
+
+  // Card de produto
   productCard: {
     width: 120,
     backgroundColor: '#ECEAEA',
@@ -75,32 +92,23 @@ export const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
   },
-  productImagePlaceholder: {
-    width: 80,
-    height: 80,
-    backgroundColor: '#E0E0E0',
-    borderRadius: 8,
-    marginBottom: 8,
-  },
-  productName: {
-    fontSize: 12,
-    fontWeight: 'semibold',
-    textAlign: 'center',
-  },
-  productPrice: {
-    fontSize: 15,
-    color: '#000000',
-    fontWeight: "bold",
-    marginTop: 4,
-  },
-
   productImage: {
     width: 100,
     height: 100,
     borderRadius: 8,
   },
-
-
+  productName: {
+    fontSize: 12,
+    fontWeight: '600',
+    textAlign: 'center',
+    marginTop: 4,
+  },
+  productPrice: {
+    fontSize: 15,
+    color: '#000000',
+    fontWeight: 'bold',
+    marginTop: 4,
+  },
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -109,7 +117,6 @@ export const styles = StyleSheet.create({
   ratingText: {
     marginRight: 4,
     fontSize: 12,
-    fontWeight: "semibold",
+    fontWeight: '600',
   },
-
 });
