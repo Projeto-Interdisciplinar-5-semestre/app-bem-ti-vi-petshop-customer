@@ -24,6 +24,8 @@ import ClientLogin from "../../screens/ClientLogin";
 import ClientRegister from "../../screens/ClientRegister";
 import { ResetPassword } from "../../screens/ResetPassword";
 import { Teste } from "../../screens/Teste";
+import { ReceivePassword } from "../../screens/ReceivePassword";
+import { NowPassword } from "../../screens/NowPassword";
 
 
 type RootStackParamList = {
@@ -48,25 +50,19 @@ type RootStackParamList = {
     ClientLogin: undefined;
     ClientRegister: undefined;
     ResetPassword: undefined;
+    NowPassword: undefined;
+    ReceivePassword: undefined;
     
 };
 
-export type NavigationProps = NativeStackNavigationProp<RootStackParamList>;
+export type NavigationProps = NativeStackNavigationProp<RootStackParamList, "Home">;
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
-
-const headerIcons = {
-    home: require('../assets/icons/home.png'),
-    pet: require('../assets/images/pet.png'),
-    profile: require('../assets/images/perfil.png'),
-    appointment: require('../assets/images/agenda.png'),
-    dog: require('../assets/images/cachorro.png')
-};
+const Stack = createNativeStackNavigator();
 
 export default function AppRoute() {
     return (
         <NavigationContainer>
-           <Stack.Navigator initialRouteName="Home">
+           <Stack.Navigator initialRouteName="Teste">
                 <Stack.Screen 
                     name="Teste" 
                     component={Teste} 
@@ -197,41 +193,43 @@ export default function AppRoute() {
 
 
                 <Stack.Screen 
-                 name="DetailsAppointmentAdm" 
-                component={DetailsAppointmentAdm} 
-                 options={() => ({ 
-                    header: () =>  <Header  activateBackButton={true}  title="DETALHES DO AGENDAMENTO"  icon={require('../../assets/images/agenda.png')} />
-                     })}
+                    name="DetailsAppointmentAdm" 
+                    component={DetailsAppointmentAdm} 
+                    options={() => ({ 
+                        header: () =>  <Header  activateBackButton={true}  title="DETALHES DO AGENDAMENTO"  icon={require('../../assets/images/agenda.png')} />
+                    })}
                 />
 
                 <Stack.Screen 
-                name="ClientLogin" 
-                component={ClientLogin} 
-                   options={{ headerShown: false }} 
+                    name="ClientLogin" 
+                    component={ClientLogin} 
+                    options={{ headerShown: false }} 
                 />
 
-             <Stack.Screen 
-            name="ClientRegister" 
-            component={ClientRegister} 
-                options={{ headerShown: false }} 
+                <Stack.Screen 
+                    name="ClientRegister" 
+                    component={ClientRegister} 
+                    options={{ headerShown: false }} 
                 />
-                {/* Tela de Reset Password sem Header */}
+
                 <Stack.Screen 
                     name="ResetPassword" 
                     component={ResetPassword} 
-                    options={{ 
-                        headerShown: false // Isso remove o header completamente
-                    }} 
+                    options={{headerShown: false}} 
                 />
 
-                {/* Demais telas com Header personalizado */}
                 <Stack.Screen 
-                    name="Home" 
-                    component={Home} 
-                    options={{ 
-                        header: () => <Header activateBackButton={false} title="HOME" icon={headerIcons.home}/>
-                    }} 
+                    name="ReceivePassword" 
+                    component={ReceivePassword} 
+                    options={{headerShown: false}} 
                 />
+
+                <Stack.Screen 
+                    name="NowPassword" 
+                    component={NowPassword} 
+                    options={{headerShown: false}} 
+                />
+
             </Stack.Navigator>
         </NavigationContainer>
     );
