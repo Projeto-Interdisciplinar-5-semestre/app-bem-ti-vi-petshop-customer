@@ -36,6 +36,7 @@ export const Teste = () => {
             <Button text="NowPassword" screen={() => navigate("NowPassword")} />
             <Button text="ReceivePassword" screen={() => navigate("ReceivePassword")} />
             <Button text="ResetPassword" screen={() => navigate("ResetPassword")} />
+            <Button text="ShopScreen" screen={() => navigate("ShopScreen")} />
         </View>
     )
 }

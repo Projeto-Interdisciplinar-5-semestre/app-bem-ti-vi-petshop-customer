@@ -26,6 +26,7 @@ import { ResetPassword } from "../../screens/ResetPassword";
 import { Teste } from "../../screens/Teste";
 import { ReceivePassword } from "../../screens/ReceivePassword";
 import { NowPassword } from "../../screens/NowPassword";
+import { ShopScreen } from "../../screens/ShopScreen";
 
 
 type RootStackParamList = {
@@ -52,6 +53,7 @@ type RootStackParamList = {
     ResetPassword: undefined;
     NowPassword: undefined;
     ReceivePassword: undefined;
+    ShopScreen: undefined;
     
 };
 
@@ -228,6 +230,14 @@ export default function AppRoute() {
                     name="NowPassword" 
                     component={NowPassword} 
                     options={{headerShown: false}} 
+                />
+
+                <Stack.Screen 
+                    name="ShopScreen" 
+                    component={ShopScreen} 
+                    options={{ 
+                        header: () => <Header activateBackButton={false} title="CARRINHO" icon={require('../../assets/images/carrinho.png')}/>
+                    }} 
                 />
 
             </Stack.Navigator>
