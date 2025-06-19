@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Image, TouchableOpacity } from 'react-native';
 import { styles } from './styles';
+import { NavigationProps } from '../../routes/AppRoute';
+import { useNavigation } from '@react-navigation/native';
 
 export const ResetPassword = () => {
+  const { goBack } = useNavigation<NavigationProps>()
   const [email, setEmail] = useState('');
 
   return (
@@ -37,7 +40,7 @@ export const ResetPassword = () => {
         <Text style={styles.loginButtonText}>Continuar</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.backButton}>
+      <TouchableOpacity style={styles.backButton} onPress={()=> goBack()}>
         <Text style={styles.backButtonText}>Voltar ao Login</Text>
       </TouchableOpacity>
     </View>

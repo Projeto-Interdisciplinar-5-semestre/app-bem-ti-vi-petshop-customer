@@ -30,6 +30,26 @@ export interface Category {
     products: Product[],
     activationStatus: ActivationStatus,
 }
+export type CustomerCreate = {
+  name: string;
+  email: string;
+  password: string;
+  birthDate: string;
+  telephones: {
+    phoneOne: string;
+    phoneTwo: string;
+  };
+  address: {
+    state: string;
+    city: string;
+    neighborhood: string;
+    street: string;
+    number: string;
+    complement: string;
+    postalCode: string;
+  };
+};
+
 export interface Customer {
     id: string,
     name: string,

@@ -14,27 +14,6 @@ export const Teste = () => {
     const { navigate } = useNavigation<NavigationProps>()
     const tempId = "64b4476c-be75-4c6d-8791-9242bdd08405" // APENAS PARA TESTES
 
-    const sendRequestLogin = async () =>{
-        const userAuth: UserAuth={
-            email:'email@gmail.com',
-            password:'12345678'
-        }
-
-        try{
-            const token: Token = await login(userAuth)
-            if(token){
-                GLOBAL_VAR.TOKEN_JWT = token.token
-                Alert.alert('Sucesso!', 'O login foi realizado.')
-                console.log(`1 token foi criado e salvo: ${GLOBAL_VAR.TOKEN_JWT}`)
-                // navigate('')
-            }
-        } catch(error){
-            console.error('POST request failed:', error);
-            Alert.alert('Erro', 'Não foi possível fazer o login.');
-        }
-    }
-    sendRequestLogin()
-
     return (
         <View style={styles.screen}>
             <Button text="ShowServices" screen={() => navigate("ShowServices")} />
@@ -52,6 +31,11 @@ export const Teste = () => {
             <Button text="DetailsProduct" screen={() => navigate("DetailsProduct",{id:tempId})} />
             <Button text="DetailsAppointment" screen={() => navigate("DetailsAppointment")} />
             <Button text="CreatePet" screen={() => navigate("CreatePet", {id:tempId})} />
+            <Button text="ClientLogin" screen={() => navigate("ClientLogin")} />
+            <Button text="ClientRegister" screen={() => navigate("ClientRegister")} />
+            <Button text="NowPassword" screen={() => navigate("NowPassword")} />
+            <Button text="ReceivePassword" screen={() => navigate("ReceivePassword")} />
+            <Button text="ResetPassword" screen={() => navigate("ResetPassword")} />
         </View>
     )
 }
