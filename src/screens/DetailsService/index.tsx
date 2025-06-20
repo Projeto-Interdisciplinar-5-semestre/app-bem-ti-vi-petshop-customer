@@ -8,6 +8,8 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { NavigationProps } from '../../routes/AppRoute';
 import { findById } from '../../api/service/search/findById';
 import { Service } from '../../utils/Types';
+import { validateTokenCustomer } from '../../api/auth/validateTokenCustomer/validateTokenCustomer';
+import { createAppointment } from '../../api/appointment/create/createAppointment';
 
 export const DetailsService = () => {
   const { navigate } = useNavigation<NavigationProps>();
@@ -45,11 +47,33 @@ export const DetailsService = () => {
         },
         { 
           text: "Agendar", 
-          onPress: () => console.log("Serviço agendado") 
+          onPress: () => scheduleService()
         }
       ]
     );
   };
+
+const scheduleService = async () => {
+  try {
+    const customerId = await validateTokenCustomer()
+
+    if (!customerId) {
+      Alert.alert("Erro", "Usuário não autenticado.")
+      return
+    }
+
+    const result = await createAppointment(serviceId, customerId.id)
+
+    if (result) {
+      Alert.alert("Sucesso", "Serviço agendado com sucesso!")
+    }else{
+      Alert.alert("Erro", "Falha ao agendar o serviço.")
+    }
+  } catch (error) {
+    console.error("Erro ao agendar serviço:", error)
+    Alert.alert("Erro", "Falha ao agendar o serviço.")
+  }
+}
 
   const toggleComments = () => {
     setShowComments(!showComments);
