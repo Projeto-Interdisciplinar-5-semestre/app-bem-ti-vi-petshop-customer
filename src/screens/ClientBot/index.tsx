@@ -20,6 +20,7 @@ const ClientBot: React.FC = () => {
     Montserrat_700Bold,
   });
 
+
   if (!fontsLoaded) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -85,14 +86,15 @@ const ClientBot: React.FC = () => {
     setMessages(prev => [...prev, botMessage]);
   };
 
-  const renderItem = ({ item }: { item: Message }) => (
-    <View style={[styles.messageContainer, item.from === 'user' ? styles.user : styles.bot]}>
-      <Text style={styles.messageAuthor}>
-        {item.from === 'user' ? 'Você' : 'Admin'}
-      </Text>
-      <Text style={styles.messageText}>{item.text}</Text>
-    </View>
-  );
+const renderItem = ({ item }: { item: Message }) => (
+  <View style={[styles.messageContainer, item.from === 'user' ? styles.user : styles.bot]}>
+    <Text style={item.from === 'user' ? styles.messageAuthorUser : styles.messageAuthorBot}>
+      {item.from === 'user' ? 'Você' : 'Admin'}
+    </Text>
+    <Text style={styles.messageText}>{item.text}</Text>
+  </View>
+);
+
 
   return (
     <View style={styles.container}>
