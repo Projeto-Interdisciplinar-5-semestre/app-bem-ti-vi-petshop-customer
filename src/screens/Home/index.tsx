@@ -2,7 +2,7 @@ import React from 'react';
 import { ScrollView, View, Text, TouchableOpacity, Image } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
-import { NavigationBar } from '../../components/NavigationBar';
+import { NavigationBar } from "../../components/NavigationBar";
 
 import { styles } from './style';
 
