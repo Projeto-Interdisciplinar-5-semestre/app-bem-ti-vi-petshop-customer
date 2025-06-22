@@ -1,11 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { createNativeStackNavigator, NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { NavigationContainer } from "@react-navigation/native";
-
-import { Header } from "../components/Header";
-
+import { Header } from '../components/Header';
 import { Home } from "../screens/Home";
-import { ShopScreen } from "../screens/ShopScreen"; // ✅ Importa a ShopScreen
+import { ShopScreen } from "../screens/ShopScreen";
 import { CreatePet } from "../screens/CreatePet";
 import { SearchPet } from "../screens/SearchPet";
 import { UpdateProfile } from "../screens/UpdateProfile";
@@ -20,10 +18,9 @@ import { DetailsProduct } from "../screens/DetailsProduct";
 import SearchAppointment2 from "../screens/SearchAppointment2";
 import { ShowServices } from "../screens/ShowServices";
 import { DetailsService } from "../screens/DetailsService";
-import PetShopScreen from "../screens/PetStore"; // Importação adicionada
 
 type RootStackParamList = {
-    ShopScreen: undefined;
+    ShopScreen: { cartCount: number };
     Home: undefined;
     CreatePet: undefined;
     ManagePet: undefined;
@@ -31,15 +28,14 @@ type RootStackParamList = {
     UpdateProfile: undefined;
     SearchAppointment: undefined;
     SearchAppointment2: undefined;
-    DetailsAppointment: undefined;
-    DetailsProduct: undefined;
-    DetailsService: undefined;
+    DetailsAppointment: { appointmentId: string };
+    DetailsProduct: { productId: number };
+    DetailsService: { serviceId: number };
     SearchOrder: undefined;
     ShowProfile: undefined;
     ShowServices: undefined;
     ShowCategories: undefined;
-    ProductsByCategory: undefined;
-    PetShop: undefined; // Rota adicionada
+    ProductsByCategory: { categoryId: number };
 };
 
 export type NavigationProps = NativeStackNavigationProp<RootStackParamList, "ShopScreen">;
@@ -47,353 +43,250 @@ export type NavigationProps = NativeStackNavigationProp<RootStackParamList, "Sho
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function AppRoute() {
+    const [cartCount, setCartCount] = useState(0);
+
     return (
         <NavigationContainer>
-<<<<<<< Updated upstream
             <Stack.Navigator initialRouteName="ShopScreen">
                 <Stack.Screen
                     name="ShopScreen"
                     component={ShopScreen}
-                    options={() => ({
+                    initialParams={{ cartCount: 0 }}
+                    options={({ navigation, route }) => ({
                         header: () => (
-                            <Header
-                                activateBackButton={false}
+                            <Header 
                                 title="LOJA"
-                                icon={require('../assets/icons/home.png')}
+                                navigation={navigation}
+                                showCart={true}
+                                cartCount={route.params?.cartCount || 0}
+                                onCartPress={() => navigation.navigate('SearchOrder')}
                             />
                         )
                     })}
                 />
+
                 <Stack.Screen
                     name="Home"
                     component={Home}
-                    options={() => ({
+                    options={({ navigation }) => ({
                         header: () => (
                             <Header
-                                activateBackButton={false}
                                 title="HOME"
-                                icon={require('../assets/icons/home.png')}
+                                icon={require('../assets/images/home.png')}
+                                navigation={navigation}
                             />
                         )
                     })}
                 />
+
                 <Stack.Screen
                     name="CreatePet"
                     component={CreatePet}
-                    options={() => ({
+                    options={({ navigation }) => ({
                         header: () => (
                             <Header
-                                activateBackButton={true}
-                                title="CADASTRAR"
+                                title="CADASTRAR PET"
                                 icon={require('../assets/images/pet.png')}
+                                activateBackButton={true}
+                                navigation={navigation}
                             />
                         )
                     })}
                 />
+
                 <Stack.Screen
                     name="ManagePet"
                     component={ManagePet}
-                    options={() => ({
+                    options={({ navigation }) => ({
                         header: () => (
                             <Header
-                                activateBackButton={true}
-                                title="GERENCIAR"
+                                title="GERENCIAR PET"
                                 icon={require('../assets/images/pet.png')}
+                                activateBackButton={true}
+                                navigation={navigation}
                             />
                         )
                     })}
                 />
+
                 <Stack.Screen
                     name="SearchPet"
                     component={SearchPet}
-                    options={() => ({
+                    options={({ navigation }) => ({
                         header: () => (
                             <Header
-                                activateBackButton={true}
-                                title="PETS"
+                                title="BUSCAR PET"
                                 icon={require('../assets/images/cachorro.png')}
+                                activateBackButton={true}
+                                navigation={navigation}
                             />
                         )
                     })}
                 />
+
                 <Stack.Screen
                     name="UpdateProfile"
                     component={UpdateProfile}
-                    options={() => ({
+                    options={({ navigation }) => ({
                         header: () => (
                             <Header
-                                activateBackButton={true}
-                                title="EDITAR"
+                                title="ATUALIZAR PERFIL"
                                 icon={require('../assets/images/perfil.png')}
+                                activateBackButton={true}
+                                navigation={navigation}
                             />
                         )
                     })}
                 />
+
                 <Stack.Screen
                     name="ShowProfile"
                     component={ShowProfile}
-                    options={() => ({
+                    options={({ navigation }) => ({
                         header: () => (
                             <Header
-                                activateBackButton={true}
-                                title="PERFIL"
+                                title="MEU PERFIL"
                                 icon={require('../assets/images/perfil.png')}
+                                activateBackButton={true}
+                                navigation={navigation}
                             />
                         )
                     })}
                 />
+
                 <Stack.Screen
                     name="SearchAppointment"
                     component={SearchAppointment}
-                    options={() => ({
+                    options={({ navigation }) => ({
                         header: () => (
                             <Header
-                                activateBackButton={true}
                                 title="AGENDAMENTOS"
                                 icon={require('../assets/images/agenda.png')}
+                                activateBackButton={true}
+                                navigation={navigation}
                             />
                         )
                     })}
                 />
+
                 <Stack.Screen
                     name="SearchAppointment2"
                     component={SearchAppointment2}
-                    options={() => ({
+                    options={({ navigation }) => ({
                         header: () => (
                             <Header
-                                activateBackButton={true}
                                 title="AGENDAMENTOS"
                                 icon={require('../assets/images/agenda.png')}
+                                activateBackButton={true}
+                                navigation={navigation}
                             />
                         )
                     })}
                 />
+
                 <Stack.Screen
                     name="DetailsAppointment"
                     component={DetailsAppointment}
-                    options={() => ({
+                    options={({ navigation }) => ({
                         header: () => (
                             <Header
-                                activateBackButton={true}
-                                title="AGENDAMENTO"
+                                title="DETALHES AGENDAMENTO"
                                 icon={require('../assets/images/agenda.png')}
+                                activateBackButton={true}
+                                navigation={navigation}
                             />
                         )
                     })}
                 />
+
                 <Stack.Screen
                     name="SearchOrder"
                     component={SearchOrder}
-                    options={() => ({
+                    options={({ navigation }) => ({
                         header: () => (
                             <Header
-                                activateBackButton={true}
-                                title="PEDIDOS"
+                                title="MEUS PEDIDOS"
                                 icon={require('../assets/icons/home.png')}
+                                activateBackButton={true}
+                                navigation={navigation}
                             />
                         )
                     })}
                 />
+
                 <Stack.Screen
                     name="ShowCategories"
                     component={ShowCategories}
-                    options={() => ({
+                    options={({ navigation }) => ({
                         header: () => (
                             <Header
-                                activateBackButton={true}
                                 title="CATEGORIAS"
                                 icon={require('../assets/icons/home.png')}
+                                activateBackButton={true}
+                                navigation={navigation}
                             />
                         )
                     })}
                 />
+
                 <Stack.Screen
                     name="ShowServices"
                     component={ShowServices}
-                    options={() => ({
+                    options={({ navigation }) => ({
                         header: () => (
                             <Header
-                                activateBackButton={true}
                                 title="SERVIÇOS"
                                 icon={require('../assets/images/cachorro.png')}
+                                activateBackButton={true}
+                                navigation={navigation}
                             />
                         )
                     })}
                 />
+
                 <Stack.Screen
                     name="ProductsByCategory"
                     component={ProductsByCategory}
-                    options={() => ({
+                    options={({ navigation }) => ({
                         header: () => (
                             <Header
-                                activateBackButton={true}
                                 title="PRODUTOS"
                                 icon={require('../assets/icons/home.png')}
+                                activateBackButton={true}
+                                navigation={navigation}
                             />
                         )
                     })}
                 />
+
                 <Stack.Screen
                     name="DetailsProduct"
                     component={DetailsProduct}
-                    options={() => ({
+                    options={({ navigation }) => ({
                         header: () => (
                             <Header
-                                activateBackButton={true}
-                                title="PRODUTO"
+                                title="DETALHES PRODUTO"
                                 icon={require('../assets/icons/home.png')}
+                                activateBackButton={true}
+                                navigation={navigation}
                             />
                         )
                     })}
                 />
+
                 <Stack.Screen
                     name="DetailsService"
                     component={DetailsService}
-                    options={() => ({
+                    options={({ navigation }) => ({
                         header: () => (
                             <Header
-                                activateBackButton={true}
-                                title="SERVIÇO"
+                                title="DETALHES SERVIÇO"
                                 icon={require('../assets/images/cachorro.png')}
+                                activateBackButton={true}
+                                navigation={navigation}
                             />
                         )
                     })}
-=======
-            <Stack.Navigator initialRouteName="Home">
-                {/* Rotas existentes */}
-                <Stack.Screen 
-                    name="Home" 
-                    component={Home} 
-                    options={() => ({ 
-                        header: () => <Header activateBackButton={false} title="HOME" icon={require('../assets/icons/home.png')}/>
-                    })} 
-                />
-
-                {/* Nova rota para a PetShop */}
-                <Stack.Screen 
-                    name="PetShop" 
-                    component={PetShopScreen} 
-                    options={() => ({ 
-                        header: () => <Header 
-                            activateBackButton={true} 
-                            title="PET SHOP" 
-                            icon={require('../assets/images/cachorro.png')}
-                        />
-                    })} 
-                />
-
-                {/* Rotas existentes continuam... */}
-                <Stack.Screen 
-                    name="CreatePet" 
-                    component={CreatePet} 
-                    options={() => ({ 
-                        header: () => <Header activateBackButton={true} title="CADASTRAR" icon={require('../assets/images/pet.png')}/>
-                    })} 
-                />
-
-                <Stack.Screen 
-                    name="ManagePet" 
-                    component={ManagePet} 
-                    options={() => ({ 
-                        header: () => <Header activateBackButton={true} title="GERENCIAR" icon={require('../assets/images/pet.png')}/>
-                    })} 
-                />
-
-                <Stack.Screen 
-                    name="SearchPet" 
-                    component={SearchPet} 
-                    options={() => ({ 
-                        header: () => <Header activateBackButton={true} title="PETS" icon={require('../assets/images/cachorro.png')}/>
-                    })} 
-                />
-
-                <Stack.Screen 
-                    name="UpdateProfile" 
-                    component={UpdateProfile} 
-                    options={() => ({ 
-                        header: () => <Header activateBackButton={true} title="EDITAR" icon={require('../assets/images/perfil.png')}/>
-                    })} 
-                />
-
-                <Stack.Screen 
-                    name="ShowProfile" 
-                    component={ShowProfile} 
-                    options={() => ({ 
-                        header: () => <Header activateBackButton={true} title="PERFIL" icon={require('../assets/images/perfil.png')}/>
-                    })} 
-                />
-
-                <Stack.Screen 
-                    name="SearchAppointment" 
-                    component={SearchAppointment} 
-                    options={() => ({ 
-                        header: () => <Header activateBackButton={true} title="AGENDAMENTOS" icon={require('../assets/images/agenda.png')}/>
-                    })} 
-                />
-
-                <Stack.Screen 
-                    name="SearchAppointment2" 
-                    component={SearchAppointment2} 
-                    options={() => ({ 
-                        header: () => <Header activateBackButton={true} title="AGENDAMENTOS" icon={require('../assets/images/agenda.png')}/>
-                    })} 
-                />
-
-                <Stack.Screen 
-                    name="DetailsAppointment" 
-                    component={DetailsAppointment} 
-                    options={() => ({ 
-                        header: () => <Header activateBackButton={true} title="AGENDAMENTO" icon={require('../assets/images/agenda.png')}/>
-                    })} 
-                />
-
-                <Stack.Screen 
-                    name="SearchOrder" 
-                    component={SearchOrder} 
-                    options={() => ({ 
-                        header: () => <Header activateBackButton={true} title="PEDIDOS" icon={require('../assets/icons/home.png')}/>
-                    })} 
-                />
-
-                <Stack.Screen 
-                    name="ShowCategories" 
-                    component={ShowCategories} 
-                    options={() => ({ 
-                        header: () => <Header activateBackButton={true} title="CATEGORIAS" icon={require('../assets/icons/home.png')}/>
-                    })} 
-                />
-
-                <Stack.Screen 
-                    name="ShowServices" 
-                    component={ShowServices} 
-                    options={() => ({ 
-                        header: () => <Header activateBackButton={true} title="SERVIÇOS" icon={require('../assets/images/cachorro.png')}/>
-                    })} 
-                />
-
-                <Stack.Screen 
-                    name="ProductsByCategory" 
-                    component={ProductsByCategory} 
-                    options={() => ({ 
-                        header: () => <Header activateBackButton={true} title="PRODUTOS" icon={require('../assets/icons/home.png')}/>
-                    })} 
-                />
-
-                <Stack.Screen 
-                    name="DetailsProduct" 
-                    component={DetailsProduct} 
-                    options={() => ({ 
-                        header: () => <Header activateBackButton={true} title="PRODUTO" icon={require('../assets/icons/home.png')}/>
-                    })} 
-                />
-
-                <Stack.Screen 
-                    name="DetailsService" 
-                    component={DetailsService} 
-                    options={() => ({ 
-                        header: () => <Header activateBackButton={true} title="SERVIÇO" icon={require('../assets/images/cachorro.png')}/>
-                    })} 
->>>>>>> Stashed changes
                 />
             </Stack.Navigator>
         </NavigationContainer>

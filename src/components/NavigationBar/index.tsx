@@ -5,25 +5,25 @@ const NavigationBar = ({ navigation }: { navigation: any }) => {
   const tabs = [
     {
       id: 'home',
-      icon: require('../../assets/icons/home.png'),
+      icon: require('../../assets/images/home.png'),
       label: 'Home',
       screen: 'Home'
     },
     {
       id: 'loja',
-      icon: require('../../assets/icons/shop.png'),
+      icon: require('../../assets/images/carrinho.png'),
       label: 'Loja',
-      screen: 'PetStore'
+      screen: 'ShopScreen'
     },
     {
       id: 'servicos',
-      icon: require('../../assets/icons/services.png'),
+      icon: require('../../assets/images/pet.png'),
       label: 'Serviços',
       screen: 'Services'
     },
     {
       id: 'perfil',
-      icon: require('../../assets/icons/profile.png'),
+      icon: require('../../assets/images/perfil.png'),
       label: 'Perfil',
       screen: 'Profile'
     }
@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   tabLabel: {
+    fontFamily: 'Montserrat-Medium',
     fontSize: 12,
     color: '#95A5A6',
   },

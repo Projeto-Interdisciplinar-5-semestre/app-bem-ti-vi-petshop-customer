@@ -7,7 +7,8 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
-  Dimensions
+  Dimensions,
+  Alert
 } from 'react-native';
 import { style } from './style';
 
@@ -53,18 +54,13 @@ const discountProducts = [
   { id: 10, name: 'Arranhador', price: 'R$ 119,90', originalPrice: 'R$ 139,90', discount: '14%', image: require('../../assets/images/produto1.png'), category: 'Brinquedos' },
 ];
 
-export const ShopScreen = () => {
+export const ShopScreen = ({ navigation, route }: { navigation: any, route: any }) => {
   const [selectedCategory, setSelectedCategory] = useState('Popular');
   const [selectedProductType, setSelectedProductType] = useState('Mais Vendidos');
   const [currentBanner, setCurrentBanner] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const flatListRef = useRef<FlatList>(null);
-
-  // Filtra os produtos baseado na busca
-  const filteredProducts = allProducts.filter(product => 
-    product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const [productQuantities, setProductQuantities] = useState<{[key: number]: number}>({});
 
   const handleCategorySelect = (category: string) => {
     setSelectedCategory(category);
@@ -72,6 +68,36 @@ export const ShopScreen = () => {
 
   const handleProductTypeSelect = (type: string) => {
     setSelectedProductType(type);
+  };
+
+  const filteredProducts = allProducts.filter(product => 
+    product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    product.category.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleAddToCart = (productId: number) => {
+    const currentCount = route.params?.cartCount || 0;
+    navigation.setParams({ cartCount: currentCount + 1 });
+    setProductQuantities(prev => ({
+      ...prev,
+      [productId]: (prev[productId] || 0) + 1
+    }));
+  };
+
+  const handleRemoveFromCart = (productId: number) => {
+    const currentCount = route.params?.cartCount || 0;
+    const currentQuantity = productQuantities[productId] || 0;
+
+    if (currentQuantity <= 0) {
+      Alert.alert('Atenção', 'Não há itens deste produto no carrinho para remover');
+      return;
+    }
+
+    navigation.setParams({ cartCount: Math.max(0, currentCount - 1) });
+    setProductQuantities(prev => ({
+      ...prev,
+      [productId]: Math.max(0, (prev[productId] || 0) - 1)
+    }));
   };
 
   useEffect(() => {
@@ -101,58 +127,82 @@ export const ShopScreen = () => {
   };
 
   const renderProductCard = (product: any) => (
-    <TouchableOpacity key={product.id} style={style.productCard}>
-      <Image
-        source={product.image}
-        style={style.productImage}
-        resizeMode="contain"
-      />
+    <View key={product.id} style={style.productCard}>
+      <Image source={product.image} style={style.productImage} resizeMode="contain" />
       <View style={style.productInfo}>
         <Text style={style.productName} numberOfLines={1}>{product.name}</Text>
         <Text style={style.productPrice}>{product.price}</Text>
+        <View style={style.quantityContainer}>
+          <TouchableOpacity 
+            style={style.quantityButton} 
+            onPress={() => handleRemoveFromCart(product.id)}
+          >
+            <Text style={style.quantityButtonText}>-</Text>
+          </TouchableOpacity>
+          <Text style={style.quantityText}>
+            {productQuantities[product.id] || 0}
+          </Text>
+          <TouchableOpacity 
+            style={style.quantityButton} 
+            onPress={() => handleAddToCart(product.id)}
+          >
+            <Text style={style.quantityButtonText}>+</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 
   const renderDiscountProductCard = (product: any) => (
-    <TouchableOpacity key={product.id} style={style.discountProductCard}>
+    <View key={product.id} style={style.discountProductCard}>
       <View style={style.discountBadge}>
         <Text style={style.discountText}>{product.discount}</Text>
       </View>
-      <Image
-        source={product.image}
-        style={style.productImage}
-        resizeMode="contain"
-      />
+      <Image source={product.image} style={style.productImage} resizeMode="contain" />
       <View style={style.productInfo}>
         <Text style={style.productName} numberOfLines={1}>{product.name}</Text>
         <View style={style.priceContainer}>
           <Text style={style.discountPrice}>{product.price}</Text>
           <Text style={style.originalPrice}>{product.originalPrice}</Text>
         </View>
+        <View style={style.quantityContainer}>
+          <TouchableOpacity 
+            style={style.quantityButton} 
+            onPress={() => handleRemoveFromCart(product.id)}
+          >
+            <Text style={style.quantityButtonText}>-</Text>
+          </TouchableOpacity>
+          <Text style={style.quantityText}>
+            {productQuantities[product.id] || 0}
+          </Text>
+          <TouchableOpacity 
+            style={style.quantityButton} 
+            onPress={() => handleAddToCart(product.id)}
+          >
+            <Text style={style.quantityButtonText}>+</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 
   return (
     <View style={style.container}>
-      {/* Barra de pesquisa */}
-      <View style={style.searchBarContainer}>
-        <TextInput
-          placeholder="Pesquisar produtos..."
-          style={style.searchInputBar}
-          placeholderTextColor="#999"
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-        />
-        <Image
-          source={require('../../assets/images/busca.png')}
-          style={style.searchIcon}
-        />
-      </View>
+      <ScrollView showsVerticalScrollIndicator={false} style={style.scrollView}>
+        <View style={style.searchBarContainer}>
+          <TextInput
+            placeholder="Pesquisar produtos..."
+            style={style.searchInputBar}
+            placeholderTextColor="#999"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+          />
+          <Image
+            source={require('../../assets/images/busca.png')}
+            style={style.searchIcon}
+          />
+        </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {/* Carrossel de categorias */}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -187,7 +237,6 @@ export const ShopScreen = () => {
           ))}
         </ScrollView>
 
-        {/* Carrossel de banners */}
         <View style={style.bannerContainer}>
           <FlatList
             data={bannerImages}
@@ -201,17 +250,12 @@ export const ShopScreen = () => {
               setCurrentBanner(index);
             }}
             renderItem={({ item }) => (
-              <Image
-                source={item}
-                style={style.bannerImage}
-                resizeMode="cover"
-              />
+              <Image source={item} style={style.bannerImage} resizeMode="cover" />
             )}
           />
           {renderBannerIndicator()}
         </View>
 
-        {/* Seção de tipos de produtos */}
         <View style={style.sectionTitleContainer}>
           <View style={style.sectionLine} />
           <Text style={style.sectionTitle}>Destaques da Semana</Text>
@@ -243,7 +287,6 @@ export const ShopScreen = () => {
           ))}
         </ScrollView>
 
-        {/* Grid de produtos */}
         <View style={style.productsGrid}>
           {filteredProducts.slice(0, 2).map(renderProductCard)}
         </View>
@@ -251,10 +294,9 @@ export const ShopScreen = () => {
           {filteredProducts.slice(2, 4).map(renderProductCard)}
         </View>
 
-        {/* Seção de produtos em desconto */}
         <View style={style.sectionTitleContainer}>
           <View style={style.sectionLine} />
-          <Text style={style.sectionTitle}>Produtos em Desconto</Text>
+          <Text style={style.sectionTitle}>Promoções</Text>
           <View style={style.sectionLine} />
         </View>
         

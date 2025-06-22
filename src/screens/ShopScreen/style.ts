@@ -4,6 +4,7 @@ const { width } = Dimensions.get('window');
 
 const PRIMARY_COLOR = '#256489';
 const SECONDARY_COLOR = '#e3f2fd';
+const ACCENT_COLOR = '#e74c3c';
 
 export const style = StyleSheet.create({
   container: {
@@ -11,6 +12,9 @@ export const style = StyleSheet.create({
     backgroundColor: '#f8f9fa',
     paddingHorizontal: 16,
     paddingTop: 16,
+  },
+  scrollView: {
+    marginBottom: 60,
   },
   searchBarContainer: {
     flexDirection: 'row',
@@ -76,8 +80,8 @@ export const style = StyleSheet.create({
     textAlign: 'center',
   },
   selectedCategoryText: {
-    color: PRIMARY_COLOR,
     fontFamily: 'Montserrat-SemiBold',
+    color: PRIMARY_COLOR,
   },
   bannerContainer: {
     height: 160,
@@ -125,11 +129,6 @@ export const style = StyleSheet.create({
     height: 1,
     backgroundColor: PRIMARY_COLOR,
   },
-  seeAllText: {
-    fontFamily: 'Montserrat-Medium',
-    fontSize: 14,
-    color: PRIMARY_COLOR,
-  },
   productTypesContainer: {
     marginBottom: 15,
   },
@@ -153,6 +152,7 @@ export const style = StyleSheet.create({
   },
   selectedProductTypeText: {
     color: '#fff',
+    fontFamily: 'Montserrat-Medium',
   },
   productsGrid: {
     flexDirection: 'row',
@@ -188,7 +188,7 @@ export const style = StyleSheet.create({
     position: 'absolute',
     top: 8,
     right: 8,
-    backgroundColor: '#e74c3c',
+    backgroundColor: ACCENT_COLOR,
     borderRadius: 10,
     paddingHorizontal: 6,
     paddingVertical: 2,
@@ -201,7 +201,7 @@ export const style = StyleSheet.create({
   },
   productImage: {
     width: '100%',
-    height: 80,
+    height: 100,
     marginBottom: 8,
   },
   productInfo: {
@@ -221,7 +221,7 @@ export const style = StyleSheet.create({
   discountPrice: {
     fontFamily: 'Montserrat-SemiBold',
     fontSize: 14,
-    color: '#e74c3c',
+    color: ACCENT_COLOR,
   },
   originalPrice: {
     fontFamily: 'Montserrat-Regular',
@@ -233,5 +233,31 @@ export const style = StyleSheet.create({
   priceContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  quantityContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 8,
+    width: '100%',
+  },
+  quantityButton: {
+    backgroundColor: PRIMARY_COLOR,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  quantityButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontFamily: 'Montserrat-Bold',
+  },
+  quantityText: {
+    fontFamily: 'Montserrat-SemiBold',
+    fontSize: 16,
+    color: '#333',
+    marginHorizontal: 10,
   },
 });
