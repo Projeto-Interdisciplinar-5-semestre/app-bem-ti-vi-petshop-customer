@@ -1,260 +1,234 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, SafeAreaView, Image } from 'react-native';
-import { Checkbox } from 'expo-checkbox';
-import { styles } from './style';
-import { NavigationBar } from '../../components/NavigationBar'; ;
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { View, Text, ScrollView, Image, TouchableOpacity, FlatList, Dimensions } from 'react-native';
 
-const IMAGES = {
-  CART: require('../../assets/images/carrinho-branco.png'),
-  PRODUCT: require('../../assets/images/produto1.png'),
-  TRASH: require('../../assets/images/lixeira.png'),
-  PIX: require('../../assets/images/pix.png'),
-  CARTAO: require('../../assets/images/cartaooo.png')
-};
+import { useNavigation } from '@react-navigation/native';
 
-export const ShopScreen = () => {
-  const [items, setItems] = useState([
-    { 
-      id: 1, 
-      name: 'Cama Decorada Para\nGatos', 
-      price: 109.99, 
-      quantity: 1, 
-      checked: true,
-      image: IMAGES.PRODUCT
-    },
-    { 
-      id: 2, 
-      name: 'Ração Para Cães\nAdultos', 
-      price: 79.50, 
-      quantity: 1, 
-      checked: true,
-      image: IMAGES.PRODUCT
-    }
-  ]);
-  
-  const [deliveryType, setDeliveryType] = useState({
-    address: false,
-    pickup: false
-  });
-  
-  const [paymentMethods, setPaymentMethods] = useState({
-    pix: true,
-    card: false
-  });
+import { SearchInput } from '../../components/SearchInput';
+import { NavigationBar } from '../../components/NavigationBar';
+import { PaginationControls } from '../../components/PaginationControls';
 
-  const updateQuantity = (id: number, change: number) => {
-    setItems(items.map(item => {
-      if (item.id === id) {
-        const newQuantity = item.quantity + change;
-        if (newQuantity < 1) {
-          removeItem(id);
-          return item;
+import { useValidateToken } from '../../utils/UseValidateToken/UseValidateToken';
+import hardwareBackPress from '../../utils/hardwareBackPress/hardwareBackPress';
+import { Category, Error, Paginacao, Product } from '../../utils/Types';
+
+import { NavigationProps } from '../../routes/AppRoute';
+
+import { searchProduct } from '../../api/product/search/searchProduct';
+import { search } from '../../api/category/search/search';
+
+import { style } from './style';
+
+const bannerImages = [
+    require('../../assets/images/banner.png'),
+    require('../../assets/images/banner2.png'),
+    require('../../assets/images/banner3.png')
+];
+
+export default function ShopScreen() {
+    const { navigate } = useNavigation<NavigationProps>();
+
+    const [currentBanner, setCurrentBanner] = useState(0);
+    const flatListRef = useRef<FlatList>(null);
+
+    const [categories, setCategories] = useState<Category[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
+    const [searchText, setSearchText] = useState<string>('');
+    const [pageIndex, setPageIndex] = useState<number>(0);
+    const [totalPages, setTotalPages] = useState<number>(1);
+
+    const [error, setError] = useState<string>('');
+
+    const { width } = Dimensions.get('window');
+
+    useValidateToken();
+    hardwareBackPress(navigate, "Home");
+
+    const handleNextPage = () => {
+        if (pageIndex + 1 < totalPages) setPageIndex(prev => prev + 1);
+    };
+
+    const handlePrevPage = () => {
+        if (pageIndex > 0) setPageIndex(prev => prev - 1);
+    };
+
+
+    useEffect(() => {
+        async function carregarCategorias() {
+            try {
+                const categories: Paginacao<Category> | Error = await search("", 0);
+
+                if ('code' in categories) {
+                    setError(categories.message);
+                    return;
+                }
+
+                setCategories(categories.content);
+
+            } catch {
+                setError('Não foi possível atualizar. Verifique sua conexão.');
+            }
         }
-        return { ...item, quantity: newQuantity };
-      }
-      return item;
-    }));
-  };
+        carregarCategorias();
+    }, []);
 
-  const toggleItemCheck = (id: number) => {
-    setItems(items.map(item => 
-      item.id === id ? { ...item, checked: !item.checked } : item
-    ));
-  };
+    const carregarProdutos = useCallback(async (searchText: string, pageIndex: number) => {
+        setError('');
+        try {
+            const dados: Paginacao<Product> | Error = await searchProduct(searchText, pageIndex);
+            if ('code' in dados) {
+                setError(dados.message);
+                return;
+            }
 
-  const removeItem = (id: number) => {
-    setItems(items.filter(item => item.id !== id));
-  };
+            setProducts(dados.content);
 
-  const total = items.reduce((sum, item) => sum + (item.checked ? item.price * item.quantity : 0), 0);
+        } catch {
+            setProducts([]);
+            setError('Erro ao carregar produtos. Verifique sua conexão.');
+        }
+    }, []);
 
-  const handleDeliveryTypeChange = (type: 'address' | 'pickup') => {
-    if (type === 'address') {
-      setDeliveryType({
-        address: true,
-        pickup: false
-      });
-    } else {
-      setDeliveryType({
-        pickup: true,
-        address: false
-      });
-    }
-  };
+    useEffect(() => {
+        carregarProdutos(searchText, pageIndex);
+    }, [pageIndex, searchText, carregarProdutos]);
 
-  const handlePaymentMethodChange = (method: 'pix' | 'card') => {
-    setPaymentMethods({
-      pix: method === 'pix',
-      card: method === 'card'
-    });
-  };
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const nextIndex = (currentBanner + 1) % bannerImages.length;
+            setCurrentBanner(nextIndex);
+            flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
+        }, 5000);
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Continue Shopping Button */}
-        <View style={styles.continueShoppingContainer}>
-          <TouchableOpacity style={styles.continueShoppingButton}>
-            <Image 
-              source={IMAGES.CART} 
-              style={styles.cartIcon}
-            />
-            <Text style={styles.continueText}>Continuar Comprando</Text>
-          </TouchableOpacity>
-        </View>
+        return () => clearInterval(interval);
+    }, [currentBanner]);
 
-        {/* Items List */}
-        {items.map((item) => (
-          <View key={item.id} style={styles.itemCard}>
-            <Image 
-              source={item.image} 
-              style={styles.productImage}
-            />
-            
-            <View style={styles.productInfoContainer}>
-              <Text style={styles.itemName}>{item.name}</Text>
-              <Text style={styles.itemPrice}>R$ {item.price.toFixed(2)}</Text>
-              
-              <View style={styles.quantityContainer}>
-                <TouchableOpacity 
-                  style={styles.quantityButton}
-                  onPress={() => updateQuantity(item.id, -1)}
-                >
-                  <Text style={styles.quantityText}>-</Text>
-                </TouchableOpacity>
-                <Text style={styles.quantity}>{item.quantity}</Text>
-                <TouchableOpacity 
-                  style={styles.quantityButton}
-                  onPress={() => updateQuantity(item.id, 1)}
-                >
-                  <Text style={styles.quantityText}>+</Text>
-                </TouchableOpacity>
-              </View>
+    const renderBannerIndicator = () => {
+        return (
+            <View style={style.indicatorContainer}>
+                {bannerImages.map((_, index) => (
+                    <View
+                        key={index}
+                        style={[
+                            style.indicator,
+                            currentBanner === index && style.activeIndicator
+                        ]}
+                    />
+                ))}
             </View>
-            
-            <TouchableOpacity 
-              style={styles.trashButton}
-              onPress={() => removeItem(item.id)}
-            >
-              <Image 
-                source={IMAGES.TRASH} 
-                style={styles.trashIcon}
-              />
-            </TouchableOpacity>
-          </View>
-        ))}
+        );
+    };
 
-        {/* Total Card */}
-        <View style={styles.totalCard}>
-          <Text style={styles.totalLabel}>Total</Text>
-          <Text style={styles.totalValue}>R$ {total.toFixed(2)}</Text>
-        </View>
-
-        {/* Delivery Options - Redesign */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Tipo de Entrega</Text>
-          
-          <View style={styles.deliveryOptionsContainer}>
-            <TouchableOpacity 
-              style={[
-                styles.deliveryOptionCard,
-                deliveryType.address && styles.deliveryOptionCardActive
-              ]}
-              onPress={() => handleDeliveryTypeChange('address')}
-            >
-              <View style={styles.deliveryOptionContent}>
-                <View style={styles.deliveryRadio}>
-                  {deliveryType.address && <View style={styles.deliveryRadioSelected} />}
+    const renderProductCard = (product: Product) => (
+        <TouchableOpacity key={product.id} style={style.productCard} onPress={() => navigate("DetailsProduct", { id: product.id })}>
+            <Image source={{ uri: product.pathImage }} style={style.productImage} resizeMode="contain" />
+            <View style={style.productInfo}>
+                <Text style={style.productName} numberOfLines={1}>{product.name}</Text>
+                <Text style={style.productPrice}>{product.price}</Text>
+                <View style={style.ratingStarsContainer}>
+                    {renderStars(product.rate)}
+                    <Text style={style.ratingText}>{product.rate.toFixed(1)}</Text>
                 </View>
-                <Text style={styles.deliveryOptionText}>Entregar no Endereço</Text>
-              </View>
-              {deliveryType.address && (
-                <Text style={styles.deliveryAddressText}>
-                  Rua Exemplo, 123 - Bairro, Cidade/Estado
-                </Text>
-              )}
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={[
-                styles.deliveryOptionCard,
-                deliveryType.pickup && styles.deliveryOptionCardActive,
-                { marginTop: 12 }
-              ]}
-              onPress={() => handleDeliveryTypeChange('pickup')}
-            >
-              <View style={styles.deliveryOptionContent}>
-                <View style={styles.deliveryRadio}>
-                  {deliveryType.pickup && <View style={styles.deliveryRadioSelected} />}
-                </View>
-                <Text style={styles.deliveryOptionText}>Retirar na Loja</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
-        </View>
+            </View>
+        </TouchableOpacity>
+    );
 
-        {/* Payment Methods - Redesign */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Forma de Pagamento</Text>
-          
-          <View style={styles.paymentMethodsContainer}>
-            <TouchableOpacity 
-              style={[
-                styles.paymentMethodCard, 
-                paymentMethods.pix && styles.paymentMethodCardActive
-              ]}
-              onPress={() => handlePaymentMethodChange('pix')}
-            >
-              <View style={styles.paymentMethodContent}>
-                <Image 
-                  source={IMAGES.PIX} 
-                  style={[
-                    styles.paymentMethodImage,
-                    styles.pixImage
-                  ]} 
+    const produtosFiltrados = products.filter(produto =>
+        produto.name.toLowerCase().includes(searchText.toLowerCase()) ||
+        produto.categories.some((c: Category) =>
+            c.name.toLowerCase().includes(searchText.toLowerCase())
+        )
+    );
+
+    const renderStars = (rating: number) => {
+        const stars = [];
+        const fullStars = Math.floor(rating);
+        const hasHalfStar = rating - fullStars >= 0.5;
+        for (let i = 1; i <= 5; i++) {
+            let source;
+            if (i <= fullStars) {
+                source = require('../../assets/images/star.png');
+            } else if (i === fullStars + 1 && hasHalfStar) {
+                source = require('../../assets/images/halfstar.png');
+            } else {
+                source = require('../../assets/images/emptystar.png');
+            }
+            stars.push(<Image key={i} source={source} style={style.starIcon} />);
+        }
+        return stars;
+    };
+
+    return (
+        <View style={style.container} >
+
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <View style={style.subcontainer}>
+                <SearchInput
+                    placeholder="Buscar categoria..."
+                    searchText={searchText}
+                    setSearchText={setSearchText}
                 />
-                <View>
-                  <Text style={styles.paymentMethodText}>Pix</Text>
-                  <Text style={styles.paymentMethodSubtext}>Pagamento instantâneo</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-            
-            <TouchableOpacity 
-              style={[
-                styles.paymentMethodCard, 
-                paymentMethods.card && styles.paymentMethodCardActive,
-                { marginTop: 12 }
-              ]}
-              onPress={() => handlePaymentMethodChange('card')}
-            >
-              <View style={styles.paymentMethodContent}>
-                <Image 
-                  source={IMAGES.CARTAO} 
-                  style={[
-                    styles.paymentMethodImage,
-                    styles.cardImage
-                  ]} 
-                />
-                <View>
-                  <Text style={styles.paymentMethodText}>Cartão</Text>
-                  <Text style={styles.paymentMethodSubtext}>Crédito ou Débito</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          </View>
-        </View>
 
-        {/* Confirm Button */}
-        <View style={styles.confirmButtonContainer}>
-          <TouchableOpacity style={styles.confirmButton}>
-            <Text style={styles.confirmButtonText}>CONFIRMAR PEDIDO</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+                <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    style={style.categoriesContainer}
+                    contentContainerStyle={style.categoriesContent}
+                >
+                    {categories.map((category) => (
+                        <TouchableOpacity key={category.id} style={style.categoryButton}
+                            onPress={() => navigate('ProductsByCategory', { id: category.id })}>
+                            <View style={style.categoryImageContainer}>
+                                <Image source={{ uri: category.pathImage }} style={style.categoryIcon} />
+                            </View>
+                            <Text style={style.categoryText}>{category.name}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </ScrollView>
 
-      {/* Navigation Bar */}
-      <NavigationBar />
-    </SafeAreaView>
-  );
+                <View style={style.bannerContainer}>
+                    <FlatList
+                        data={bannerImages}
+                        ref={flatListRef}
+                        keyExtractor={(_, index) => index.toString()}
+                        horizontal
+                        pagingEnabled
+                        showsHorizontalScrollIndicator={false}
+                        onMomentumScrollEnd={(event) => {
+                            const index = Math.round(event.nativeEvent.contentOffset.x / width);
+                            setCurrentBanner(index);
+                        }}
+                        renderItem={({ item }) => (
+                            <Image source={item} style={style.bannerImage} resizeMode="cover" />
+                        )}
+                    />
+                    {renderBannerIndicator()}
+                </View>
+
+                <View>
+                    <TouchableOpacity style={style.buttonCategories} onPress={() => navigate("ShowCategories")}>
+                        <Text style={style.buttonTextCategories}>Ver todas as categorias</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <View style={style.sectionTitleContainer}>
+                    <View style={style.sectionLine} />
+                    <Text style={style.sectionTitle}>Veja nossos produtos</Text>
+                    <View style={style.sectionLine} />
+                </View>
+
+                <View style={style.productsGrid}>
+                    {produtosFiltrados.map(renderProductCard)}
+                </View>
+                </View>
+            </ScrollView>
+
+            <PaginationControls
+                pageIndex={pageIndex}
+                totalPages={totalPages}
+                onNext={handleNextPage}
+                onPrev={handlePrevPage}
+            />
+            <NavigationBar initialTab='loja' />
+        </View>
+    );
 };

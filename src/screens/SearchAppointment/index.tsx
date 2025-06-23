@@ -1,124 +1,142 @@
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, TextInput, ImageBackground } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { ScrollView, SafeAreaView, View, Text, ActivityIndicator } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
+import hardwareBackPress from '../../utils/hardwareBackPress/hardwareBackPress';
+import { Appointment, Error, Paginacao } from '../../utils/Types';
+
+import { PaginationControls } from '../../components/PaginationControls';
 import { NavigationBar } from '../../components/NavigationBar';
+import { InputPaymentStatus } from '../../components/InputPaymentStatus';
 
+import { validateTokenCustomer } from '../../api/auth/validateTokenCustomer/validateTokenCustomer';
+import { search } from '../../api/appointment/search/search';
+
+import { NavigationProps } from '../../routes/AppRoute';
 import { styles } from './style';
 
+export function SearchAppointment() {
+    const { navigate } = useNavigation<NavigationProps>();
 
-type AgendamentoType = {
-  id: number;
-  servico: string;
-  valor: string;
-  horario: string;
-  data: string;
-  imagem: any;
-};
+    const [paymentStatus, setPaymentStatus] = useState<string>('');
+    const [appointments, setAppointments] = useState<Appointment[]>([]);
+    const [pageIndex, setPageIndex] = useState<number>(0);
+    const [totalPages, setTotalPages] = useState<number>(1);
+    const [error, setError] = useState<string>('');
+    const [fields, setFields] = useState<string[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
 
-export const SearchAppointment = () => {
-  const [searchText, setSearchText] = useState('');
-  const [agendamentos] = useState<AgendamentoType[]>([
-    { 
-      id: 1, 
-      servico: 'Banho e Tosa', 
-      valor: 'R$ 25,50', 
-      horario: '14:00',
-      data: '08/04/2025',
-      imagem: require('../../assets/images/tosa.png')
-    },
-    { 
-      id: 2, 
-      servico: 'Corte de Unhas', 
-      valor: 'R$ 35,00', 
-      horario: '10:30',
-      data: '15/04/2025',
-      imagem: require('../../assets/images/corte.jpg')
-    },
-    { 
-      id: 3, 
-      servico: 'Vacinação', 
-      valor: 'R$ 120,00', 
-      horario: '16:45',
-      data: '30/04/2025',
-      imagem: require('../../assets/images/vacinacao.jpg')
-    },
-  ]);
+    hardwareBackPress(navigate, 'ShowProfile');
 
-  const filteredAgendamentos = agendamentos.filter(agendamento =>
-    agendamento.servico.toLowerCase().includes(searchText.toLowerCase())
-  );
+    const formatDateTime = (date: Date) =>
+        date.toLocaleString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
 
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView 
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-      >
+    useEffect(() => {
+        const debounceTimeout = setTimeout(() => setPageIndex(0), 600);
+        return () => clearTimeout(debounceTimeout);
+    }, [paymentStatus]);
 
-        {/* Greeting */}
-        <View style={styles.greetingContainer}>
-          <Text style={styles.greetingText}>Olá, Ana!</Text>
-          <Text style={styles.subtitle}>Seus agendamentos</Text>
-        </View>
+    useEffect(() => {
+        async function loadAppointments() {
+            setLoading(true);
+            try {
+                const customerId = await validateTokenCustomer();
+                if ('code' in customerId) {
+                    navigate('ClientLogin');
+                    return;
+                }
 
-        {/* Search Input */}
-        <View style={styles.searchContainer}>
-          <Image 
-            source={require('../../assets/images/busca.png')} 
-            style={styles.searchIcon} 
-          />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Pesquisar agendamento"
-            placeholderTextColor="#999"
-            value={searchText}
-            onChangeText={setSearchText}
-          />
-        </View>
+                const data: Paginacao<Appointment> | Error = await search(pageIndex, customerId.id, paymentStatus);
 
-        {/* Lista de Agendamentos */}
-        <View style={styles.agendamentosContainer}>
-          {filteredAgendamentos.map((agendamento) => (
-            <View key={agendamento.id} style={styles.agendamentoCard}>
-              <View style={styles.agendamentoContent}>
-                <ImageBackground 
-                  source={agendamento.imagem} 
-                  style={styles.agendamentoImage}
-                  imageStyle={styles.agendamentoImageStyle}
-                >
-                  <View style={styles.imageOverlay} />
-                </ImageBackground>
-                
-                <View style={styles.agendamentoInfo}>
-                  <Text style={styles.agendamentoLabel}>Serviço</Text>
-                  <Text style={styles.agendamentoValue}>{agendamento.servico}</Text>
-                  
-                  <Text style={styles.agendamentoLabel}>Data</Text>
-                  <Text style={styles.agendamentoValue}>{agendamento.data}</Text>
-                  
-                  <Text style={styles.agendamentoLabel}>Horário</Text>
-                  <Text style={styles.agendamentoValue}>{agendamento.horario}</Text>
-                  
-                  <Text style={styles.agendamentoLabel}>Valor</Text>
-                  <Text style={styles.agendamentoValue}>{agendamento.valor}</Text>
+                if ('content' in data && 'totalPages' in data) {
+                    setAppointments(data.content);
+                    setTotalPages(data.totalPages);
+                    setError('');
+                    setFields([]);
+                } else {
+                    setAppointments([]);
+                    setError(data.message || 'Erro desconhecido.');
+                    setFields(data.errorFields?.map(field => field.description) || []);
+                }
+            } catch {
+                setAppointments([]);
+                setError('Não foi possível carregar os agendamentos. Verifique sua conexão.');
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        loadAppointments();
+    }, [pageIndex, paymentStatus, navigate]);
+
+    const handleNextPage = () => {
+        if (pageIndex + 1 < totalPages) setPageIndex(prev => prev + 1);
+    };
+
+    const handlePrevPage = () => {
+        if (pageIndex > 0) setPageIndex(prev => prev - 1);
+    };
+
+    return (
+        <SafeAreaView style={styles.safeArea}>
+            <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+
+                <InputPaymentStatus
+                    label='Status de pagamento'
+                    paymentStatus={paymentStatus}
+                    setPaymentStatus={setPaymentStatus}
+                />
+
+                <View style={styles.itemContainer}>
+                    {loading ? (
+                        <ActivityIndicator size="large" color="#256489" style={{ marginTop: 20 }} />
+                    ) : appointments.length > 0 ? (
+                        appointments.map(appointment => (
+                            <View key={appointment.id} style={styles.card}>
+                                <Text style={styles.cardTitle}>Cliente: {appointment.customer.name}</Text>
+                                <Text style={styles.cardSubtitle}>Email: {appointment.customer.email}</Text>
+                                <Text style={styles.cardSubtitle}>Serviço: {appointment.service.name}</Text>
+                                <Text style={styles.cardSubtitle}>Descrição: {appointment.service.description}</Text>
+                                <Text style={styles.cardSubtitle}>
+                                    Data/Hora: {formatDateTime(new Date(appointment.dateTime))}
+                                </Text>
+                                <Text style={styles.cardSubtitle}>Preço: R$ {appointment.price.toFixed(2)}</Text>
+                                <Text style={styles.cardSubtitle}>
+                                    Status de Pagamento: {appointment.paymentStatus}
+                                </Text>
+                            </View>
+                        ))
+                    ) : (
+                        <Text style={{ textAlign: 'center', marginTop: 20 }}>
+                            Nenhum agendamento encontrado.
+                        </Text>
+                    )}
                 </View>
-              </View>
-              
-              <View style={styles.agendamentoActions}>
-                <TouchableOpacity>
-                  <Image 
-                    source={require('../../assets/images/olhos.png')} 
-                    style={styles.actionIcon} 
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-          ))}
-        </View>
-      </ScrollView>
 
-      {/* Navegação Inferior */}
-      <NavigationBar />
-      </SafeAreaView>
-  );
-};
+                {error ? (
+                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
+                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
+                        {fields.map((field, index) => (
+                            <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
+                        ))}
+                    </View>
+                ) : null}
+            </ScrollView>
+
+            <PaginationControls
+                pageIndex={pageIndex}
+                totalPages={totalPages}
+                onNext={handleNextPage}
+                onPrev={handlePrevPage}
+            />
+
+            <NavigationBar initialTab="home" />
+        </SafeAreaView>
+    );
+}

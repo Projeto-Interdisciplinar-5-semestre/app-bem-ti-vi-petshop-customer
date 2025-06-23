@@ -1,13 +1,8 @@
+import { Appointment, Customer, Error, Pet, Service } from '../../../utils/Types';
 import { GLOBAL_VAR } from '../../config/globalVar'
 
-export async function createAppointment(serviceId:string, customerId:string) {
+export async function createAppointment(appointment: Appointment): Promise<Appointment | Error> {
     try {
-        const appointment = {
-            service: { id: serviceId },
-            customer: { id: customerId },
-            dateTime: new Date().toISOString()
-        };
-
         const response = await fetch(`${GLOBAL_VAR.BASE_URL}/agendamentos/inserir`, {
             headers: {
                 'Content-Type': 'application/json',
@@ -18,13 +13,28 @@ export async function createAppointment(serviceId:string, customerId:string) {
         });
         
         if (response.status === 201) {
-            return true;
+            const data: Appointment = await response.json();
+            return data;
         } else {
-            console.error(`Erro ao agendar: código ${response.status}`);
-            return false;
+            const data: Error = await response.json();
+
+            return {
+                code: data.code ?? 'UNKNOWN_ERROR',
+                status: data.status ?? response.status.toString(),
+                message: data.message ?? 'Erro inesperado',
+                timestamp: data.timestamp ?? new Date().toISOString(),
+                path: data.path ?? `/autenticacao/token/cliente`,
+                errorFields: data.errorFields ?? null
+            };
         }
     } catch (error) {
-        console.error('Erro na requisição POST: ', error)
-        throw error;
+        return {
+            code: 'NETWORK_ERROR',
+            status: '0',
+            message: 'Erro de conexão. Verifique sua internet.',
+            timestamp: new Date().toISOString(),
+            path: `/autenticacao/token/cliente`,
+            errorFields: null
+        };
     }
 } 

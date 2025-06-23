@@ -1,64 +1,149 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { Ionicons, AntDesign } from '@expo/vector-icons';
-import { styles } from './style';
-import { NavigationBar } from '../../components/NavigationBar';
-import { NavigationProps } from '../../routes/AppRoute';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import { findByCustomer } from '../../api/order/search/findByCustomer';
-import { Order } from '../../utils/Types';
+import React, { useState, useEffect } from 'react';
+import { ScrollView, SafeAreaView, View, Text, ActivityIndicator } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-export default function SearchOrder() {
-  const { navigate } = useNavigation<NavigationProps>();
-  const route = useRoute();
-  const { id: customerId } = route.params as { id: string };
-  const [pedidos, setPedidos] = useState<Order[]>([])
-  
-  useEffect(() => {
-    const buscarPedidos = async () => {
-      if(!customerId) return
-      try {
-        const data = await findByCustomer(customerId);
-        if (!data) {
-          throw new Error("Erro ao buscar dados dos pedidos");
+import hardwareBackPress from '../../utils/hardwareBackPress/hardwareBackPress';
+import { Order, Error, Paginacao } from '../../utils/Types';
+
+import { PaginationControls } from '../../components/PaginationControls';
+import { NavigationBar } from '../../components/NavigationBar';
+import { InputPaymentStatus } from '../../components/InputPaymentStatus';
+
+import { validateTokenCustomer } from '../../api/auth/validateTokenCustomer/validateTokenCustomer';
+
+import { NavigationProps } from '../../routes/AppRoute';
+import { styles } from './style';
+import { search } from '../../api/order/search/search';
+
+export function SearchOrder() {
+    const { navigate } = useNavigation<NavigationProps>();
+
+    const [paymentStatus, setPaymentStatus] = useState<string>('');
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [pageIndex, setPageIndex] = useState<number>(0);
+    const [totalPages, setTotalPages] = useState<number>(1);
+    const [error, setError] = useState<string>('');
+    const [fields, setFields] = useState<string[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
+
+    hardwareBackPress(navigate, 'ShowProfile');
+
+    const formatDateTime = (date: Date) =>
+        date.toLocaleString('pt-BR', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+
+    useEffect(() => {
+        const debounceTimeout = setTimeout(() => setPageIndex(0), 600);
+        return () => clearTimeout(debounceTimeout);
+    }, [paymentStatus]);
+
+    // Buscar agendamentos
+    useEffect(() => {
+        async function loadOrders() {
+            setLoading(true);
+            try {
+                const customerId = await validateTokenCustomer();
+                if ('code' in customerId) {
+                    navigate('ClientLogin');
+                    return;
+                }
+
+                const data: Paginacao<Order> | Error = await search(pageIndex, customerId.id, paymentStatus);
+
+                if ('content' in data && 'totalPages' in data) {
+                    setOrders(data.content);
+                    setTotalPages(data.totalPages);
+                    setError('');
+                    setFields([]);
+                } else {
+                    setOrders([]);
+                    setError(data.message || 'Erro desconhecido.');
+                    setFields(data.errorFields?.map(field => field.description) || []);
+                }
+            } catch {
+                setOrders([]);
+                setError('Não foi possível carregar os agendamentos. Verifique sua conexão.');
+            } finally {
+                setLoading(false);
+            }
         }
-        setPedidos(data)
-      } catch (erro) {
-        console.error("Erro ao buscar pedidos:", erro);
-        Alert.alert("Erro", "Não foi possível carregar os dados dos pedidos.");
-      }
+
+        loadOrders();
+    }, [pageIndex, paymentStatus, navigate]);
+
+    const handleNextPage = () => {
+        if (pageIndex + 1 < totalPages) setPageIndex(prev => prev + 1);
     };
 
-    buscarPedidos();
-  }, [customerId]);
+    const handlePrevPage = () => {
+        if (pageIndex > 0) setPageIndex(prev => prev - 1);
+    };
 
-  return (
-    <View style={styles.container}>
+    return (
+        <SafeAreaView style={styles.safeArea}>
+            <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
 
-      <Text style={styles.subTitle}>Histórico de pedidos</Text>
+                <InputPaymentStatus
+                    label='Status de pagamento'
+                    paymentStatus={paymentStatus}
+                    setPaymentStatus={setPaymentStatus}
+                />
 
-      <ScrollView style={styles.scroll}>
-        {pedidos.map((pedido, index) => (
-          <View key={pedido.id || index} style={styles.card}>
-            <Text style={styles.title}>Pedido #{index + 1}</Text>
-            {pedido.orderItems.map((item, i) => (
-              <View key={item.id || i}>
-                <Text style={styles.title}>{item.product.name}</Text>
-                <Text>{`${item.quantity}x unidades`}</Text>
-                <Text>{`Valor unitário: R$ ${item.price.toFixed(2)}`}</Text>
-              </View>
-            ))}
-            <Text>{`Total: R$ ${pedido.totalPrice.toFixed(2)}`}</Text>
-            <Text>{`Compra realizada em: ${new Date(pedido.moment).toLocaleString()}`}</Text>
+                <View style={styles.itemContainer}>
+                    {loading ? (
+                        <ActivityIndicator size="large" color="#256489" style={{ marginTop: 20 }} />
+                    ) : orders.length > 0 ? (
+                        
+                        orders.map(order => (
+                            <View key={order.id} style={styles.card}>
+                                <Text style={styles.cardTitle}>Cliente: {order.customer.name}</Text>
+                                <Text style={styles.cardSubtitle}>Email: {order.customer.email}</Text>
+                                <Text style={styles.cardSubtitle}>Data/Hora: {formatDateTime(new Date(order.moment))}</Text>
+                                <Text style={styles.cardSubtitle}>Preço Total: R$ {order.totalPrice.toFixed(2)}</Text>
+                                <Text style={styles.cardSubtitle}>Status de Pagamento: {order.paymentStatus}</Text>
 
-            <TouchableOpacity style={styles.link}>
-              <Text style={styles.linkText}>Ver item</Text>
-              <AntDesign name="arrowright" size={16} color="#007b83" />
-            </TouchableOpacity>
-          </View>
-        ))}
-      </ScrollView>
-      <NavigationBar initialTab='perfil'/>
-    </View>
-  );
+                                <Text style={styles.cardSubtitle}>Itens do Pedido:</Text>
+                                {Array.isArray(order.orderItems) && order.orderItems.length > 0 ? (
+                                    order.orderItems.map(item => (
+                                        <View key={item.id} style={{ marginLeft: 10, marginBottom: 5 }}>
+                                            <Text style={styles.cardText}>Produto: {item.product.name}</Text>
+                                            <Text style={styles.cardText}>Quantidade: {item.quantity}</Text>
+                                            <Text style={styles.cardText}>Preço Unitário: R$ {item.price.toFixed(2)}</Text>
+                                        </View>
+                                    ))
+                                ) : (
+                                    <Text style={styles.cardText}>Nenhum item.</Text>
+                                )}
+                            </View>
+                        ))
+                    ) : (
+                        <Text style={{ textAlign: 'center', marginTop: 20 }}>Nenhum pedido encontrado.</Text>
+                    )}
+                </View>
+
+                {error ? (
+                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
+                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
+                        {fields.map((field, index) => (
+                            <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
+                        ))}
+                    </View>
+                ) : null}
+            </ScrollView>
+
+            <PaginationControls
+                pageIndex={pageIndex}
+                totalPages={totalPages}
+                onNext={handleNextPage}
+                onPrev={handlePrevPage}
+            />
+
+            <NavigationBar initialTab="home" />
+        </SafeAreaView>
+    );
 }

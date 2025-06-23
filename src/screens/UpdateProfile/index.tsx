@@ -1,364 +1,433 @@
-import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-  TextInput,
-  SafeAreaView,
-  Alert,
-  ScrollView,
-  FlatList,
-} from "react-native";
-import { styles } from "./style";
-import { NavigationBar } from "../../components/NavigationBar";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { View, Text, TouchableOpacity, Image, TextInput, ScrollView, FlatList, Pressable, ToastAndroid} from "react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { NavigationProps } from "../../routes/AppRoute";
+import { NavigationBar } from "../../components/NavigationBar";
+import { Title } from "../../components/Title";
+
+import { useNavigation } from "@react-navigation/native";
 
 import { findById } from "../../api/customer/search/findById";
 import { update } from "../../api/customer/update/update";
-
-import { useValidateToken } from "../../utils/UseValidateToken/UseValidateToken";
-import { selectImageFromGalery } from "../../utils/selectImageFromGalery/selectImageFromGalery";
-import { Customer } from "../../utils/Types";
 import { CustomerId, validateTokenCustomer } from "../../api/auth/validateTokenCustomer/validateTokenCustomer";
 
+import { selectImageFromGalery } from "../../utils/selectImageFromGalery/selectImageFromGalery";
+import { Address, Customer, Error, Telephones } from "../../utils/Types";
+import hardwareBackPress from "../../utils/hardwareBackPress/hardwareBackPress";
+
+import { NavigationProps } from "../../routes/AppRoute";
+
+import { styles } from "./style";
+
 type EstadoType = {
-  label: string;
-  value: string;
+    label: string;
+    value: string;
 };
 
 const estados: EstadoType[] = [
-  { label: "Acre", value: "AC" },
-  { label: "Alagoas", value: "AL" },
-  { label: "Amapá", value: "AP" },
-  { label: "Amazonas", value: "AM" },
-  { label: "Bahia", value: "BA" },
-  { label: "Ceará", value: "CE" },
-  { label: "Distrito Federal", value: "DF" },
-  { label: "Espírito Santo", value: "ES" },
-  { label: "Goiás", value: "GO" },
-  { label: "Maranhão", value: "MA" },
-  { label: "Mato Grosso", value: "MT" },
-  { label: "Mato Grosso do Sul", value: "MS" },
-  { label: "Minas Gerais", value: "MG" },
-  { label: "Pará", value: "PA" },
-  { label: "Paraíba", value: "PB" },
-  { label: "Paraná", value: "PR" },
-  { label: "Pernambuco", value: "PE" },
-  { label: "Piauí", value: "PI" },
-  { label: "Rio de Janeiro", value: "RJ" },
-  { label: "Rio Grande do Norte", value: "RN" },
-  { label: "Rio Grande do Sul", value: "RS" },
-  { label: "Rondônia", value: "RO" },
-  { label: "Roraima", value: "RR" },
-  { label: "Santa Catarina", value: "SC" },
-  { label: "São Paulo", value: "SP" },
-  { label: "Sergipe", value: "SE" },
-  { label: "Tocantins", value: "TO" },
+    { label: "Acre", value: "AC" },
+    { label: "Alagoas", value: "AL" },
+    { label: "Amapá", value: "AP" },
+    { label: "Amazonas", value: "AM" },
+    { label: "Bahia", value: "BA" },
+    { label: "Ceará", value: "CE" },
+    { label: "Distrito Federal", value: "DF" },
+    { label: "Espírito Santo", value: "ES" },
+    { label: "Goiás", value: "GO" },
+    { label: "Maranhão", value: "MA" },
+    { label: "Mato Grosso", value: "MT" },
+    { label: "Mato Grosso do Sul", value: "MS" },
+    { label: "Minas Gerais", value: "MG" },
+    { label: "Pará", value: "PA" },
+    { label: "Paraíba", value: "PB" },
+    { label: "Paraná", value: "PR" },
+    { label: "Pernambuco", value: "PE" },
+    { label: "Piauí", value: "PI" },
+    { label: "Rio de Janeiro", value: "RJ" },
+    { label: "Rio Grande do Norte", value: "RN" },
+    { label: "Rio Grande do Sul", value: "RS" },
+    { label: "Rondônia", value: "RO" },
+    { label: "Roraima", value: "RR" },
+    { label: "Santa Catarina", value: "SC" },
+    { label: "São Paulo", value: "SP" },
+    { label: "Sergipe", value: "SE" },
+    { label: "Tocantins", value: "TO" },
 ];
 
-export const UpdateProfile = () => {
-  const { navigate } = useNavigation<NavigationProps>();
-  const route = useRoute();
-  const { id: customerId } = route.params as { id: string };
-  const [nomeCliente, setNomeCliente] = useState<string>("");
-  const [telefone, setTelefone] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [dataNascimento, setDataNascimento] = useState<string>("");
-  const [imagemPerfil, setImagemPerfil] = useState<string | null>(null);
-  const [cep, setCep] = useState<string>("");
-  const [endereco, setEndereco] = useState<string>("");
-  const [bairro, setBairro] = useState<string>("");
-  const [cidade, setCidade] = useState<string>("");
-  const [estado, setEstado] = useState<string>("");
-  const [dadosUsuario, setDadosUsuario] = useState<Customer>();
-  // const [customerId, setCustomerId] = useState<string>('');
-  const [mostrarEstados, setMostrarEstados] = useState<boolean>(false);
+export default function UpdateProfile() {
+    const { navigate } = useNavigation<NavigationProps>();
 
-  // useValidateToken();
+    const [nome, setNome] = useState<string>('');
+    const [cep, setCep] = useState<string>('');
+    const [state, setState] = useState<string>("");
+    const [city, setCity] = useState<string>("");
+    const [neighborhood, setNeighborhood] = useState<string>("");
+    const [street, setStreet] = useState<string>("");
+    const [number, setNumber] = useState<string>('');
+    const [complement, setComplement] = useState<string>('');
+    const [phoneOne, setPhoneOne] = useState<string>('');
+    const [phoneTwo, setPhoneTwo] = useState<string>('');
+    const [imagem, setImagem] = useState<string>('');
+    const [dateBirth, setDateBirth] = useState<Date>(new Date());
 
-  
-  
-  const selecionarImagem = async () => {
-    const imageSelected = await selectImageFromGalery();
-    if (imageSelected) {
-      setImagemPerfil(imageSelected);
-    }
-  };
+    const [mostrarEstados, setMostrarEstados] = useState<boolean>(false);
 
-  useEffect(() => {
-    const buscarUsuario = async () => {
-      if(!customerId) return
-      try {
-        const data: Customer | undefined = await findById(customerId);
-        if (!data) {
-          throw new Error("Erro ao buscar dados do usuário");
+    const [customerId, setCustomerId] = useState<string>('');
+
+    const [error, setError] = useState<string>('');
+    const [fields, setFields] = useState<string[]>([]);
+
+    hardwareBackPress(navigate, "ShowProfile");
+
+    useEffect(() => {
+        async function loadCustomerId() {
+            try {
+                const customerId: CustomerId | Error = await validateTokenCustomer();
+                if ('code' in customerId) {
+                    ToastAndroid.show('Você foi deslogado!', ToastAndroid.SHORT);
+                    navigate("ClientLogin");
+                } else {
+                    setCustomerId(customerId.id);
+                }
+            } catch (error) {
+                ToastAndroid.show('Você foi deslogado!', ToastAndroid.SHORT);
+                navigate("ClientLogin");
+            }
         }
-        setDadosUsuario(data)
-        setNomeCliente(data.name);
-        setTelefone(data.telephones.phoneOne);
-        setEmail(data.email);
-        setDataNascimento(data.birthDate);
-        setImagemPerfil(data.pathImage);
-        setCep(data.address.postalCode);
-        setEndereco(data.address.street);
-        setBairro(data.address.neighborhood);
-        setCidade(data.address.city);
-        setEstado(data.address.state);
-      } catch (erro) {
-        console.error("Erro ao buscar usuário:", erro);
-        Alert.alert("Erro", "Não foi possível carregar os dados do usuário.");
-      }
+        loadCustomerId();
+    }, []);
+
+    const selecionarImagem = async () => {
+        const imageSelected = await selectImageFromGalery();
+        if (imageSelected) {
+            setImagem(imageSelected);
+        }
     };
 
-    buscarUsuario();
-  }, [customerId]);
+    const formatDateTime = (date: Date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hour = String(date.getHours()).padStart(2, '0');
+        const minute = String(date.getMinutes()).padStart(2, '0');
+        const second = String(date.getSeconds()).padStart(2, '0');
 
-  const handleUpdate = async () => {
-    if (
-      !nomeCliente ||
-      !telefone ||
-      !email ||
-      !dataNascimento ||
-      !imagemPerfil ||
-      !cep ||
-      !endereco ||
-      !bairro ||
-      !cidade ||
-      !estado
-    ) {
-      Alert.alert(
-        "Campos obrigatórios",
-        "Preencha todos os campos antes de atualizar."
-      );
-      return;
-    }
-    const customer: Customer = {
-      id: customerId,
-      name: nomeCliente,
-      email: email,
-      birthDate: dataNascimento,
-      pathImage: imagemPerfil,
-      telephones: {
-        id: dadosUsuario?.telephones.id ?? '',
-        phoneOne: telefone,
-        phoneTwo: dadosUsuario?.telephones.phoneTwo ?? '',
-      },
-      address: {
-        id: dadosUsuario?.address.id ?? '',
-        city: cidade,
-        complement: dadosUsuario?.address.complement ?? '',
-        neighborhood: bairro,
-        number: dadosUsuario?.address.number ?? 101,
-        postalCode: cep,
-        state: estado,
-        street: endereco
-      },
-      pets: []
+        return `${year}-${month}-${day}T${hour}:${minute}:${second}Z`;
     };
 
-    try {
-      const success = await update(customer, imagemPerfil, customerId);
+    useEffect(() => {
+        const buscarUsuario = async () => {
+            if (!customerId) return
+            try {
+                const data: Customer | Error = await findById(customerId);
+                if ('code' in data) {
+                    throw new Error("Erro ao buscar dados do usuário");
+                }
 
-      if (success) {
-        Alert.alert("Sucesso!", "O perfil foi atualizado.");
-        navigate("ShowProfile");
-      }
-    } catch (error) {
-      console.error("UPDATE request failed:", error);
-      Alert.alert("Erro!", "Falha ao atualizar o perfil.");
-    }
-  };
+                setNome(data.name);
+                setPhoneOne(data.telephones.phoneOne);
+                setPhoneTwo(data.telephones.phoneTwo);
+                setDateBirth(new Date(data.birthDate));
+                setImagem(data.pathImage);
+                setCep(data.address.postalCode);
+                setState(data.address.state);
+                setCity(data.address.city);
+                setNeighborhood(data.address.neighborhood);
+                setStreet(data.address.street);
+                setNumber(data.address.number);
+                setComplement(data.address.complement);
 
-  const selecionarEstado = (estadoSelecionado: string) => {
-    setEstado(estadoSelecionado);
-    setMostrarEstados(false);
-  };
+            } catch (erro) {
+                setError('Erro ao buscar dados. Verifique sua conexão.');
+            }
+        };
 
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-      >
-        {/* Divisor de Informações */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Informações do Perfil</Text>
-          <View style={styles.divider} />
-        </View>
+        buscarUsuario();
+    }, [customerId]);
 
-        {/* Formulário */}
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Nome completo</Text>
-          <TextInput
-            style={styles.inputField}
-            placeholder="Digite seu nome completo"
-            placeholderTextColor="#999"
-            value={nomeCliente}
-            onChangeText={setNomeCliente}
-          />
-        </View>
+    const handleUpdate = async () => {
+        const customer = {
+            name: nome,
+            birthDate: formatDateTime(dateBirth),
+            pathImage: imagem,
+            telephones: {
+                phoneOne: phoneOne,
+                phoneTwo: phoneTwo,
+            } as Telephones,
+            address: {
+                postalCode: cep,
+                state: state,
+                city: city,
+                neighborhood: neighborhood,
+                street: street,
+                number: number,
+                complement: complement
+            } as Address,
+        } as Customer;
 
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Telefone</Text>
-          <TextInput
-            style={styles.inputField}
-            placeholder="Digite seu telefone"
-            placeholderTextColor="#999"
-            keyboardType="phone-pad"
-            value={telefone}
-            onChangeText={setTelefone}
-          />
-        </View>
+        try {
+            const success = await update(customer, imagem, customerId);
 
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>E-mail</Text>
-          <TextInput
-            style={styles.inputField}
-            placeholder="Digite seu e-mail"
-            placeholderTextColor="#999"
-            keyboardType="email-address"
-            value={email}
-            onChangeText={setEmail}
-          />
-        </View>
+            if ('code' in success) {
+                setError(success.message);
+                setFields(success.errorFields?.map(field => field.description) || []);
+                return;
+            }
 
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Data de nascimento</Text>
-          <TextInput
-            style={styles.inputField}
-            placeholder="DD/MM/AAAA"
-            placeholderTextColor="#999"
-            keyboardType="default"
-            value={dataNascimento}
-            onChangeText={setDataNascimento}
-          />
-        </View>
+            ToastAndroid.show('O perfil foi atualizado!', ToastAndroid.SHORT);
+            navigate("ShowProfile");
+        } catch (error) {
+            setError('Não foi possível atualizar. Verifique sua conexão.');
+        }
+    };
 
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Foto de perfil</Text>
-          <TouchableOpacity
-            style={[
-              styles.imagePicker,
-              imagemPerfil ? styles.imagePickerActive : null,
-            ]}
-            onPress={selecionarImagem}
-          >
-            <Text
-              style={[
-                styles.imagePickerText,
-                imagemPerfil ? styles.imagePickerTextActive : null,
-              ]}
-            >
-              {imagemPerfil
-                ? "Imagem selecionada (clique para alterar)"
-                : "Selecione uma foto de perfil"}
-            </Text>
-          </TouchableOpacity>
+    const selecionarEstado = (estadoSelecionado: string) => {
+        setState(estadoSelecionado);
+        setMostrarEstados(false);
+    };
 
-          {imagemPerfil && (
-            <View style={styles.imagePreviewContainer}>
-              <Image
-                source={{ uri: imagemPerfil }}
-                style={styles.imagePreview}
-              />
-            </View>
-          )}
-        </View>
+    return (
+        <View style={styles.safeArea}>
+            <ScrollView>
+                <Title text="Atualize o seu perfil" />
 
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>CEP</Text>
-          <TextInput
-            style={styles.inputField}
-            placeholder="Digite seu CEP"
-            placeholderTextColor="#999"
-            keyboardType="numeric"
-            value={cep}
-            onChangeText={setCep}
-          />
-        </View>
-
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Endereço</Text>
-          <TextInput
-            style={styles.inputField}
-            placeholder="Digite seu endereço completo"
-            placeholderTextColor="#999"
-            value={endereco}
-            onChangeText={setEndereco}
-          />
-        </View>
-
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Bairro</Text>
-          <TextInput
-            style={styles.inputField}
-            placeholder="Digite seu bairro"
-            placeholderTextColor="#999"
-            value={bairro}
-            onChangeText={setBairro}
-          />
-        </View>
-
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Cidade</Text>
-          <TextInput
-            style={styles.inputField}
-            placeholder="Digite sua cidade"
-            placeholderTextColor="#999"
-            value={cidade}
-            onChangeText={setCidade}
-          />
-        </View>
-
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Estado</Text>
-          <TouchableOpacity
-            style={styles.estadoSelector}
-            onPress={() => setMostrarEstados(!mostrarEstados)}
-          >
-            <Text
-              style={
-                estado ? styles.estadoSelecionado : styles.estadoPlaceholder
-              }
-            >
-              {estado || "Selecione seu estado"}
-            </Text>
-          </TouchableOpacity>
-
-          {mostrarEstados && (
-            <View style={styles.estadosListaContainer}>
-              <FlatList
-                data={estados}
-                keyExtractor={(item) => item.value}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    style={styles.estadoItem}
-                    onPress={() => selecionarEstado(item.label)}
-                  >
-                    <Text style={styles.estadoItemText}>{item.label}</Text>
-                  </TouchableOpacity>
+                {imagem && (
+                    <View style={styles.imagePreviewContainer}>
+                        <Image
+                            source={{ uri: imagem }}
+                            style={styles.imagePreview}
+                        />
+                    </View>
                 )}
-                style={styles.estadosLista}
-                nestedScrollEnabled
-              />
-            </View>
-          )}
-        </View>
 
-        {/* Submit Button */}
-        <View style={styles.submitButtonWrapper}>
-          <TouchableOpacity style={styles.submitButton} onPress={handleUpdate}>
-            <Text style={styles.submitButtonText}>SALVAR</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+                <View style={styles.formGroup}>
+                    <Text style={styles.label}>Nome completo</Text>
+                    <TextInput
+                        style={styles.inputField}
+                        placeholder="Digite seu nome completo"
+                        placeholderTextColor="#999"
+                        value={nome}
+                        onChangeText={setNome}
+                    />
+                </View>
 
-      {/* Fixed Bottom Navigation */}
-      <NavigationBar initialTab="perfil"/>
-    </SafeAreaView>
-  );
+                <View style={styles.formGroup}>
+                    <Text style={styles.label}>Telefone 1</Text>
+                    <TextInput
+                        style={styles.inputField}
+                        placeholder="Digite seu telefone"
+                        placeholderTextColor="#999"
+                        keyboardType="phone-pad"
+                        value={phoneOne}
+                        onChangeText={setPhoneOne}
+                    />
+                </View>
+
+                <View style={styles.formGroup}>
+                    <Text style={styles.label}>Telefone 2</Text>
+                    <TextInput
+                        style={styles.inputField}
+                        placeholder="Digite seu telefone"
+                        placeholderTextColor="#999"
+                        keyboardType="phone-pad"
+                        value={phoneTwo}
+                        onChangeText={setPhoneTwo}
+                    />
+                </View>
+
+                <InputDate
+                    label='Data de nascimento'
+                    moment={dateBirth}
+                    setMoment={setDateBirth}
+                />
+
+                <View style={styles.formGroup}>
+                    <Text style={styles.label}>Foto de perfil</Text>
+                    <TouchableOpacity
+                        style={[
+                            styles.imagePicker,
+                            imagem ? styles.imagePickerActive : null,
+                        ]}
+                        onPress={selecionarImagem}
+                    >
+                        <Text
+                            style={[
+                                styles.imagePickerText,
+                                imagem ? styles.imagePickerTextActive : null,
+                            ]}
+                        >
+                            {imagem
+                                ? "Imagem selecionada (clique para alterar)"
+                                : "Selecione uma foto de perfil"}
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+
+
+                <View style={styles.formGroup}>
+                    <Text style={styles.label}>CEP</Text>
+                    <TextInput
+                        style={styles.inputField}
+                        placeholder="Digite seu CEP"
+                        placeholderTextColor="#999"
+                        keyboardType="numeric"
+                        value={cep}
+                        onChangeText={setCep}
+                    />
+                </View>
+
+                <View style={styles.formGroup}>
+                    <Text style={styles.label}>Estado</Text>
+                    <TouchableOpacity
+                        style={styles.estadoSelector}
+                        onPress={() => setMostrarEstados(!mostrarEstados)}
+                    >
+                        <Text
+                            style={
+                                state ? styles.estadoSelecionado : styles.estadoPlaceholder
+                            }
+                        >
+                            {state || "Selecione seu estado"}
+                        </Text>
+                    </TouchableOpacity>
+
+                    {mostrarEstados && (
+                        <View style={styles.estadosListaContainer}>
+                            <FlatList
+                                data={estados}
+                                keyExtractor={(item) => item.value}
+                                renderItem={({ item }) => (
+                                    <TouchableOpacity
+                                        style={styles.estadoItem}
+                                        onPress={() => selecionarEstado(item.label)}
+                                    >
+                                        <Text style={styles.estadoItemText}>{item.label}</Text>
+                                    </TouchableOpacity>
+                                )}
+                                style={styles.estadosLista}
+                                nestedScrollEnabled
+                            />
+                        </View>
+                    )}
+                </View>
+
+                <View style={styles.formGroup}>
+                    <Text style={styles.label}>Cidade</Text>
+                    <TextInput
+                        style={styles.inputField}
+                        placeholder="Digite sua cidade"
+                        placeholderTextColor="#999"
+                        value={city}
+                        onChangeText={setCity}
+                    />
+                </View>
+
+                <View style={styles.formGroup}>
+                    <Text style={styles.label}>Bairro</Text>
+                    <TextInput
+                        style={styles.inputField}
+                        placeholder="Digite seu bairro"
+                        placeholderTextColor="#999"
+                        value={neighborhood}
+                        onChangeText={setNeighborhood}
+                    />
+                </View>
+
+                <View style={styles.formGroup}>
+                    <Text style={styles.label}>Rua</Text>
+                    <TextInput
+                        style={styles.inputField}
+                        placeholder="Digite seu endereço completo"
+                        placeholderTextColor="#999"
+                        value={street}
+                        onChangeText={setStreet}
+                    />
+                </View>
+
+                <View style={styles.formGroup}>
+                    <Text style={styles.label}>Número</Text>
+                    <TextInput
+                        style={styles.inputField}
+                        placeholder="Digite o número da sua residência"
+                        placeholderTextColor="#999"
+                        value={number}
+                        onChangeText={setNumber}
+                    />
+                </View>
+
+                <View style={styles.formGroup}>
+                    <Text style={styles.label}>Complemento</Text>
+                    <TextInput
+                        style={styles.inputField}
+                        placeholder="Digite o complemento"
+                        placeholderTextColor="#999"
+                        value={complement}
+                        onChangeText={setComplement}
+                    />
+                </View>
+
+                {error ? (
+                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
+                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
+                        {fields.map((field, index) => (
+                            <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
+                        ))}
+                    </View>
+                ) : null}
+
+                <View style={styles.submitButtonWrapper}>
+                    <TouchableOpacity style={styles.submitButton} onPress={handleUpdate}>
+                        <Text style={styles.submitButtonText}>SALVAR</Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
+
+            <NavigationBar initialTab="perfil" />
+        </View>
+    );
+};
+
+
+export type InputProps = {
+    label: string;
+    moment: Date;
+    setMoment: Dispatch<SetStateAction<Date>>;
+};
+
+export const InputDate = ({ label, moment, setMoment }: InputProps) => {
+    const [showPicker, setShowPicker] = useState<boolean>(false);
+
+    const formatDate = (date: Date) => {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
+
+    const handleChange = (event: any, selectedDate?: Date) => {
+        setShowPicker(false);
+        if (selectedDate) setMoment(selectedDate);
+    };
+
+    return (
+        <View style={styles.formGroup}>
+            <Text style={styles.label}>{label}</Text>
+            <Pressable onPress={() => setShowPicker(true)}>
+                <View style={styles.inputField}>
+                    <Text style={{ color: "#333", fontSize: 14 }}>
+                        {formatDate(moment)}
+                    </Text>
+                </View>
+            </Pressable>
+
+            {showPicker && (
+                <DateTimePicker
+                    value={moment}
+                    mode="date"
+                    display="default"
+                    onChange={handleChange}
+                />
+            )}
+        </View>
+    );
 };

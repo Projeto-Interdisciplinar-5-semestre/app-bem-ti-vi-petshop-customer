@@ -1,17 +1,11 @@
 import { StyleSheet } from 'react-native';
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#fff'
   },
-  scrollView: {
-    flex: 1,
-    marginBottom: 70
-  },
-  scrollContent: {
-    paddingBottom: 40
-  },
+
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -304,5 +298,3 @@ const styles = StyleSheet.create({
     marginTop: 2
   }
 });
-
-export default styles;

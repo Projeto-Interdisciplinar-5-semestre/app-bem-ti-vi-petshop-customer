@@ -5,13 +5,6 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff'
   },
-  scrollView: {
-    flex: 1,
-    marginBottom: 70
-  },
-  scrollContent: {
-    paddingBottom: 40
-  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

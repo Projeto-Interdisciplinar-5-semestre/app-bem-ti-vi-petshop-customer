@@ -1,66 +1,48 @@
 import { StyleSheet } from "react-native";
 
-
 export const styles = StyleSheet.create({
     container: {
-    flex: 1,
-    backgroundColor: "#FFF",
-   },
-
-   title:{
-    backgroundColor: "#EADDFF", 
-    color: "#000",           
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "center",
-    padding: 15,    
-
- },
-
- subtitle:{
-    fontSize: 20,
-    textAlign: "center",
-    marginTop: 15,
-    marginBottom: 15,
-    color: "#000",
-    fontWeight: "bold"
- },
- 
- cardContent: {
-  flexDirection: "row",
-  alignItems: "center",
-  justifyContent: "center",
-  borderRadius: 10,
-  padding: 10,
-  margin: 2, 
-  width: "45%",
-  alignSelf: "center", 
- 
- },
- categoryImage: {
-   width: 200, 
-   height:64,
-   resizeMode: "contain",
- },
-
- 
-
- menu:{
-    backgroundColor: "#fff",
-    flexDirection: "row",
-    justifyContent: "space-around",
-   paddingVertical: 85,
-
- },
-
- menuItem:{
-    alignItems:"center",
- },
-
- menuText:{
-    fontSize: 12,
-    fontWeight: "bold",
-    marginTop: 5,
- }
-
-})
+        flex: 1,
+        backgroundColor: "#FFFFFF",
+        paddingHorizontal: 16,
+        paddingTop: 10,
+    },
+    listContent: {
+        paddingBottom: 20,
+    },
+    rowWrapper: {
+        justifyContent: 'space-between',
+        marginBottom: 15,
+    },
+    cardContent: {
+        flex: 1,
+        borderRadius: 20,
+        padding: 10,
+        marginHorizontal: 5,
+        alignItems: "center",
+        justifyContent: "center",
+        elevation: 4,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+    },
+    categoryImage: {
+        width: "90%",
+        height: 100,
+        borderRadius: 30,
+        marginBottom: 8,
+    },
+    categoryName: {
+        fontSize: 18,
+        fontWeight: "600",
+        color: "#333",
+        textAlign: "center",
+    },
+    errorText: {
+        color: "red",
+        textAlign: "center",
+        marginVertical: 10,
+        fontSize: 16,
+    },
+});

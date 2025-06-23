@@ -1,208 +1,222 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, Alert } from 'react-native';
+import {
+    View,
+    Text,
+    TouchableOpacity,
+    Image,
+    ScrollView,
+    SafeAreaView,
+    Alert,
+    ToastAndroid,
+    Pressable,
+    ActivityIndicator,
+} from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+
+import {  Comment, Customer, Service } from '../../utils/Types';
+import hardwareBackPress from '../../utils/hardwareBackPress/hardwareBackPress';
+import { searchByService } from '../../api/comments/search/searchByService';
+import { validateTokenCustomer } from '../../api/auth/validateTokenCustomer/validateTokenCustomer';
+import { findById } from '../../api/service/search/findById';
+import { create } from '../../api/comments/create/create';
 
 import { NavigationBar } from '../../components/NavigationBar';
+import { Title } from '../../components/Title';
+import { InputDescription } from '../../components/InputDescription';
+import { Input } from '../../components/Input';
+import { ButtonLarge } from '../../components/ButtonLarge';
+import { StarRatingInput } from '../../components/inputStar';
 
-import { styles } from './style';
-import { useNavigation, useRoute } from '@react-navigation/native';
 import { NavigationProps } from '../../routes/AppRoute';
-import { findById } from '../../api/service/search/findById';
-import { Service } from '../../utils/Types';
-import { validateTokenCustomer } from '../../api/auth/validateTokenCustomer/validateTokenCustomer';
-import { createAppointment } from '../../api/appointment/create/createAppointment';
+import { styles } from './style';
+import { useValidateToken } from '../../utils/UseValidateToken/UseValidateToken';
 
 export const DetailsService = () => {
-  const { navigate } = useNavigation<NavigationProps>();
-  const route = useRoute();
-  const { id: serviceId } = route.params as { id: string };
+    const { navigate, replace } = useNavigation<NavigationProps>();
+    const route = useRoute();
+    const { id: serviceId } = route.params as { id: string };
 
+    const [service, setService] = useState<Service>({} as Service);
+    const [comments, setComments] = useState<Comment[]>([]);
+    const [totalRate, setTotalRate] = useState<number>(0);
+    const [totalComments, setTotalComments] = useState<number>(0);
 
-  const [showComments, setShowComments] = useState<boolean>(false);
-  const [servico, setServico] = useState<Service>();
-  useEffect(() => {
-    const buscarServico = async () => {
-      try {
-        const data = await findById(serviceId);
-        if (!data) {
-          throw new Error("Erro ao buscar dados do serviço");
+    const [loadingService, setLoadingService] = useState(true);
+    const [loadingSendComment, setLoadingSendComment] = useState(false);
+
+    const [titleComment, setTitleComment] = useState('');
+    const [messageComment, setMessageComment] = useState('');
+    const [ratingComment, setRatingComment] = useState<number>(3);
+
+    const [errors, setErrors] = useState<{ service?: string; comments?: string; sendComment?: string; fields?: string[] }>({});
+
+    useValidateToken();
+    hardwareBackPress(navigate, "ShowServices");
+
+    const loadServiceData = async () => {
+        setLoadingService(true);
+        try {
+            const serviceResult = await findById(serviceId);
+            if ('code' in serviceResult) {
+                setErrors(prev => ({ ...prev, service: serviceResult.message }));
+                return;
+            }
+            setService(serviceResult);
+
+            const commentsResult = await searchByService(serviceId, 0);
+            if ('code' in commentsResult) {
+                setErrors(prev => ({ ...prev, comments: commentsResult.message }));
+                return;
+            }
+
+            setComments(commentsResult.content);
+            setTotalComments(commentsResult.totalElements);
+            setTotalRate(commentsResult.totalRate);
+        } catch (error) {
+            setErrors(prev => ({ ...prev, service: 'Erro ao carregar serviço. Verifique a conexão.' }));
+        } finally {
+            setLoadingService(false);
         }
-        setServico(data)
-      } catch (erro) {
-        console.error("Erro ao buscar categorias:", erro);
-        Alert.alert("Erro", "Não foi possível carregar os dados do serviço.");
-      }
     };
 
-    buscarServico();
-  }, [serviceId]);
+    useEffect(() => {
+        loadServiceData();
+    }, [serviceId]);
 
-  const handleAgendar = () => {
-    Alert.alert(
-      "Agendar Serviço",
-      "Deseja agendar o serviço de Banho e Tosa?",
-      [
-        {
-          text: "Cancelar",
-          style: "cancel"
-        },
-        { 
-          text: "Agendar", 
-          onPress: () => scheduleService()
+    const sendComment = async () => {
+        setLoadingSendComment(true);
+        setErrors({});
+        try {
+            const customerId = await validateTokenCustomer();
+            if ('code' in customerId) {
+                navigate('ClientLogin');
+                return;
+            }
+
+            const comment = {
+                customer: { id: customerId.id } as Customer,
+                service: { id: serviceId } as Service,
+                typeComment: "SERVICE",
+                title: titleComment,
+                message: messageComment,
+                rate: ratingComment
+            } as Comment;
+
+            const result = await create(comment);
+            if (result instanceof Boolean) {
+                ToastAndroid.show('Comentário enviado!', ToastAndroid.SHORT);
+                replace("DetailsService", { id: serviceId });
+                return;
+            }
+            setErrors({ sendComment: result.message, fields: result.errorFields?.map(f => f.description) });
+        } catch (error) {
+            setErrors({ sendComment: 'Erro ao enviar comentário. Tente novamente.' });
+        } finally {
+            setLoadingSendComment(false);
         }
-      ]
+    };
+
+    const renderStars = (rating: number) => {
+        const stars = [];
+        const fullStars = Math.floor(rating);
+        const hasHalfStar = rating - fullStars >= 0.5;
+        for (let i = 1; i <= 5; i++) {
+            let source;
+            if (i <= fullStars) {
+                source = require('../../assets/images/star.png');
+            } else if (i === fullStars + 1 && hasHalfStar) {
+                source = require('../../assets/images/halfstar.png');
+            } else {
+                source = require('../../assets/images/emptystar.png');
+            }
+            stars.push(<Image key={i} source={source} style={styles.starIcon} />);
+        }
+        return stars;
+    };
+
+    if (loadingService) {
+        return (
+            <SafeAreaView style={styles.safeArea}>
+                <ActivityIndicator size="large" color="#256489" style={{ marginTop: 50 }} />
+            </SafeAreaView>
+        );
+    }
+
+    return (
+        <SafeAreaView style={styles.safeArea}>
+            <ScrollView>
+                <Title text="Serviço" />
+                {service && (
+                    <View style={styles.card}>
+                        <Image source={{ uri: service.pathImage }} style={styles.servicoImage} resizeMode="cover" />
+                        <View style={styles.horarioContainer}>
+                            <Text style={styles.horarioText}>{service.name}</Text>
+                        </View>
+                        <View style={styles.precoContainer}>
+                            <Text style={styles.precoLabel}>A partir de</Text>
+                            <Text style={styles.servicoPreco}>R$ {service.price}</Text>
+                        </View>
+                        <View style={styles.descricaoTable}>
+                            <View style={styles.tableHeader}>
+                                <Text style={styles.tableHeaderText}>Descrição</Text>
+                            </View>
+                            <View style={styles.tableBody}>
+                                <Text style={styles.descricaoText}>{service.description}</Text>
+                            </View>
+                        </View>
+                        <View style={styles.ratingContainer}>
+                            <View style={styles.ratingStarsContainer}>
+                                {renderStars(totalRate)}
+                                <Text style={styles.ratingText}>{totalRate.toFixed(1)}</Text>
+                                <Text style={styles.reviewsText}>{totalComments} avaliações</Text>
+                            </View>
+                        </View>
+                        {errors.service && <Text style={{ color: 'red', marginBottom: 8 }}>{errors.service}</Text>}
+                    </View>
+                )}
+
+                <View style={styles.buttonContainer}>
+                    <TouchableOpacity style={styles.agendarButton} onPress={() => navigate("ScheduleService", { service: service })}>
+                        <Text style={styles.agendarButtonText}>Agende um horário</Text>
+                        <Image source={require('../../assets/images/check.png')} style={styles.checkIcon} />
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.commentsContainer}>
+                    <Text style={styles.titleCommentMain}>Ver comentários</Text>
+                    {comments.map(comment => (
+                        <View key={comment.id} style={styles.commentCard}>
+                            <View style={styles.commentHeader}>
+                                <View style={{ flexDirection: 'row' }}>
+                                    <Image style={styles.image} src={comment.customer.pathImage} />
+                                    <Text style={styles.commentAuthor}>{comment.customer.name}</Text>
+                                </View>
+                                <View style={styles.commentRating}>{renderStars(comment.rate)}</View>
+                            </View>
+                            <Text style={styles.commentAuthor}>{comment.title}</Text>
+                            <Text style={styles.commentText}>{comment.message}</Text>
+                            <Text style={styles.commentDate}>{comment.activationStatus.creationDate}</Text>
+                        </View>
+                    ))}
+                    {errors.comments && <Text style={{ color: 'red', marginBottom: 8 }}>{errors.comments}</Text>}
+
+                    <View style={styles.commentContainer}>
+                        <Text style={styles.titleComment}>Deixe seu comentário</Text>
+                        <Input label="Título" placeholder="Digite o título aqui" keyboardType='default' value={titleComment} onChangeText={setTitleComment} />
+                        <InputDescription label="Mensagem" keyboardType='default' placeholder="Descreva sua experiência" value={messageComment} onChangeText={setMessageComment} />
+                        <StarRatingInput onChange={setRatingComment} />
+
+                        <ButtonLarge
+                            icon={require('../../assets/icons/send.png')}
+                            text={loadingSendComment ? "Enviando..." : "Enviar"}
+                            color="#256489"
+                            width='45%'
+                            action={sendComment}
+                        />
+                    </View>
+                </View>
+            </ScrollView>
+            <NavigationBar initialTab='servicos' />
+        </SafeAreaView>
     );
-  };
-
-const scheduleService = async () => {
-  try {
-    const customerId = await validateTokenCustomer()
-
-    if (!customerId) {
-      Alert.alert("Erro", "Usuário não autenticado.")
-      return
-    }
-
-    const result = await createAppointment(serviceId, customerId.id)
-
-    if (result) {
-      Alert.alert("Sucesso", "Serviço agendado com sucesso!")
-    }else{
-      Alert.alert("Erro", "Falha ao agendar o serviço.")
-    }
-  } catch (error) {
-    console.error("Erro ao agendar serviço:", error)
-    Alert.alert("Erro", "Falha ao agendar o serviço.")
-  }
-}
-
-  const toggleComments = () => {
-    setShowComments(!showComments);
-  };
-
-  const renderStars = (rating: number) => {
-    const stars = [];
-    for (let i = 1; i <= 5; i++) {
-      stars.push(
-        <Image
-          key={i}
-          source={require('../../assets/images/estrela.png')}
-          style={[
-            styles.starIcon,
-            i <= rating ? styles.filledStar : styles.emptyStar
-          ]}
-        />
-      );
-    }
-    return stars;
-  };
-
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView 
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-      >
-        {/* Título "Meus Serviços" centralizado */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Meus Serviços</Text>
-          <View style={styles.divider} />
-        </View>
-
-        {/* Card do Serviço */}
-        <View style={styles.card}>
-          {/* Imagem em cima */}
-          <Image
-            source={{uri:servico?.pathImage}}
-            style={styles.servicoImage}
-            resizeMode="cover"
-          />
-          
-          {/* Botão Banho e Tosa */}
-          <View style={styles.horarioContainer}>
-            <Text style={styles.horarioText}>{servico?.name}</Text>
-          </View>
-          
-          {/* Tabela de Descrição */}
-          <View style={styles.descricaoTable}>
-            <View style={styles.tableHeader}>
-              <Text style={styles.tableHeaderText}>Descrição</Text>
-            </View>
-            <View style={styles.tableBody}>
-              <Text style={styles.descricaoText}>{servico?.description}</Text>
-            </View>
-          </View>
-
-          {/* Rating Section */}
-          <View style={styles.ratingContainer}>
-            <View style={styles.ratingStarsContainer}>
-              {renderStars(4)}
-              <Text style={styles.ratingText}>4,7</Text>
-              <Text style={styles.reviewsText}>(15 avaliações)</Text>
-            </View>
-          </View>
-
-          {/* Botão de Comentários */}
-          <TouchableOpacity 
-            style={styles.commentsButton} 
-            onPress={toggleComments}
-          >
-            <Text style={styles.commentsButtonText}>
-              {showComments ? '▲ Ocultar comentários' : '▼ Ver comentários'}
-            </Text>
-          </TouchableOpacity>
-
-          {/* Comments Section */}
-          {showComments && (
-            <View style={styles.commentsContainer}>
-              {/* Comment 1 */}
-              <View style={styles.commentCard}>
-                <View style={styles.commentHeader}>
-                  <Text style={styles.commentAuthor}>Cairos Saira</Text>
-                  <View style={styles.commentRating}>
-                    {renderStars(5)}
-                  </View>
-                </View>
-                <Text style={styles.commentText}>
-                  O serviço de banho e tosa simples foi excelente! Meu pet ficou muito mais limpo e confortável, e a tosa higiênica foi feita com cuidado. Ele está muito mais feliz e cheiroso agora!
-                </Text>
-                <Text style={styles.commentDate}>12/05/2023</Text>
-              </View>
-
-              {/* Comment 2 */}
-              <View style={styles.commentCard}>
-                <View style={styles.commentHeader}>
-                  <Text style={styles.commentAuthor}>Laudo Norris</Text>
-                  <View style={styles.commentRating}>
-                    {renderStars(4)}
-                  </View>
-                </View>
-                <Text style={styles.commentText}>
-                  Fiquei muito satisfeito com o banho e tosa simples. O atendimento foi atencioso e o banho muito cuidado. A tosa ficou perfeita.
-                </Text>
-                <Text style={styles.commentDate}>05/05/2023</Text>
-              </View>
-            </View>
-          )}
-        </View>
-
-        {/* Botão Agendar Serviço */}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity 
-            style={styles.agendarButton} 
-            onPress={handleAgendar}
-          >
-            <Text style={styles.agendarButtonText}>AGENDAR SERVIÇO</Text>
-            <Image 
-              source={require('../../assets/images/check.png')} 
-              style={styles.checkIcon} 
-            />
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-
-      {/* Navegação Inferior */}
-      <NavigationBar initialTab='servicos'/>
-    </SafeAreaView>
-  );
 };

@@ -1,158 +1,237 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, ToastAndroid, ActivityIndicator } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
-import { StarRatingDisplay } from 'react-native-star-rating-widget';
-
-import { styles } from './style'
-import { NavigationBar } from '../../components/NavigationBar';
-import { useRoute, useNavigation } from '@react-navigation/native';
-import { NavigationProps } from "../../routes/AppRoute";
+import { searchByProduct } from '../../api/comments/search/searchByProduct';
+import { validateTokenCustomer } from '../../api/auth/validateTokenCustomer/validateTokenCustomer';
 import { findById } from '../../api/product/search/findById';
+import { create } from '../../api/comments/create/create';
 
-const relatedProducts = [
-  {
-    id: 1,
-    image: require('../../assets/images/produto1.png'),
-    title: 'Produto Similar 1',
-    rating: 4,
-    price: 'R$ 149,90'
-  },
-  {
-    id: 2,
-    image: require('../../assets/images/product.jpg'),
-    title: 'Produto Similar 2',
-    rating: 3.5,
-    price: 'R$ 129,90'
-  },
-];
+import { NavigationBar } from '../../components/NavigationBar';
+import { Title } from '../../components/Title';
+import { InputDescription } from '../../components/InputDescription';
+import { Input } from '../../components/Input';
+import { ButtonLarge } from '../../components/ButtonLarge';
+import { StarRatingInput } from '../../components/inputStar';
 
-// Dados dos comentários
-const comments = [
-  {
-    id: 1,
-    name: 'João Silva',
-    rating: 5,
-    commentTitle: 'Ótimo produto!',
-    comment: 'Superou minhas expectativas, recomendo a todos!'
-  },
-  {
-    id: 2,
-    name: 'Maria Souza',
-    rating: 4,
-    commentTitle: 'Bom custo-benefício',
-    comment: 'Produto de boa qualidade pelo preço oferecido.'
-  },
-  {
-    id: 3,
-    name: 'Carlos Oliveira',
-    rating: 3,
-    commentTitle: 'Poderia ser melhor',
-    comment: 'Funciona bem, mas esperava mais recursos.'
-  }
-];
+import { Comment, Customer, OrderItemForCar, Product } from '../../utils/Types';
+import hardwareBackPress from '../../utils/hardwareBackPress/hardwareBackPress';
+import { useValidateToken } from '../../utils/UseValidateToken/UseValidateToken';
 
+import { NavigationProps } from '../../routes/AppRoute';
+
+import { styles } from './style';
 
 export const DetailsProduct = () => {
-    const { navigate } = useNavigation<NavigationProps>();
+    const { navigate, replace } = useNavigation<NavigationProps>();
     const route = useRoute();
     const { id: productId } = route.params as { id: string };
-    const [nomeProduto, setNomeProduto] = useState<string>('');
-    const [valorProduto, setValorProduto] = useState<number>(0);
-    const [descricaoProduto, setDescricaoProduto] = useState<string>('');
-    const [imagemProduto, setImagemProduto] = useState<string>('');
-    const [categoriaProduto, setCategoriaProduto] = useState<string>('');
+
+    const [product, setProduct] = useState<Product | null>(null);
+    const [comments, setComments] = useState<Comment[]>([]);
+    const [totalRate, setTotalRate] = useState<number>(0);
+    const [totalComments, setTotalComments] = useState<number>(0);
+
+    const [loadingProduct, setLoadingProduct] = useState(true);
+    const [loadingSendComment, setLoadingSendComment] = useState(false);
+
+    const [titleComment, setTitleComment] = useState('');
+    const [messageComment, setMessageComment] = useState('');
+    const [ratingComment, setRatingComment] = useState<number>(3);
+
+    const [error, setError] = useState<string>('');
+    const [fields, setFields] = useState<string[]>([]);
+
+    useValidateToken();
+    hardwareBackPress(navigate, "ShopScreen");
+
+    const loadProductData = async () => {
+        setLoadingProduct(true);
+        try {
+            const productResult = await findById(productId);
+            if ('code' in productResult) {
+                setError(productResult.message);
+                return;
+            }
+            setProduct(productResult);
+
+            const commentsResult = await searchByProduct(productId, 0);
+            if ('code' in commentsResult) {
+                setError(commentsResult.message);
+                return;
+            }
+
+            setComments(commentsResult.content);
+            setTotalComments(commentsResult.totalElements);
+            setTotalRate(commentsResult.totalRate);
+        } catch (error) {
+            setError('Erro ao carregar serviço. Verifique a conexão.');
+        } finally {
+            setLoadingProduct(false);
+        }
+    };
 
     useEffect(() => {
-      const buscarProdutos = async () => {
-        try {
-          const data = await findById(productId);
-          if (!data) {
-            throw new Error("Erro ao buscar dados do produto");
-          }
-          setNomeProduto(data.name)
-          setValorProduto(data.price)
-          setDescricaoProduto(data.description)
-          setImagemProduto(data.pathImage || '')
-          setCategoriaProduto(data.categories[0].name)
-        } catch (erro) {
-          console.error("Erro ao buscar produto:", erro);
-          Alert.alert("Erro", "Não foi possível carregar os dados do produto.");
-        }
-      };
-  
-      buscarProdutos();
+        loadProductData();
     }, [productId]);
-  return (
-    <>
-    <ScrollView style={styles.container}>
-      
-      <Text style={styles.productTitle}>{nomeProduto}</Text>
-      
-      <View style={styles.productCard}>
-      <Image
-        source={imagemProduto ? { uri: imagemProduto } : require('../../assets/images/product.jpg')}
-        style={styles.productImage}
-      />
-        <Text style={styles.cardTitle}>{nomeProduto}</Text>
-        <Text style={styles.cardPrice}>{valorProduto}</Text>
-        
-        <TouchableOpacity style={styles.addButton}>
-          <Text style={styles.addButtonText}>Adicionar ao Carrinho</Text>
-        </TouchableOpacity>
 
-        <View style={styles.descriptionCard}>
-          <Text style={styles.descriptionLabel}>Descrição</Text>
-          <Text style={styles.description}>{descricaoProduto}</Text>
-        </View>
-      </View>
-      
-      <Text style={styles.sectionTitle}>Outros também viram</Text>
-      
-      <View style={styles.relatedProductsContainer}>
-        {relatedProducts.map(product => (
-          <View key={product.id} style={styles.relatedProductCard}>
-            <Image source={product.image} style={styles.relatedProductImage} />
-            <Text style={styles.relatedProductTitle}>{product.title}</Text>
-            <StarRatingDisplay 
-              rating={product.rating} 
-              starSize={20}
-              style={styles.rating}
-            />
-            <Text style={styles.relatedProductPrice}>{product.price}</Text>
-          </View>
-        ))}
-      </View>
-      
-      <View style={styles.ratingContainer}>
-        <View style={styles.starRatingContainer}>
-        <Text style={styles.ratingTitle}>5,0</Text>
-        <StarRatingDisplay 
-            rating={5}
-            starSize={26}
-            style={styles.averageRating}
-          />
-        <Text style={styles.ratingTitle}>78 avaliações</Text>
-      
-      </View>
-      <Text style={styles.sectionTitle}>Comentários</Text>
+    const addProductToCar = async () => {
+        const customerId = await validateTokenCustomer();
+        if ('code' in customerId) {
+            navigate('ClientLogin');
+            return;
+        }
 
-      {comments.map(comment => (
-        <View key={comment.id} style={styles.commentCard}>
-          <View style={styles.commentStarRatingContainer}>
-            <Text style={styles.commentName}>{comment.name}</Text>
-            <StarRatingDisplay 
-              rating={comment.rating} 
-              starSize={15}
-              style={styles.commentRating}
-            />
-          </View>
-          <Text style={styles.commentTitle}>{comment.commentTitle}</Text>
-          <Text style={styles.commentText}>{comment.comment}</Text>
-        </View>
-      ))}
-      </View>
-    </ScrollView>
-    <NavigationBar initialTab='loja'/>
-    </> 
-  );
+        if (product != null) {
+            const orderItem: OrderItemForCar = { id: product.id, product: product, quantity: 1 };
+            navigate("CartProduct", { orderItemForCar: orderItem });
+        }
+    };
+
+    const sendComment = async () => {
+        setLoadingSendComment(true);
+        setError("");
+        try {
+            const customerId = await validateTokenCustomer();
+            if ('code' in customerId) {
+                navigate('ClientLogin');
+                return;
+            }
+
+            const comment = {
+                customer: { id: customerId.id } as Customer,
+                product: { id: productId } as Product,
+                typeComment: "PRODUCT",
+                title: titleComment,
+                message: messageComment,
+                rate: ratingComment
+            } as Comment;
+
+            const result = await create(comment);
+            if (result instanceof Boolean) {
+                ToastAndroid.show('Comentário enviado!', ToastAndroid.SHORT);
+                replace("DetailsProduct", { id: productId });
+                return;
+            }
+            setError(result.message);
+            setFields(result.errorFields?.map(field => field.description) || []);
+        } catch (error) {
+            setError('Erro ao carregar serviço. Verifique a conexão.');
+        } finally {
+            setLoadingSendComment(false);
+        }
+    };
+
+    const renderStars = (rating: number) => {
+        const stars = [];
+        const fullStars = Math.floor(rating);
+        const hasHalfStar = rating - fullStars >= 0.5;
+        for (let i = 1; i <= 5; i++) {
+            let source;
+            if (i <= fullStars) {
+                source = require('../../assets/images/star.png');
+            } else if (i === fullStars + 1 && hasHalfStar) {
+                source = require('../../assets/images/halfstar.png');
+            } else {
+                source = require('../../assets/images/emptystar.png');
+            }
+            stars.push(<Image key={i} source={source} style={styles.starIcon} />);
+        }
+        return stars;
+    };
+
+    if (loadingProduct) {
+        return (
+            <SafeAreaView style={styles.safeArea}>
+                <ActivityIndicator size="large" color="#256489" style={{ marginTop: 50 }} />
+            </SafeAreaView>
+        );
+    }
+
+    return (
+        <SafeAreaView style={styles.safeArea}>
+            <ScrollView>
+                <Title text="Serviço" />
+                {product && (
+                    <View style={styles.card}>
+                        <Image source={{ uri: product.pathImage }} style={styles.servicoImage} resizeMode="cover" />
+                        <View style={styles.nameContainer}>
+                            <Text style={styles.nameText}>{product.name}</Text>
+                        </View>
+                        <View style={styles.precoContainer}>
+                            <Text style={styles.precoLabel}>A partir de</Text>
+                            <Text style={styles.servicoPreco}>R$ {product.price}</Text>
+                        </View>
+                        <View style={styles.descricaoTable}>
+                            <View style={styles.tableHeader}>
+                                <Text style={styles.tableHeaderText}>Descrição</Text>
+                            </View>
+                            <View style={styles.tableBody}>
+                                <Text style={styles.descricaoText}>{product.description}</Text>
+                            </View>
+                        </View>
+                        <View style={styles.ratingContainer}>
+                            <View style={styles.ratingStarsContainer}>
+                                {renderStars(totalRate)}
+                                <Text style={styles.ratingText}>{totalRate.toFixed(1)}</Text>
+                                <Text style={styles.reviewsText}>{totalComments} avaliações</Text>
+                            </View>
+                        </View>
+                        {error && <Text style={{ color: 'red', marginBottom: 8 }}>{error}</Text>}
+                    </View>
+                )}
+
+                <View style={styles.buttonContainer}>
+                    <TouchableOpacity style={styles.addCardButton} onPress={addProductToCar}>
+                        <Text style={styles.addCardButtonText}>ADICIONAR AO CARRINHO</Text>
+                        <Image source={require('../../assets/images/check.png')} style={styles.checkIcon} />
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.commentsContainer}>
+                    <Text style={styles.titleCommentMain}>Ver comentários</Text>
+                    {comments.map(comment => (
+                        <View key={comment.id} style={styles.commentCard}>
+                            <View style={styles.commentHeader}>
+                                <View style={{ flexDirection: 'row' }}>
+                                    <Image style={styles.image} src={comment.customer.pathImage} />
+                                    <Text style={styles.commentAuthor}>{comment.customer.name}</Text>
+                                </View>
+                                <View style={styles.commentRating}>{renderStars(comment.rate)}</View>
+                            </View>
+                            <Text style={styles.commentAuthor}>{comment.title}</Text>
+                            <Text style={styles.commentText}>{comment.message}</Text>
+                            <Text style={styles.commentDate}>{comment.activationStatus.creationDate}</Text>
+                        </View>
+                    ))}
+                        {error && <Text style={{ color: 'red', marginBottom: 8 }}>{error}</Text>}
+
+                    <View style={styles.commentContainer}>
+                        <Text style={styles.titleComment}>Deixe seu comentário</Text>
+                        <Input label="Título" placeholder="Digite o título aqui" keyboardType='default' value={titleComment} onChangeText={setTitleComment} />
+                        <InputDescription label="Mensagem" keyboardType='default' placeholder="Descreva sua experiência" value={messageComment} onChangeText={setMessageComment} />
+                        <StarRatingInput onChange={setRatingComment} />
+
+                        <ButtonLarge
+                            icon={require('../../assets/icons/send.png')}
+                            text={loadingSendComment ? "Enviando..." : "Enviar"}
+                            color="#256489"
+                            width='45%'
+                            action={sendComment}
+                        />
+
+                        {error ? (
+                            <View style={{ marginVertical: 10, alignSelf: 'center' }}>
+                                <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
+                                {fields.map((field, index) => (
+                                    <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
+                                ))}
+                            </View>
+                        ) : null}
+                    </View>
+                </View>
+            </ScrollView>
+            <NavigationBar initialTab='servicos' />
+        </SafeAreaView>
+    );
 };

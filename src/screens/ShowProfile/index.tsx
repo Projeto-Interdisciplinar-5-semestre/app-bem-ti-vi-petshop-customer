@@ -1,96 +1,183 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Image, SafeAreaView, ScrollView, Alert } from 'react-native';
-import { styles } from './style';
+import { View, Text, TouchableOpacity, Image, SafeAreaView, ScrollView, Alert, ToastAndroid } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+
 import { NavigationBar } from '../../components/NavigationBar';
-import { useRoute, useNavigation } from '@react-navigation/native';
-import { NavigationProps } from "../../routes/AppRoute";
 import { CustomerId, validateTokenCustomer } from '../../api/auth/validateTokenCustomer/validateTokenCustomer';
+import { GLOBAL_VAR } from '../../api/config/globalVar';
+import { findById } from '../../api/customer/search/findById';
+
+import hardwareBackPress from '../../utils/hardwareBackPress/hardwareBackPress';
+import { Customer, Error } from '../../utils/Types';
+import { NavigationProps } from "../../routes/AppRoute";
+
+import { styles } from './style';
+
+const logoutRequest = (navigate: any) => {
+    Alert.alert(
+        'Confirmação',
+        'Tem certeza que deseja sair?',
+        [
+            { text: 'Cancelar', style: 'cancel' },
+            {
+                text: 'Sair',
+                style: 'destructive',
+                onPress: () => {
+                    GLOBAL_VAR.TOKEN_JWT = "";
+                    navigate("ClientLogin");
+                },
+            },
+        ]
+    );
+};
 
 export const ShowProfile = () => {
-  const { navigate } = useNavigation<NavigationProps>();
-  const [customerId, setCustomerId] = useState('');
-  const [activeTab, setActiveTab] = useState('perfil');
+    const { navigate } = useNavigation<NavigationProps>();
+
+    const [customerId, setCustomerId] = useState('');
+    const [name, setName] = useState<string>('');
+    const [photoProfile, setPhotoProfile] = useState<string>('');
+    const [email, setEmail] = useState<string>('');
+    const [emailIsActive, setEmailIsActive] = useState<boolean>(false);
+    const [error, setError] = useState<string>('');
+
+    hardwareBackPress(navigate, "Home");
 
     useEffect(() => {
-        async function loadCustomerId() {
+        const loadCustomerData = async () => {
             try {
-              
-                const usuarioId: CustomerId | undefined = await validateTokenCustomer();
-                if (usuarioId == undefined) {
-                    Alert.alert("Atenção!", "Você foi deslogado!")
-                    navigate("Teste");
-                } else {
-                    setCustomerId(usuarioId.id)
+                const customerIdResult: CustomerId | Error = await validateTokenCustomer();
+
+                if ('code' in customerIdResult) {
+                    ToastAndroid.show('Você foi deslogado!', ToastAndroid.SHORT);
+                    navigate("ClientLogin");
+                    return;
                 }
-            } catch (error) {
-                console.error('Erro ao carregar o usuário:', error);
+                setCustomerId(customerIdResult.id);
+
+                const customer: Customer | Error = await findById(customerIdResult.id);
+
+                if ('code' in customer) {
+                    ToastAndroid.show('Você foi deslogado!', ToastAndroid.SHORT);
+                    navigate("ClientLogin");
+                    return;
+                }
+
+                setName(customer.name);
+                setPhotoProfile(customer.pathImage);
+                setEmail(customer.email);
+                setEmailIsActive(customer.isEmailActive);
+            } catch {
+                ToastAndroid.show('Você foi deslogado!', ToastAndroid.SHORT);
+                navigate("ClientLogin");
             }
-        }
-        loadCustomerId();
+        };
+
+        loadCustomerData();
     }, []);
 
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView 
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-      >
+    return (
+        <SafeAreaView style={styles.safeArea}>
+            <ScrollView>
+                <View style={styles.profileSection}>
+                    {photoProfile ? (
+                        <Image source={{ uri: photoProfile }} style={styles.profileImage} />
+                    ) : (
+                        <View style={styles.profileImagePlaceholder}>
+                            <Text>Sem Foto</Text>
+                        </View>
+                    )}
+                    <Text style={styles.profileLabel}>{name}</Text>
+                    {emailIsActive ? (
+                        <Text style={styles.confirmText}>Seu e-mail está confirmado!</Text>
+                    ) : (
+                        <Text style={styles.warningText}>Você ainda não confirmou o e-mail!</Text>
+                    )}
+                </View>
 
-        {/* Profile Section */}
-        <View style={styles.profileSection}>
-          <Image 
-            source={require('../../assets/images/girl.png')} 
-            style={styles.profileImage} 
-          />
-          <Text style={styles.profileLabel}>Cliente</Text>
-        </View>
+                <View style={styles.profileCard}>
+                    <View style={styles.menuContainer}>
+                        {!emailIsActive && (
+                            <ItemProfile
+                                label="Confirmar e-mail"
+                                icon="email-check-outline"
+                                onPress={() => navigate("SendRequestConfirmationEmail", { email })}
+                            />
+                        )}
 
-        {/* Profile Card */}
-        <View style={styles.profileCard}>
-          {/* Menu Items */}
-          <View style={styles.menuContainer}>
-            <TouchableOpacity style={styles.menuItem} activeOpacity={0.7}>
-              <Image source={require('../../assets/images/ver.png')} style={styles.menuItemIcon} />
-              <Text style={styles.menuItemText}>Ver Meus Dados</Text>
-            </TouchableOpacity>
+                        <ItemProfile
+                            icon="eye"
+                            label="Ver Meus Dados"
+                            onPress={() => { }}
+                        />
 
-            <TouchableOpacity style={styles.menuItem} activeOpacity={0.7} onPress={()=> navigate('UpdateProfile',{id:customerId})}>
-              <Image source={require('../../assets/images/editar.png')} style={styles.menuItemIcon} />
-              <Text style={styles.menuItemText}>Editar Perfil</Text>
-            </TouchableOpacity>
+                        <ItemProfile
+                            icon="account-edit"
+                            label="Editar Perfil"
+                            onPress={() => navigate('UpdateProfile')}
+                        />
 
-            <TouchableOpacity style={styles.menuItem} activeOpacity={0.7}>
-              <Image source={require('../../assets/images/password.png')} style={styles.menuItemIcon} />
-              <Text style={styles.menuItemText}>Alterar senha</Text>
-            </TouchableOpacity>
+                        <ItemProfile
+                            label="Alterar senha"
+                            icon="lock-reset"
+                            onPress={() => navigate("UpdatePassword")}
+                        />
 
-            <TouchableOpacity style={styles.menuItem} activeOpacity={0.7} onPress={()=> navigate('SearchPet',{id:customerId})}>
-              <Image source={require('../../assets/images/pet.png')} style={styles.menuItemIcon} />
-              <Text style={styles.menuItemText}>Pets Cadastrados</Text>
-            </TouchableOpacity>
+                        <ItemProfile
+                            label="Alterar e-mail"
+                            icon="email-edit-outline"
+                            onPress={() => navigate("SendRequestChangeEmail", { email })}
+                        />
 
-            <TouchableOpacity style={styles.menuItem} activeOpacity={0.7} onPress={()=> navigate('SearchOrder', {id:customerId})}>
-              <Image source={require('../../assets/images/produto.png')} style={styles.menuItemIcon} />
-              <Text style={styles.menuItemText}>Histórico de Pedidos</Text>
-            </TouchableOpacity>
+                        <ItemProfile
+                            icon="dog"
+                            label="Pets Cadastrados"
+                            onPress={() => navigate('SearchPet')}
+                        />
 
-            <TouchableOpacity style={styles.menuItem} activeOpacity={0.7} onPress={()=>navigate('SearchAppointment',{id:customerId})}>
-              <Image source={require('../../assets/images/cachorro.png')} style={styles.menuItemIcon} />
-              <Text style={styles.menuItemText}>Histórico de Serviços</Text>
-            </TouchableOpacity>
-          </View>
+                        <ItemProfile
+                            icon="clipboard-list"
+                            label="Ver meus pedidos"
+                            onPress={() => navigate('SearchOrder')}
+                        />
 
-          {/* Logout Button */}
-          <TouchableOpacity style={styles.logoutButton}>
-            <Image source={require('../../assets/images/logout.png')} style={styles.logoutIcon} />
-            <Text style={styles.logoutText}>Deslogar Perfil</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+                        <ItemProfile
+                            icon="calendar-check"
+                            label="Ver meus agendamentos"
+                            onPress={() => navigate('SearchAppointment')}
+                        />
+                    </View>
 
-      {/* Bottom Navigation */}
-      
-      <NavigationBar initialTab='perfil'/>    
-      </SafeAreaView>
-  );
+                    <TouchableOpacity style={styles.logoutButton} onPress={() => logoutRequest(navigate)}>
+                        <Icon name="logout" size={24} color="#fff" style={styles.logoutIcon} />
+                        <Text style={styles.logoutText}>Deslogar Perfil</Text>
+                    </TouchableOpacity>
+                </View>
+
+                {error.length > 0 && (
+                    <Text style={{ color: 'red', textAlign: 'center', marginTop: 10 }}>{error}</Text>
+                )}
+            </ScrollView>
+
+            <NavigationBar initialTab='perfil' />
+        </SafeAreaView>
+    );
 };
+
+type ItemProfileProps = {
+    icon: string;
+    label: string;
+    onPress: () => void;
+};
+
+const ItemProfile = ({ label, icon, onPress }: ItemProfileProps) => (
+    <TouchableOpacity
+        style={styles.menuItem}
+        activeOpacity={0.7}
+        onPress={onPress}
+    >
+        <Icon name={icon} size={24} color="#256489" style={styles.menuItemIcon} />
+        <Text style={styles.menuItemText}>{label}</Text>
+    </TouchableOpacity>
+);

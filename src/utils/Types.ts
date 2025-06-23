@@ -1,7 +1,7 @@
 export interface ActivationStatus {
-  isActive: boolean,
-  creationDate: string,
-  deactivationDate: string | null,
+    isActive: boolean,
+    creationDate: string,
+    deactivationDate: string | null,
 }
 
 export interface Service {
@@ -10,18 +10,22 @@ export interface Service {
     pathImage: string,
     price: number,
     description: string,
+    rate: number,
     estimatedDuration: string,
     activationStatus: ActivationStatus,
 }
+
 export interface Product {
     id: string,
     name: string,
     pathImage: string,
     price: number,
     description: string,
+    rate: number,
     categories: Category[],
     activationStatus: ActivationStatus,
 }
+
 export interface Category {
     id: string,
     name: string,
@@ -31,23 +35,23 @@ export interface Category {
     activationStatus: ActivationStatus,
 }
 export type CustomerCreate = {
-  name: string;
-  email: string;
-  password: string;
-  birthDate: string;
-  telephones: {
-    phoneOne: string;
-    phoneTwo: string;
-  };
-  address: {
-    state: string;
-    city: string;
-    neighborhood: string;
-    street: string;
-    number: string;
-    complement: string;
-    postalCode: string;
-  };
+    name: string;
+    email: string;
+    password: string;
+    birthDate: string;
+    telephones: {
+        phoneOne: string;
+        phoneTwo: string;
+    };
+    address: {
+        state: string;
+        city: string;
+        neighborhood: string;
+        street: string;
+        number: string;
+        complement: string;
+        postalCode: string;
+    };
 };
 
 export interface Customer {
@@ -57,10 +61,13 @@ export interface Customer {
     birthDate: string,
     pathImage: string,
     telephones: Telephones,
+    isEmailActive: boolean,
     address: Address,
-    pets:Pet[],
-    orders:Order[],
+    pets: Pet[],
+    orders: Order[],
+    activationStatus: ActivationStatus,
 }
+
 export interface Telephones {
     id: string,
     phoneOne: string,
@@ -72,7 +79,7 @@ export interface Address {
     city: string,
     neighborhood: string,
     street: string,
-    number: number,
+    number: string,
     complement: string,
     postalCode: string,
 }
@@ -80,9 +87,7 @@ export interface CustomerPets {
     owner: Owner,
     pets: Pet[],
 }
-export interface CustomerOrders {
 
-}
 export interface Pet {
     id: string,
     name: string,
@@ -91,37 +96,115 @@ export interface Pet {
     size: string,
     gender: string,
     species: string,
-    note: string,
+    details: string,
     pathImage: string,
-    owner:Owner,
+    owner: Owner,
     activationStatus: ActivationStatus
 }
-type Owner={
+type Owner = {
     id: string,
 }
 
 export interface OrderItem {
-    id:string,
-    price:number,
+    id: string,
+    price: number,
     quantity: number,
-    product:Product
+    product: Product
 }
 
+export interface OrderItemForCar {
+    id: string,
+    quantity: number,
+    product: ProductForCar
+}
+
+export interface ProductForCar {
+    name: string,
+    pathImage: string,
+    price: number,
+}
+
+export interface Passwords {
+    passwordOld: string,
+    passwordNew: string
+};
+
 export interface Order {
-    id: string ,
+    id: string,
     moment: string,
-    paymentStatus: string, 
+    paymentStatus: string,
     totalPrice: number,
-    customer: null,
-    orderItems: OrderItem[]
+    customer: Customer,
+    orderItems: OrderItem[],
+    paymentId: string | null,
+    deliverToAddress: boolean,
+    methodPaymentByPix: boolean,
+    pix: {
+        qrCode: string,
+        qrCodeBase64: string
+    } | null
 }
 
 export interface Paginacao<T> {
-  pageSize: number,
-  totalElements: number,
-  totalPages: number,
-  currentPage: number,
-  nextPage: number,
-  previousPage: number,
-  content: T[],
+    pageSize: number,
+    totalElements: number,
+    totalPages: number,
+    currentPage: number,
+    nextPage: number,
+    previousPage: number,
+    content: T[],
+    totalRate: number
+}
+
+export interface Error {
+    code: string,
+    status: string,
+    message: string,
+    timestamp: string,
+    path: string,
+    errorFields: {
+        name: string,
+        description: string,
+        value: string,
+    }[] | null
+};
+
+export interface Comment {
+    id: string,
+    title: string,
+    message: string,
+    typeComment: string,
+    rate: number,
+    product: Product | null,
+    service: Service | null,
+    customer: Customer,
+    activationStatus: ActivationStatus
+}
+
+export interface Appointment {
+    id: string,
+    dateTime: Date,
+    customer: Customer,
+    price: number,
+    paymentStatus: string,
+    service: Service
+    paymentId: string | null,
+    methodPaymentByPix: boolean
+    pet: Pet,
+    pix: {
+        qrCode: string,
+        qrCodeBase64: string
+    } | null
+}
+
+export interface PaymentStatus {
+    id: string,
+    paymentStatus: string
+}
+
+export interface AdressByCEP {
+    logradouro: string,
+    bairro: string,
+    localidade: string,
+    estado: string
 }

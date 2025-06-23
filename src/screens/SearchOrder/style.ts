@@ -1,54 +1,75 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    padding: 20,
-    paddingTop: 50,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#e5d4f5',
-    padding: 10,
-    borderRadius: 10,
-    marginBottom: 20,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginLeft: 15,
-  },
-  subTitle: {
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginBottom: 15,
-    textAlign: 'center',
-  },
-  scroll: {
-    flex: 1,
-  },
-  card: {
-    borderWidth: 1,
-    borderColor: '#c9d6d8',
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 15,
-  },
-  title: {
-    fontWeight: 'bold',
-    color: '#007b83',
-    fontSize: 16,
-    marginBottom: 5,
-  },
-  link: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  linkText: {
-    color: '#007b83',
-    marginRight: 5,
-  },
+    safeArea: {
+        flex: 1,
+        backgroundColor: '#f9f9f9',
+    },
+    scrollView: {
+        flex: 1,
+    },
+    scrollContent: {
+        padding: 16,
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        marginBottom: 16,
+        color: '#333',
+        textAlign: 'center',
+    },
+    formGroup: {
+        marginBottom: 16,
+    },
+    label: {
+        fontSize: 16,
+        marginBottom: 8,
+        color: '#555',
+    },
+    inputField: {
+        padding: 12,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 8,
+        backgroundColor: '#fff',
+    },
+    itemContainer: {
+        marginTop: 16,
+    },
+    card: {
+        backgroundColor: '#fff',
+        padding: 16,
+        borderRadius: 12,
+        marginBottom: 12,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    cardTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 4,
+    },
+    cardSubtitle: {
+        fontSize: 14,
+        color: '#555',
+        marginBottom: 2,
+    },
+    errorContainer: {
+        backgroundColor: '#ffe5e5',
+        padding: 12,
+        borderRadius: 8,
+        marginVertical: 10,
+    },
+    errorText: {
+        color: '#d00',
+        textAlign: 'center',
+    },
+
+    cardText: {
+        fontSize: 13,
+        color: '#333',
+    },
 });

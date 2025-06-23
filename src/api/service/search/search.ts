@@ -1,25 +1,37 @@
 import { GLOBAL_VAR } from "../../config/globalVar";
-import { Paginacao, Service } from "../../../utils/Types";
+import { Error, Paginacao, Service } from "../../../utils/Types";
 
-export async function search(searchText: string,pageIndex: number): Promise<Paginacao<Service> | undefined>{
-
+export async function search(searchText: string, pageIndex: number): Promise<Paginacao<Service> | Error> {
     try {
-
-        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/servicos/paginacao?isActive=true&pageSize=2&page=${pageIndex}&name=${searchText}`,{
+        const response = await fetch(`${GLOBAL_VAR.BASE_URL}/servicos/paginacao?isActive=true&pageSize=2&page=${pageIndex}&name=${searchText}`, {
             headers: {
                 Authorization: "Bearer " + GLOBAL_VAR.TOKEN_JWT
             },
             method: 'GET',
         })
 
-        if (!response.ok){
-            console.error(`Algo errado no response: ${response.status}`)
+        if (response.ok) {
+            const data: Paginacao<Service> = await response.json()
+            return data
+        } else {
+            const data: Error = await response.json()
+            return {
+                code: data.code ?? 'UNKNOWN_ERROR',
+                status: data.status ?? response.status.toString(),
+                message: data.message ?? 'Erro inesperado',
+                timestamp: data.timestamp ?? new Date().toISOString(),
+                path: data.path ?? `/servicos/paginacao?isActive=true&pageSize=2&page=${pageIndex}&name=${searchText}`,
+                errorFields: data.errorFields ?? null
+            };
         }
-
-        const data:Paginacao<Service>= await response.json()
-        
-        return data
     } catch (error) {
-        console.error('Erro na requisição: ', error)
+        return {
+            code: 'NETWORK_ERROR',
+            status: '0',
+            message: 'Erro de conexão. Verifique sua internet.',
+            timestamp: new Date().toISOString(),
+            path: `/servicos/paginacao?isActive=true&pageSize=2&page=${pageIndex}&name=${searchText}`,
+            errorFields: null
+        };
     }
 }

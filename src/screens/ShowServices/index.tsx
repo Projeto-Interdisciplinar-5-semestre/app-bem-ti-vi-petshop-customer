@@ -1,171 +1,122 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, TextInput, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, Alert } from 'react-native';
+
+import { useNavigation } from '@react-navigation/native';
+
+import { Error, Paginacao, Service } from '../../utils/Types';
 
 import { NavigationBar } from '../../components/NavigationBar';
+import { PaginationControls } from '../../components/PaginationControls';
+import { Title } from '../../components/Title';
+import { SearchInput } from '../../components/SearchInput';
+
+import { search } from '../../api/service/search/search';
+
+import { NavigationProps } from '../../routes/AppRoute';
 
 import { styles } from './style';
-import { useNavigation } from '@react-navigation/native';
-import { NavigationProps } from '../../routes/AppRoute';
-import { Service } from '../../utils/Types';
-import { search } from '../../api/service/search/search';
-import { PaginationControls } from '../../components/PaginationControls';
-
-const servicos = [
-  { 
-    id: 1, 
-    nome: 'Vacinação em Cães e Gatos', 
-    preco: '29,99',
-    imagem: require('../../assets/images/vacinacao.jpg')
-  },
-  { 
-    id: 2, 
-    nome: 'Banho e Tosa', 
-    preco: '49,99',
-    imagem: require('../../assets/images/tosa.png')
-  },
-  { 
-    id: 3, 
-    nome: 'Corte de Unhas', 
-    preco: '19,99',
-    imagem: require('../../assets/images/corte.jpg')
-  },
-  { 
-    id: 4, 
-    nome: 'Banho Completo', 
-    preco: '39,99',
-    imagem: require('../../assets/images/banho-tosa.jpg')
-  },
-]
+import hardwareBackPress from '../../utils/hardwareBackPress/hardwareBackPress';
+import { useValidateToken } from '../../utils/UseValidateToken/UseValidateToken';
 
 export const ShowServices = () => {
-  const { navigate } = useNavigation<NavigationProps>();
-  const [pageIndex, setPageIndex] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
-  const [servicos, setServicos] = useState<Service[]>([]);
-  const [searchText, setSearchText] = useState('');
+    const { navigate } = useNavigation<NavigationProps>();
+    const [pageIndex, setPageIndex] = useState<number>(0);
+    const [totalPages, setTotalPages] = useState<number>(1);
+    const [servicos, setServicos] = useState<Service[]>([]);
+    const [searchText, setSearchText] = useState<string>('');
+    const [error, setError] = useState<string>('');
 
-  useEffect(() => {
-    const buscarCategorias = async () => {
-      try {
-        const data = await search(searchText,pageIndex);
-        if (!data) {
-          throw new Error("Erro ao buscar dados dos serviços");
+    useValidateToken();
+    hardwareBackPress(navigate, "Home");
+
+    useEffect(() => {
+        const buscarCategorias = async () => {
+            try {
+                const data: Paginacao<Service> | Error = await search(searchText, pageIndex);
+
+                if ('code' in data) {
+                    setError(data.message);
+                    return;
+                }
+
+                setServicos(data.content)
+                setTotalPages(data.totalPages)
+            } catch (erro) {
+                setError('Não foi possível atualizar. Verifique sua conexão.');
+            }
+        };
+
+        buscarCategorias();
+    }, [searchText, pageIndex]);
+
+    const filteredServicos = servicos.filter(servico =>
+        servico.name.toLowerCase().includes(searchText.toLowerCase())
+    );
+
+    const renderStars = (rating: number) => {
+        const stars = [];
+        const fullStars = Math.floor(rating);
+        const hasHalfStar = rating - fullStars >= 0.5;
+        for (let i = 1; i <= 5; i++) {
+            let source;
+            if (i <= fullStars) {
+                source = require('../../assets/images/star.png');
+            } else if (i === fullStars + 1 && hasHalfStar) {
+                source = require('../../assets/images/halfstar.png');
+            } else {
+                source = require('../../assets/images/emptystar.png');
+            }
+            stars.push(<Image key={i} source={source} style={styles.starIcon} />);
         }
-        setServicos(data.content)
-        setTotalPages(data.totalPages)
-      } catch (erro) {
-        console.error("Erro ao buscar serviços:", erro);
-        Alert.alert("Erro", "Não foi possível carregar os dados dos serviços.");
-      }
+        return stars;
     };
 
-    buscarCategorias();
-  }, [searchText,pageIndex]);
+    return (
+        <SafeAreaView style={styles.safeArea}>
 
-  const handleAgendar = () => {
-    Alert.alert(
-      "Agendar Serviço",
-      "Deseja agendar o serviço de Banho e Tosa?",
-      [
-        {
-          text: "Cancelar",
-          style: "cancel"
-        },
-        { 
-          text: "Agendar", 
-          onPress: () => console.log("Serviço agendado") 
-        }
-      ]
-    );
-  };
+            <ScrollView>
+                <Title text="Veja nossos serviços" />
 
-  const filteredServicos = servicos.filter(servico =>
-    servico.name.toLowerCase().includes(searchText.toLowerCase())
-  );
-
-  return (
-    <SafeAreaView style={styles.safeArea}>
-
-      <ScrollView 
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-      >
-
-        {/* Greeting */}
-        <View style={styles.greetingContainer}>
-          <Text style={styles.greetingText}>Nossos Serviços</Text>
-        </View>
-
-        {/* Search Input */}
-        <View style={styles.searchContainer}>
-          <Image 
-            source={require('../../assets/images/busca.png')} 
-            style={styles.searchIcon} 
-          />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Buscar serviço"
-            placeholderTextColor="#999"
-            value={searchText}
-            onChangeText={setSearchText}
-          />
-        </View>
-
-        {/* Lista de Serviços */}
-        <View style={styles.servicosContainer}>
-          {filteredServicos.map((servico) => (
-            <View key={servico.id} style={styles.servicoCard}>
-              <View style={styles.cardContent}>
-                <Image 
-                  source={{uri:servico.pathImage}} 
-                  style={styles.servicoImage}
+                <SearchInput
+                    placeholder="Buscar serviços..."
+                    searchText={searchText}
+                    setSearchText={setSearchText}
                 />
-                <View style={styles.servicoInfo}>
-                  <Text style={styles.servicoNome} numberOfLines={2}>{servico.name}</Text>
-                  <View style={styles.precoContainer}>
-                    <Text style={styles.precoLabel}>A partir de</Text>
-                    <Text style={styles.servicoPreco}>R$ {servico.price}</Text>
-                  </View>
+
+                <View style={styles.servicosContainer}>
+                    {filteredServicos.map((servico) => (
+                        <TouchableOpacity onPress={() => navigate('DetailsService', { id: servico.id })} key={servico.id} style={styles.servicoCard}>
+                            <View style={styles.cardContent}>
+                                <Image
+                                    source={{ uri: servico.pathImage }}
+                                    style={styles.servicoImage}
+                                />
+                                <View style={styles.servicoInfo}>
+                                    <Text style={styles.servicoNome} numberOfLines={2}>{servico.name}</Text>
+                                    <View style={styles.ratingStarsContainer}>
+                                        {renderStars(servico.rate)}
+                                        <Text style={styles.ratingText}>{servico.rate.toFixed(1)}</Text>
+                                    </View>
+                                    <View style={styles.precoContainer}>
+                                        <Text style={styles.precoLabel}>A partir de</Text>
+                                        <Text style={styles.servicoPreco}>R$ {servico.price}</Text>
+                                    </View>
+                                </View>
+                                <Text style={styles.date}>{new Date(servico.activationStatus.creationDate).toLocaleDateString('pt-BR')}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    ))}
                 </View>
-                <Text style={styles.commentText}>{servico.description}</Text>
-                <Text style={styles.commentDate}>{new Date(servico.activationStatus.creationDate).toLocaleDateString('pt-BR')}</Text>
-                <TouchableOpacity 
-                onPress={()=> navigate('DetailsService',{id:servico.id})}
-                >
-                <Image 
-                  source={require('../../assets/images/olhos.png')} 
-                />
-                </TouchableOpacity>
-              </View>
-            </View>
-          ))}
-        </View>
+            </ScrollView>
 
-        {/* Botão Agendar Serviço */}
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity 
-            style={styles.agendarButton} 
-            onPress={handleAgendar}
-          >
-            <Text style={styles.agendarButtonText}>AGENDAR SERVIÇO</Text>
-            <Image 
-              source={require('../../assets/images/check.png')} 
-              style={styles.checkIcon} 
+            <PaginationControls
+                pageIndex={pageIndex}
+                totalPages={totalPages}
+                onNext={() => setPageIndex(prev => prev + 1)}
+                onPrev={() => setPageIndex(prev => prev - 1)}
             />
-          </TouchableOpacity>
-        </View>
-        
-        <PaginationControls 
-            pageIndex={pageIndex}
-            totalPages={totalPages}
-            onNext={()=>setPageIndex(prev => prev + 1)}
-            onPrev={()=>setPageIndex(prev => prev - 1)}
-        />
-      </ScrollView>
 
-      {/* Navegação Inferior */}
-     <NavigationBar initialTab='servicos'/>
-    </SafeAreaView>
-  );
+            <NavigationBar initialTab='servicos' />
+        </SafeAreaView>
+    );
 };

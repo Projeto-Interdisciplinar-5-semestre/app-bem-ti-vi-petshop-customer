@@ -1,8 +1,7 @@
 import { GLOBAL_VAR } from "../../config/globalVar"
-import { Product } from "../../../utils/Types"
+import { Error, Product } from "../../../utils/Types"
 
-export async function findById(productId: string ): Promise<Product | undefined> {
-
+export async function findById(productId: string): Promise<Product | Error> {
     try {
 
         const response = await fetch(`${GLOBAL_VAR.BASE_URL}/produtos/${productId}/buscar`, {
@@ -11,16 +10,29 @@ export async function findById(productId: string ): Promise<Product | undefined>
             },
             method: 'GET',
         })
+        if (response.ok) {
+            const data: Product = await response.json();
+            return data;
+        } else {
+            const data: Error = await response.json();
 
-        if (!response.ok) {
-            console.error(`Algo errado no response: ${response.status}`)
+            return {
+                code: data.code ?? 'UNKNOWN_ERROR',
+                status: data.status ?? response.status.toString(),
+                message: data.message ?? 'Erro inesperado',
+                timestamp: data.timestamp ?? new Date().toISOString(),
+                path: data.path ?? `/produtos/${productId}/buscar`,
+                errorFields: data.errorFields ?? null
+            };
         }
-
-        const data: Product = await response.json()
-
-        return data
-
     } catch (error) {
-        console.error('Erro na requisição: ', error)
+        return {
+            code: 'NETWORK_ERROR',
+            status: '0',
+            message: 'Erro de conexão. Verifique sua internet.',
+            timestamp: new Date().toISOString(),
+            path: `/produtos/${productId}/buscar`,
+            errorFields: null
+        };
     }
 }

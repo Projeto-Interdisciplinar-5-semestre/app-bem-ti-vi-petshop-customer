@@ -5,10 +5,10 @@ import { NavigationProps } from '../../routes/AppRoute';
 import { styles } from "./style";
 
 type NavigationBarProps = {
-  initialTab?: string;
+    initialTab?: string;
 };
 
-export const NavigationBar = ({initialTab='home'}: NavigationBarProps) => {
+export const NavigationBar = ({ initialTab = 'home' }: NavigationBarProps) => {
     const { navigate } = useNavigation<NavigationProps>()
     const [activeTab, setActiveTab] = useState(initialTab);
 
@@ -28,7 +28,7 @@ export const NavigationBar = ({initialTab='home'}: NavigationBarProps) => {
                 type="loja"
                 icon={require('../../assets/images/cachorro.png')}
                 text="Loja"
-                onPress={() => navigate('ShowCategories')}
+                onPress={() => navigate('ShopScreen')}
             />
 
             <NavItem
@@ -55,7 +55,7 @@ export const NavigationBar = ({initialTab='home'}: NavigationBarProps) => {
 
 function NavItem(props: any) {
     return (
-        <TouchableOpacity style={styles.navItem} onPress={() => {props.setActiveTab(); props.onPress()}}>
+        <TouchableOpacity style={styles.navItem} onPress={() => { props.setActiveTab(); props.onPress() }}>
             <View style={styles.navIconContainer}>
                 {props.activeTab === props.type &&
                     <View style={styles.activeIndicator} />

@@ -1,7 +1,19 @@
-import { CustomerCreate } from '../../../utils/Types';
+import { Alert } from 'react-native';
+import { CustomerCreate, Error } from '../../../utils/Types';
 import { GLOBAL_VAR } from '../../config/globalVar'
 
-export async function create(user:CustomerCreate, image: string) {
+export async function create(user: CustomerCreate, image: string): Promise<Boolean | Error> {
+    if (!image) {
+        return {
+            code: 'IMAGE_IS_NULL',
+            status: '0',
+            message: 'Você precisa enviar uma imagem.',
+            timestamp: new Date().toISOString(),
+            path: `/clientes/inserir`,
+            errorFields: null
+        };
+    }
+
     try {
         const formData = new FormData();
 
@@ -20,14 +32,29 @@ export async function create(user:CustomerCreate, image: string) {
             method: 'POST',
             body: formData,
         });
+
         if (response.status === 201) {
-            return true;
+            return new Boolean(true);
         } else {
-            console.error(`Erro ao cadastrar: código ${response.status}`);
-            return false;
+            const data: Error = await response.json();
+
+            return {
+                code: data.code ?? 'UNKNOWN_ERROR',
+                status: data.status ?? response.status.toString(),
+                message: data.message ?? 'Erro inesperado',
+                timestamp: data.timestamp ?? new Date().toISOString(),
+                path: data.path ?? `/clientes/inserir`,
+                errorFields: data.errorFields ?? null
+            };
         }
     } catch (error) {
-        console.error('Erro na requisição POST: ', error)
-        throw error;
+        return {
+            code: 'NETWORK_ERROR',
+            status: '0',
+            message: 'Erro de conexão. Verifique sua internet.',
+            timestamp: new Date().toISOString(),
+            path: `/clientes/inserir`,
+            errorFields: null
+        };
     }
 } 

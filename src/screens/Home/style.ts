@@ -12,7 +12,7 @@ export const styles = StyleSheet.create({
 
   // Cabeçalho
   greeting: {
-    fontSize: 20,
+    fontSize: 28,
     fontWeight: 'bold',
     marginTop: 16,
     marginHorizontal: 16,

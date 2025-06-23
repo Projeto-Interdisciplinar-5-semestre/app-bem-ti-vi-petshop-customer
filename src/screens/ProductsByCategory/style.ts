@@ -1,84 +1,87 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
-     container: {
+    container: {
         flex: 1,
-        backgroundColor: "#FFF",
+        backgroundColor: "#F9F9F9",
+        paddingTop: 10,
+        justifyContent: 'space-between'
+    },
 
-     },
-
-    title:{
-        backgroundColor: "#EADDFF", 
-        color: "#000",           
-        fontSize: 24,
-        fontWeight: "bold",
-        textAlign: "center",
-        padding: 15,    
-
-     },
-
-     subtitle:{
-        fontSize: 20,
-        textAlign: "center",
-        marginTop: 15,
-        marginBottom: 15,
-        color: "#000",
-        fontWeight: "900"
-     },
-
-     productCard:{
-        width: "45%", 
-        backgroundColor: "#ECEAEA",
-        margin: "2.5%", 
-        padding: 10,
-        borderRadius: 10,
-        alignItems: "center",
-        elevation: 2, 
-        shadowColor: "#000", 
-        shadowOpacity: 0.1,
-        shadowOffset: { width: 0, height: 1 },
-
-     },
-     productImage:{
-        width: 100,
-        height: 100,
-
-     },
-     productName:{
-        fontSize: 15,
-        fontWeight: "bold",
-        textAlign: "center",
-        marginTop: 5,
-
-     },
-
-     productRating:{
-        fontSize: 12,
-        marginTop: 2,
-        textAlign: "center",
+    subcontainer: {
+        paddingHorizontal: 12,
+    },
     
-     },
-
-     productPrice:{
+    subtitle: {
+        fontSize: 22,
+        textAlign: "center",
+        marginVertical: 15,
+        color: "#333",
+        fontWeight: "700",
+    },
+    listContent: {
+        paddingBottom: 20,
+    },
+    rowWrapper: {
+        justifyContent: 'space-between',
+    },
+    productCard: {
+        width: '47%',
+        backgroundColor: "#FFFFFF",
+        marginBottom: 15,
+        borderRadius: 12,
+        padding: 12,
+        alignItems: "center",
+        elevation: 3,
+        shadowColor: "#000",
+        shadowOpacity: 0.1,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 4,
+    },
+    productImage: {
+        width: 110,
+        height: 110,
+        resizeMode: "contain",
+        marginBottom: 8,
+    },
+    productName: {
         fontSize: 15,
         fontWeight: "bold",
-     },
-
-     menu:{
-        backgroundColor: "#fff",
-        flexDirection: "row",
-        justifyContent: "space-around",
-       paddingVertical: 15,
-
-     },
-
-     menuItem:{
-        alignItems:"center",
-     },
-
-     menuText:{
+        textAlign: "center",
+        color: "#333",
+        marginBottom: 4,
+    },
+    productRating: {
         fontSize: 12,
+        color: "#FFA500",
+        marginBottom: 4,
+    },
+    productPrice: {
+        fontSize: 16,
         fontWeight: "bold",
-        marginTop: 5,
-     } 
-})
+        color: "#00796B",
+    },
+    emptyText: {
+        textAlign: "center",
+        fontSize: 16,
+        color: "#888",
+        marginTop: 20,
+    },
+    starIcon: {
+        width: 16,
+        height: 16,
+        marginRight: 2,
+    },
+
+    ratingStarsContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+
+    ratingText: {
+        fontFamily: 'Montserrat-Bold',
+        fontSize: 14,
+        color: '#333',
+        marginLeft: 8,
+    },
+});
