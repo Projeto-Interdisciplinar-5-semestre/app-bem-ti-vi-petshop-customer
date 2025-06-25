@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, SafeAreaView, View, Text, ActivityIndicator } from 'react-native';
+import { ScrollView, SafeAreaView, View, Text, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import hardwareBackPress from '../../utils/hardwareBackPress/hardwareBackPress';
@@ -42,7 +42,6 @@ export function SearchOrder() {
         return () => clearTimeout(debounceTimeout);
     }, [paymentStatus]);
 
-    // Buscar agendamentos
     useEffect(() => {
         async function loadOrders() {
             setLoading(true);
@@ -87,7 +86,6 @@ export function SearchOrder() {
     return (
         <SafeAreaView style={styles.safeArea}>
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-
                 <InputPaymentStatus
                     label='Status de pagamento'
                     paymentStatus={paymentStatus}
@@ -98,28 +96,33 @@ export function SearchOrder() {
                     {loading ? (
                         <ActivityIndicator size="large" color="#256489" style={{ marginTop: 20 }} />
                     ) : orders.length > 0 ? (
-                        
                         orders.map(order => (
-                            <View key={order.id} style={styles.card}>
-                                <Text style={styles.cardTitle}>Cliente: {order.customer.name}</Text>
-                                <Text style={styles.cardSubtitle}>Email: {order.customer.email}</Text>
-                                <Text style={styles.cardSubtitle}>Data/Hora: {formatDateTime(new Date(order.moment))}</Text>
-                                <Text style={styles.cardSubtitle}>Preço Total: R$ {order.totalPrice.toFixed(2)}</Text>
-                                <Text style={styles.cardSubtitle}>Status de Pagamento: {order.paymentStatus}</Text>
+                            <TouchableOpacity key={order.id} style={styles.card} onPress={() => navigate("OrderScreen", {id: order.id})}>
+                                <Text style={styles.cardTitle}>Pedido #{order.id.slice(-5)}</Text>
 
-                                <Text style={styles.cardSubtitle}>Itens do Pedido:</Text>
-                                {Array.isArray(order.orderItems) && order.orderItems.length > 0 ? (
-                                    order.orderItems.map(item => (
-                                        <View key={item.id} style={{ marginLeft: 10, marginBottom: 5 }}>
-                                            <Text style={styles.cardText}>Produto: {item.product.name}</Text>
-                                            <Text style={styles.cardText}>Quantidade: {item.quantity}</Text>
-                                            <Text style={styles.cardText}>Preço Unitário: R$ {item.price.toFixed(2)}</Text>
-                                        </View>
-                                    ))
-                                ) : (
-                                    <Text style={styles.cardText}>Nenhum item.</Text>
-                                )}
-                            </View>
+                                <View style={styles.cardSection}>
+                                    <Text style={styles.cardSubtitle}>Cliente: <Text style={styles.cardText}>{order.customer.name}</Text></Text>
+                                    <Text style={styles.cardSubtitle}>Email: <Text style={styles.cardText}>{order.customer.email}</Text></Text>
+                                    <Text style={styles.cardSubtitle}>Data/Hora: <Text style={styles.cardText}>{formatDateTime(new Date(order.moment))}</Text></Text>
+                                    <Text style={styles.cardSubtitle}>Preço Total: <Text style={styles.cardText}>R$ {order.totalPrice.toFixed(2)}</Text></Text>
+                                    <Text style={styles.cardSubtitle}>Status Pagamento: <Text style={styles.cardText}>{order.paymentStatus}</Text></Text>
+                                    <Text style={styles.cardSubtitle}>Pagamento por Pix: <Text style={styles.cardText}>{order.methodPaymentByPix ? 'Sim' : 'Não'}</Text></Text>
+                                    <Text style={styles.cardSubtitle}>Entregar em domicílio: <Text style={styles.cardText}>{order.deliverToAddress ? 'Sim' : 'Não'}</Text></Text>
+                                </View>
+
+                                <View style={styles.cardSection}>
+                                    <Text style={[styles.cardSubtitle, { marginBottom: 5 }]}>Itens do Pedido:</Text>
+                                    {Array.isArray(order.orderItems) && order.orderItems.length > 0 ? (
+                                        order.orderItems.map(item => (
+                                            <View key={item.id} style={styles.itemRow}>
+                                                <Text style={styles.cardText}>• {item.product.name} - {item.quantity}x R$ {item.price.toFixed(2)}</Text>
+                                            </View>
+                                        ))
+                                    ) : (
+                                        <Text style={styles.cardText}>Nenhum item.</Text>
+                                    )}
+                                </View>
+                            </TouchableOpacity>
                         ))
                     ) : (
                         <Text style={{ textAlign: 'center', marginTop: 20 }}>Nenhum pedido encontrado.</Text>

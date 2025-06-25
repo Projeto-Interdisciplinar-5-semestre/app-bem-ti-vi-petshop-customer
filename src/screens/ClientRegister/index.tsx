@@ -232,7 +232,7 @@ export default function Cadastro() {
 
                         <View style={styles.inputContainer}>
                             <Feather name="map-pin" size={18} color="#256489" />
-                            <TextInput placeholder="Digite seu lougradouro" style={styles.input} placeholderTextColor="#256489" value={street} onChangeText={setStreet} />
+                            <TextInput placeholder="Digite seu logradouro" style={styles.input} placeholderTextColor="#256489" value={street} onChangeText={setStreet} />
                         </View>
 
                         <View style={styles.inputContainer}>

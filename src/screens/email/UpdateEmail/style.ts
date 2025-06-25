@@ -3,67 +3,65 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: '#fff'
+        backgroundColor: '#f5f5f5',
     },
     scrollView: {
         flex: 1,
-        marginBottom: 70
     },
     scrollContent: {
-        paddingBottom: 40,
-        paddingHorizontal: 16
+        padding: 20,
     },
-    buttonsContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginHorizontal: 15,
-        marginVertical: 32,
-        gap: 16
-    },
-    formContainer: {
+    card: {
+        backgroundColor: '#fff',
+        borderRadius: 12,
+        padding: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        elevation: 4,
         marginTop: 20,
     },
-    inputContainer: {
-        marginBottom: 20
+    codeContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginVertical: 30,
     },
-    label: {
-        fontFamily: 'Montserrat-Medium',
-        fontSize: 14,
+    codeInput: {
+        width: 50,
+        height: 60,
+        backgroundColor: '#f0f0f0',
+        borderRadius: 10,
+        textAlign: 'center',
+        fontSize: 22,
+        fontWeight: '600',
         color: '#333',
-        marginBottom: 8
+        borderWidth: 1,
+        borderColor: '#ccc',
     },
-    input: {
-        backgroundColor: '#F8F8F8',
+    errorContainer: {
+        marginBottom: 15,
+        backgroundColor: '#ffe5e5',
         borderRadius: 8,
         padding: 12,
-        fontFamily: 'Montserrat-Regular',
-        fontSize: 14,
         borderWidth: 1,
-        borderColor: '#EEE'
+        borderColor: '#ff4d4f',
     },
-    imagePicker: {
-        backgroundColor: '#F8F8F8',
-        borderRadius: 8,
-        height: 100,
-        justifyContent: 'center',
+    errorText: {
+        color: '#b00020',
+        fontSize: 14,
+        marginBottom: 2,
+    },
+    buttonsContainer: {
+        marginTop: 10,
+    },
+    resendContainer: {
+        marginTop: 25,
         alignItems: 'center',
-        borderWidth: 1,
-        borderColor: '#EEE'
     },
-    imagePickerText: {
-        fontFamily: 'Montserrat-Regular',
-        fontSize: 14,
-        color: '#666'
-    },
-    imagePreview: {
-        width: '100%',
-        height: '100%',
-        borderRadius: 8
-    },
-    confirmText: {
-        color: 'blue',
-        fontWeight: 'bold',
-        textAlign: 'center',
-        marginVertical: 8,
+    resendText: {
+        color: '#007aff',
+        fontSize: 15,
+        fontWeight: '500',
     },
 });

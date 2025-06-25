@@ -1,70 +1,55 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: '#f9f9f9',
+        backgroundColor: '#f4f6f8',
     },
     scrollView: {
         flex: 1,
+        paddingHorizontal: 16,
     },
     scrollContent: {
-        padding: 16,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        marginBottom: 16,
-        color: '#333',
-        textAlign: 'center',
-    },
-    formGroup: {
-        marginBottom: 16,
-    },
-    label: {
-        fontSize: 16,
-        marginBottom: 8,
-        color: '#555',
-    },
-    inputField: {
-        padding: 12,
-        borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 8,
-        backgroundColor: '#fff',
+        paddingBottom: 20,
     },
     itemContainer: {
         marginTop: 16,
     },
     card: {
-        backgroundColor: '#fff',
-        padding: 16,
+        backgroundColor: '#ffffff',
         borderRadius: 12,
-        marginBottom: 12,
-        shadowColor: '#000',
+        padding: 16,
+        marginBottom: 16,
+        elevation: 3, // sombra Android
+        shadowColor: '#000', // sombra iOS
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
-        elevation: 3,
     },
-    cardTitle: {
+    clientName: {
         fontSize: 18,
         fontWeight: 'bold',
+        marginBottom: 8,
+        color: '#333',
+    },
+    info: {
+        fontSize: 15,
+        color: '#555',
         marginBottom: 4,
     },
-    cardSubtitle: {
-        fontSize: 14,
-        color: '#555',
-        marginBottom: 2,
+    noResult: {
+        textAlign: 'center',
+        marginTop: 20,
+        color: '#777',
+        fontSize: 16,
     },
     errorContainer: {
-        backgroundColor: '#ffe5e5',
-        padding: 12,
-        borderRadius: 8,
-        marginVertical: 10,
+        marginTop: 10,
+        alignItems: 'center',
     },
     errorText: {
-        color: '#d00',
+        color: 'red',
         textAlign: 'center',
+        fontSize: 14,
     },
 });

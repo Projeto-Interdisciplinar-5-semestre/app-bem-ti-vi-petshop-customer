@@ -24,6 +24,7 @@ export const ClientLogin = () => {
                 const newCount = prev + 1;
                 if (newCount >= 2) {
                     BackHandler.exitApp();
+                    return 0;
                 } else {
                     ToastAndroid.show('Pressione novamente para sair', ToastAndroid.SHORT);
                 }

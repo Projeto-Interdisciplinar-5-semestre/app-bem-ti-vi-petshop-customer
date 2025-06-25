@@ -6,14 +6,12 @@ import {
     Image,
     ScrollView,
     SafeAreaView,
-    Alert,
     ToastAndroid,
-    Pressable,
     ActivityIndicator,
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
-import {  Comment, Customer, Service } from '../../utils/Types';
+import { Comment, Customer, Service } from '../../utils/Types';
 import hardwareBackPress from '../../utils/hardwareBackPress/hardwareBackPress';
 import { searchByService } from '../../api/comments/search/searchByService';
 import { validateTokenCustomer } from '../../api/auth/validateTokenCustomer/validateTokenCustomer';
@@ -30,6 +28,7 @@ import { StarRatingInput } from '../../components/inputStar';
 import { NavigationProps } from '../../routes/AppRoute';
 import { styles } from './style';
 import { useValidateToken } from '../../utils/UseValidateToken/UseValidateToken';
+import { GLOBAL_VAR } from '../../api/config/globalVar';
 
 export const DetailsService = () => {
     const { navigate, replace } = useNavigation<NavigationProps>();
@@ -38,7 +37,6 @@ export const DetailsService = () => {
 
     const [service, setService] = useState<Service>({} as Service);
     const [comments, setComments] = useState<Comment[]>([]);
-    const [totalRate, setTotalRate] = useState<number>(0);
     const [totalComments, setTotalComments] = useState<number>(0);
 
     const [loadingService, setLoadingService] = useState(true);
@@ -71,7 +69,7 @@ export const DetailsService = () => {
 
             setComments(commentsResult.content);
             setTotalComments(commentsResult.totalElements);
-            setTotalRate(commentsResult.totalRate);
+
         } catch (error) {
             setErrors(prev => ({ ...prev, service: 'Erro ao carregar serviço. Verifique a conexão.' }));
         } finally {
@@ -166,8 +164,8 @@ export const DetailsService = () => {
                         </View>
                         <View style={styles.ratingContainer}>
                             <View style={styles.ratingStarsContainer}>
-                                {renderStars(totalRate)}
-                                <Text style={styles.ratingText}>{totalRate.toFixed(1)}</Text>
+                                {renderStars(service.rate)}
+                                <Text style={styles.ratingText}>{service.rate.toFixed(1)}</Text>
                                 <Text style={styles.reviewsText}>{totalComments} avaliações</Text>
                             </View>
                         </View>
@@ -184,20 +182,22 @@ export const DetailsService = () => {
 
                 <View style={styles.commentsContainer}>
                     <Text style={styles.titleCommentMain}>Ver comentários</Text>
-                    {comments.map(comment => (
-                        <View key={comment.id} style={styles.commentCard}>
-                            <View style={styles.commentHeader}>
-                                <View style={{ flexDirection: 'row' }}>
-                                    <Image style={styles.image} src={comment.customer.pathImage} />
-                                    <Text style={styles.commentAuthor}>{comment.customer.name}</Text>
+                    <TouchableOpacity onPress={() => navigate("SearchCommentByService", { serviceId: serviceId, rate: service.rate, totalCommments: totalComments })}>
+                        {comments.map(comment => (
+                            <View key={comment.id} style={styles.commentCard}>
+                                <View style={styles.commentHeader}>
+                                    <View style={{ flexDirection: 'row' }}>
+                                        <Image style={styles.image} source={{ uri: comment.customer.pathImage }} />                                        
+                                        <Text style={styles.commentAuthor}>{comment.customer.name}</Text>
+                                    </View>
+                                    <View style={styles.commentRating}>{renderStars(comment.rate)}</View>
                                 </View>
-                                <View style={styles.commentRating}>{renderStars(comment.rate)}</View>
+                                <Text style={styles.commentAuthor}>{comment.title}</Text>
+                                <Text style={styles.commentText}>{comment.message}</Text>
+                                <Text style={styles.commentDate}>{comment.activationStatus.creationDate}</Text>
                             </View>
-                            <Text style={styles.commentAuthor}>{comment.title}</Text>
-                            <Text style={styles.commentText}>{comment.message}</Text>
-                            <Text style={styles.commentDate}>{comment.activationStatus.creationDate}</Text>
-                        </View>
-                    ))}
+                        ))}
+                    </TouchableOpacity>
                     {errors.comments && <Text style={{ color: 'red', marginBottom: 8 }}>{errors.comments}</Text>}
 
                     <View style={styles.commentContainer}>

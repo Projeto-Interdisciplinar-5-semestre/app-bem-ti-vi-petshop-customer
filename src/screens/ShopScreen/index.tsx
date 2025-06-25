@@ -123,7 +123,7 @@ export default function ShopScreen() {
             <Image source={{ uri: product.pathImage }} style={style.productImage} resizeMode="contain" />
             <View style={style.productInfo}>
                 <Text style={style.productName} numberOfLines={1}>{product.name}</Text>
-                <Text style={style.productPrice}>{product.price}</Text>
+                <Text style={style.productPrice}>R$ {product.price}</Text>
                 <View style={style.ratingStarsContainer}>
                     {renderStars(product.rate)}
                     <Text style={style.ratingText}>{product.rate.toFixed(1)}</Text>

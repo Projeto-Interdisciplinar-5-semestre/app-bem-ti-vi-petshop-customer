@@ -36,27 +36,6 @@ export const styles = StyleSheet.create({
     itemContainer: {
         marginTop: 16,
     },
-    card: {
-        backgroundColor: '#fff',
-        padding: 16,
-        borderRadius: 12,
-        marginBottom: 12,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
-    },
-    cardTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 4,
-    },
-    cardSubtitle: {
-        fontSize: 14,
-        color: '#555',
-        marginBottom: 2,
-    },
     errorContainer: {
         backgroundColor: '#ffe5e5',
         padding: 12,
@@ -68,8 +47,46 @@ export const styles = StyleSheet.create({
         textAlign: 'center',
     },
 
-    cardText: {
-        fontSize: 13,
+    card: {
+        backgroundColor: '#fff',
+        borderRadius: 12,
+        padding: 16,
+        marginBottom: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 4,
+    },
+
+    cardTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 10,
         color: '#333',
     },
+
+    cardSubtitle: {
+        fontSize: 14,
+        color: '#666',
+        marginBottom: 2,
+    },
+
+    cardText: {
+        fontSize: 14,
+        color: '#111',
+    },
+
+    cardSection: {
+        marginTop: 10,
+        paddingTop: 8,
+        borderTopWidth: 1,
+        borderTopColor: '#e0e0e0',
+    },
+
+    itemRow: {
+        marginLeft: 8,
+        marginBottom: 4,
+    },
+
 });

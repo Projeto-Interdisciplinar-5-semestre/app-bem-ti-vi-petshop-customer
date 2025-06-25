@@ -35,6 +35,12 @@ import { OrderPayment } from "../../screens/OrderPayment";
 import { ScheduleService } from "../../screens/ScheduleService";
 import ShopScreen from "../../screens/ShopScreen";
 import { HeaderCart } from "../../components/HeaderCart";
+import DeleteProfile from "../../screens/DeleteProfile";
+import { SearchCommentByProduct } from "../../screens/SearchCommentByProduct";
+import { SearchCommentByService } from "../../screens/SearchCommentByService";
+import AppointmentScreen from "../../screens/AppointmentScreen";
+import CustomerScreen from "../../screens/CustomerScreen";
+import OrderScreen from "../../screens/OrderScreen";
 
 
 type RootStackParamList = {
@@ -67,6 +73,12 @@ type RootStackParamList = {
     ConfirmationEmail: { email: string };
     ScheduleService: { service: Service };
     ShopScreen: undefined;
+    DeleteProfile: undefined;
+    SearchCommentByProduct: { productId: string, rate: number, totalCommments: number };
+    SearchCommentByService: { serviceId: string, rate: number, totalCommments: number };
+    AppointmentScreen: { id: string };
+    CustomerScreen: { id: string };
+    OrderScreen: { id: string };
 };
 
 export type NavigationProps = NativeStackNavigationProp<RootStackParamList, "Home">;
@@ -81,7 +93,7 @@ export default function AppRoute() {
                     name="Home"
                     component={Home}
                     options={() => ({
-                        header: () => <Header activateBackButton={false} title="HOME" iconName="home" backScreen={null} needProps={false} props={null} />
+                        header: () => <Header activateBackButton={false} title="HOME" iconName="home" backScreen={null} needProps={false} props={null} goBackChoose={false} />
                     })}
                 />
 
@@ -89,7 +101,7 @@ export default function AppRoute() {
                     name="CreatePet"
                     component={CreatePet}
                     options={() => ({
-                        header: () => <Header activateBackButton={true} title="CADASTRAR PET" iconName="pets" backScreen="SearchPet" needProps={false} props={null} />
+                        header: () => <Header activateBackButton={true} title="CADASTRAR PET" iconName="pets" backScreen="SearchPet" needProps={false} props={null} goBackChoose={false} />
                     })}
                 />
 
@@ -97,7 +109,7 @@ export default function AppRoute() {
                     name="ManagePet"
                     component={ManagePet}
                     options={() => ({
-                        header: () => <Header activateBackButton={true} title="GERENCIAR PET" iconName="edit" backScreen="SearchPet" needProps={false} props={null} />
+                        header: () => <Header activateBackButton={true} title="GERENCIAR PET" iconName="edit" backScreen="SearchPet" needProps={false} props={null} goBackChoose={false} />
                     })}
                 />
 
@@ -105,7 +117,7 @@ export default function AppRoute() {
                     name="SearchPet"
                     component={SearchPet}
                     options={() => ({
-                        header: () => <Header activateBackButton={true} title="MEUS PETS" iconName="pets" backScreen="ShowProfile" needProps={false} props={null} />
+                        header: () => <Header activateBackButton={true} title="MEUS PETS" iconName="pets" backScreen="ShowProfile" needProps={false} props={null} goBackChoose={false} />
                     })}
                 />
 
@@ -113,7 +125,7 @@ export default function AppRoute() {
                     name="UpdateProfile"
                     component={UpdateProfile}
                     options={() => ({
-                        header: () => <Header activateBackButton={true} title="EDITAR PERFIL" iconName="person" backScreen="ShowProfile" needProps={false} props={null} />
+                        header: () => <Header activateBackButton={true} title="EDITAR PERFIL" iconName="person" backScreen="ShowProfile" needProps={false} props={null} goBackChoose={false} />
                     })}
                 />
 
@@ -121,7 +133,7 @@ export default function AppRoute() {
                     name="ShowProfile"
                     component={ShowProfile}
                     options={() => ({
-                        header: () => <Header activateBackButton={false} title="PERFIL" iconName="account-circle" backScreen="Home" needProps={false} props={null} />
+                        header: () => <Header activateBackButton={false} title="PERFIL" iconName="account-circle" backScreen="Home" needProps={false} props={null} goBackChoose={false} />
                     })}
                 />
 
@@ -129,7 +141,7 @@ export default function AppRoute() {
                     name="SearchAppointment"
                     component={SearchAppointment}
                     options={() => ({
-                        header: () => <Header activateBackButton={true} title="AGENDAMENTOS" iconName="event" backScreen="ShowProfile" needProps={false} props={null} />
+                        header: () => <Header activateBackButton={true} title="AGENDAMENTOS" iconName="event" backScreen="ShowProfile" needProps={false} props={null} goBackChoose={false} />
                     })}
                 />
 
@@ -137,7 +149,7 @@ export default function AppRoute() {
                     name="SearchOrder"
                     component={SearchOrder}
                     options={() => ({
-                        header: () => <Header activateBackButton={true} title="PEDIDOS" iconName="shopping-bag" backScreen="ShowProfile" needProps={false} props={null} />
+                        header: () => <Header activateBackButton={true} title="PEDIDOS" iconName="shopping-bag" backScreen="ShowProfile" needProps={false} props={null} goBackChoose={false} />
                     })}
                 />
 
@@ -145,7 +157,7 @@ export default function AppRoute() {
                     name="ShowCategories"
                     component={ShowCategories}
                     options={() => ({
-                        header: () => <Header activateBackButton={true} title="CATEGORIAS" iconName="category" backScreen="ShopScreen" needProps={false} props={null} />
+                        header: () => <Header activateBackButton={true} title="CATEGORIAS" iconName="category" backScreen="ShopScreen" needProps={false} props={null} goBackChoose={false} />
                     })}
                 />
 
@@ -153,7 +165,7 @@ export default function AppRoute() {
                     name="ShowServices"
                     component={ShowServices}
                     options={() => ({
-                        header: () => <Header activateBackButton={false} title="SERVIÇOS" iconName="build" backScreen="Home" needProps={false} props={null} />
+                        header: () => <Header activateBackButton={false} title="SERVIÇOS" iconName="build" backScreen="Home" needProps={false} props={null} goBackChoose={false} />
                     })}
                 />
 
@@ -161,7 +173,7 @@ export default function AppRoute() {
                     name="ProductsByCategory"
                     component={ProductsByCategory}
                     options={() => ({
-                        header: () => <Header activateBackButton={true} title="PRODUTOS" iconName="shopping-cart" backScreen="ShopScreen" needProps={false} props={null} />
+                        header: () => <Header activateBackButton={true} title="PRODUTOS" iconName="shopping-cart" backScreen="ShopScreen" needProps={false} props={null} goBackChoose={false} />
                     })}
                 />
 
@@ -169,7 +181,7 @@ export default function AppRoute() {
                     name="DetailsProduct"
                     component={DetailsProduct}
                     options={() => ({
-                        header: () => <Header activateBackButton={true} title="DETALHES DO PRODUTO" iconName="info" backScreen="ShopScreen" needProps={false} props={null} />
+                        header: () => <Header activateBackButton={true} title="DETALHES" iconName="info" backScreen="ShopScreen" needProps={false} props={null} goBackChoose={false} />
                     })}
                 />
 
@@ -177,7 +189,7 @@ export default function AppRoute() {
                     name="DetailsService"
                     component={DetailsService}
                     options={() => ({
-                        header: () => <Header activateBackButton={true} title="DETALHES DO SERVIÇO" iconName="info" backScreen="ShowServices" needProps={false} props={null} />
+                        header: () => <Header activateBackButton={true} title="DETALHES" iconName="info" backScreen="ShowServices" needProps={false} props={null} goBackChoose={false} />
                     })}
                 />
 
@@ -215,7 +227,7 @@ export default function AppRoute() {
                     name="CartProduct"
                     component={CartProduct}
                     options={() => ({
-                        header: () => <Header activateBackButton={false} title="CARRINHO" iconName="shopping-cart" backScreen={"ShopScreen"} needProps={false} props={null} />
+                        header: () => <Header activateBackButton={false} title="CARRINHO" iconName="shopping-cart" backScreen={"ShopScreen"} needProps={false} props={null} goBackChoose={false} />
                     })}
                 />
 
@@ -223,7 +235,7 @@ export default function AppRoute() {
                     name="OrderPayment"
                     component={OrderPayment}
                     options={() => ({
-                        header: () => <Header activateBackButton={false} title="PAGAMENTO" iconName="payment" backScreen={"Home"} needProps={false} props={null} />
+                        header: () => <Header activateBackButton={false} title="PAGAMENTO" iconName="payment" backScreen={"Home"} needProps={false} props={null} goBackChoose={false} />
                     })}
                 />
 
@@ -231,7 +243,7 @@ export default function AppRoute() {
                     name="AppointmentPayment"
                     component={AppointmentPayment}
                     options={() => ({
-                        header: () => <Header activateBackButton={false} title="PAGAMENTO" iconName="payment" backScreen={"Home"} needProps={false} props={null} />
+                        header: () => <Header activateBackButton={false} title="PAGAMENTO" iconName="payment" backScreen={"Home"} needProps={false} props={null} goBackChoose={false} />
                     })}
                 />
 
@@ -239,7 +251,7 @@ export default function AppRoute() {
                     name="UpdatePassword"
                     component={UpdatePassword}
                     options={() => ({
-                        header: () => <Header title="ATUALIZAR SENHA" activateBackButton={true} iconName="lock-reset" backScreen="ShowProfile" needProps={false} props={null} />
+                        header: () => <Header title="ATUALIZAR SENHA" activateBackButton={true} iconName="lock-reset" backScreen="ShowProfile" needProps={false} props={null} goBackChoose={false} />
                     })}
                 />
 
@@ -247,7 +259,7 @@ export default function AppRoute() {
                     name="SendRequestChangeEmail"
                     component={SendRequestChangeEmail}
                     options={() => ({
-                        header: () => <Header title="ALTERAR EMAIL" activateBackButton={true} iconName="mail-outline" backScreen="ShowProfile" needProps={false} props={null} />
+                        header: () => <Header title="ALTERAR EMAIL" activateBackButton={true} iconName="mail-outline" backScreen="ShowProfile" needProps={false} props={null} goBackChoose={false} />
                     })}
                 />
 
@@ -255,7 +267,7 @@ export default function AppRoute() {
                     name="UpdateEmail"
                     component={UpdateEmail}
                     options={() => ({
-                        header: () => <Header title="ATUALIZAR EMAIL" activateBackButton={true} iconName="alternate-email" backScreen="SendRequestChangeEmail" needProps={false} props={null} />
+                        header: () => <Header title="ATUALIZAR EMAIL" activateBackButton={true} iconName="alternate-email" backScreen="SendRequestChangeEmail" needProps={false} props={null} goBackChoose={false} />
                     })}
                 />
 
@@ -263,7 +275,7 @@ export default function AppRoute() {
                     name="SendRequestConfirmationEmail"
                     component={SendRequestConfirmationEmail}
                     options={() => ({
-                        header: () => <Header title="CONFIRMAR EMAIL" activateBackButton={true} iconName="mark-email-read" backScreen="ShowProfile" needProps={false} props={null} />
+                        header: () => <Header title="CONFIRMAR EMAIL" activateBackButton={true} iconName="mark-email-read" backScreen="ShowProfile" needProps={false} props={null} goBackChoose={false} />
                     })}
                 />
 
@@ -271,7 +283,7 @@ export default function AppRoute() {
                     name="ConfirmationEmail"
                     component={ConfirmationEmail}
                     options={() => ({
-                        header: () => <Header title="CONFIRMAR EMAIL" activateBackButton={true} iconName="mark-email-read" backScreen="SendRequestConfirmationEmail" needProps={true} props={{ email: GLOBAL_VAR.USER_EMAIL }} />
+                        header: () => <Header title="CONFIRMAR EMAIL" activateBackButton={true} iconName="mark-email-read" backScreen="SendRequestConfirmationEmail" needProps={true} props={{ email: GLOBAL_VAR.USER_EMAIL }} goBackChoose={false} />
                     })}
                 />
 
@@ -279,10 +291,58 @@ export default function AppRoute() {
                     name="ScheduleService"
                     component={ScheduleService}
                     options={() => ({
-                        header: () => <Header title="AGENDAR SERVIÇO" activateBackButton={true} iconName="event-available" backScreen="ShowServices" needProps={false} props={null} />
+                        header: () => <Header title="AGENDAR SERVIÇO" activateBackButton={true} iconName="event-available" backScreen="ShowServices" needProps={false} props={null} goBackChoose={false} />
                     })}
                 />
 
+                <Stack.Screen
+                    name="DeleteProfile"
+                    component={DeleteProfile}
+                    options={() => ({
+                        header: () => <Header title="DELETAR PERFIL" activateBackButton={true} iconName="delete" backScreen="ShowProfile" needProps={false} props={null} goBackChoose={false} />
+                    })}
+                />
+
+                <Stack.Screen
+                    name="SearchCommentByProduct"
+                    component={SearchCommentByProduct}
+                    options={() => ({
+                        header: () => <Header title="COMENTÁRIOS" activateBackButton={true} iconName="rate-review" backScreen="DetailsProduct" needProps={false} props={null} goBackChoose={true} />
+                    })}
+                />
+
+                <Stack.Screen
+                    name="SearchCommentByService"
+                    component={SearchCommentByService}
+                    options={() => ({
+                        header: () => <Header title="COMENTÁRIOS" activateBackButton={true} iconName="rate-review" backScreen="DetailsService" needProps={false} props={null} goBackChoose={true} />
+                    })}
+                />
+
+                <Stack.Screen
+                    name="AppointmentScreen"
+                    component={AppointmentScreen}
+                    options={() => ({
+                        header: () => <Header title="AGENDAMENTO" activateBackButton={true} iconName="event-available" backScreen="SearchAppointment" needProps={false} props={null} goBackChoose={false} />
+                    })}
+                />
+
+                <Stack.Screen
+                    name="CustomerScreen"
+                    component={CustomerScreen}
+                    options={() => ({
+                        header: () => <Header title="SUAS INFORMAÇÕES" activateBackButton={true} iconName="info" backScreen="ShowProfile" needProps={false} props={null} goBackChoose={false} />
+                    })}
+                />
+
+                <Stack.Screen
+                    name="OrderScreen"
+                    component={OrderScreen}
+                    options={() => ({
+                        header: () => <Header title="PEDIDO" activateBackButton={true} iconName="shopping-bag" backScreen="SearchOrder" needProps={false} props={null} goBackChoose={false} />
+                    })}
+                />
+                
                 <Stack.Screen
                     name="ShopScreen"
                     component={ShopScreen}

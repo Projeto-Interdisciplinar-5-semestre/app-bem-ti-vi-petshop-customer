@@ -3,49 +3,44 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
     safeArea: {
         flex: 1,
-        backgroundColor: '#fff'
-    },
-    
-    buttonsContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginHorizontal: 15,
-        marginVertical: 32,
-        gap: 16
+        backgroundColor: '#f5f5f5',
     },
     formContainer: {
+        backgroundColor: '#ffffff',
+        borderRadius: 12,
+        padding: 20,
         marginTop: 20,
-    },
-    inputContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#C9EBFF',
-        borderRadius: 30,
-        paddingHorizontal: 15,
-        paddingVertical: 8,
-        marginBottom: 20,
-        borderWidth: 2,
-        borderColor: 'rgba(37, 100, 137, 0.3)',
-        height: 48,
+        marginHorizontal: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 6,
+        elevation: 4,
     },
 
-    label: {
-        fontFamily: 'Montserrat-Medium',
+    inputContainer: {
+        width: '100%'
+    },
+
+    buttonsContainer: {
+        marginTop: 30,
+        alignItems: 'center',
+    },
+    errorContainer: {
+        marginTop: 20,
+        backgroundColor: '#ffe5e5',
+        borderRadius: 8,
+        padding: 12,
+        marginHorizontal: 20,
+        borderWidth: 1,
+        borderColor: '#ff4d4f',
+    },
+    errorText: {
+        color: '#b00020',
         fontSize: 14,
-        color: '#333',
-        marginBottom: 8
+        textAlign: 'center',
+        marginBottom: 2,
     },
-    input: {
-        flex: 1,
-        fontSize: 15,
-        color: '#333',
-        fontFamily: 'Montserrat-Medium',
-        paddingVertical: 0,
-    },
-    inputIcon: {
-        width: 28,
-        height: 28,
-        marginRight: 10,
-        opacity: 0.65,
-    },
+
+    
 });

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, ToastAndroid, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, ToastAndroid, ActivityIndicator, BackHandler } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 import { searchByProduct } from '../../api/comments/search/searchByProduct';
@@ -15,21 +15,20 @@ import { ButtonLarge } from '../../components/ButtonLarge';
 import { StarRatingInput } from '../../components/inputStar';
 
 import { Comment, Customer, OrderItemForCar, Product } from '../../utils/Types';
-import hardwareBackPress from '../../utils/hardwareBackPress/hardwareBackPress';
 import { useValidateToken } from '../../utils/UseValidateToken/UseValidateToken';
 
 import { NavigationProps } from '../../routes/AppRoute';
 
 import { styles } from './style';
+import { GLOBAL_VAR } from '../../api/config/globalVar';
 
 export const DetailsProduct = () => {
-    const { navigate, replace } = useNavigation<NavigationProps>();
+    const { navigate, replace, goBack } = useNavigation<NavigationProps>();
     const route = useRoute();
     const { id: productId } = route.params as { id: string };
 
-    const [product, setProduct] = useState<Product | null>(null);
+    const [product, setProduct] = useState<Product>({} as Product);
     const [comments, setComments] = useState<Comment[]>([]);
-    const [totalRate, setTotalRate] = useState<number>(0);
     const [totalComments, setTotalComments] = useState<number>(0);
 
     const [loadingProduct, setLoadingProduct] = useState(true);
@@ -43,7 +42,15 @@ export const DetailsProduct = () => {
     const [fields, setFields] = useState<string[]>([]);
 
     useValidateToken();
-    hardwareBackPress(navigate, "ShopScreen");
+
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            goBack();
+            return true;
+        });
+
+        return () => backHandler.remove();
+    }, []);
 
     const loadProductData = async () => {
         setLoadingProduct(true);
@@ -63,7 +70,6 @@ export const DetailsProduct = () => {
 
             setComments(commentsResult.content);
             setTotalComments(commentsResult.totalElements);
-            setTotalRate(commentsResult.totalRate);
         } catch (error) {
             setError('Erro ao carregar serviço. Verifique a conexão.');
         } finally {
@@ -172,8 +178,8 @@ export const DetailsProduct = () => {
                         </View>
                         <View style={styles.ratingContainer}>
                             <View style={styles.ratingStarsContainer}>
-                                {renderStars(totalRate)}
-                                <Text style={styles.ratingText}>{totalRate.toFixed(1)}</Text>
+                                {renderStars(product.rate)}
+                                <Text style={styles.ratingText}>{product.rate.toFixed(1)}</Text>
                                 <Text style={styles.reviewsText}>{totalComments} avaliações</Text>
                             </View>
                         </View>
@@ -190,21 +196,23 @@ export const DetailsProduct = () => {
 
                 <View style={styles.commentsContainer}>
                     <Text style={styles.titleCommentMain}>Ver comentários</Text>
-                    {comments.map(comment => (
-                        <View key={comment.id} style={styles.commentCard}>
-                            <View style={styles.commentHeader}>
-                                <View style={{ flexDirection: 'row' }}>
-                                    <Image style={styles.image} src={comment.customer.pathImage} />
-                                    <Text style={styles.commentAuthor}>{comment.customer.name}</Text>
+                    <TouchableOpacity onPress={() => navigate("SearchCommentByProduct", { productId: productId, rate: product.rate, totalCommments: totalComments })}>
+                        {comments.map(comment => (
+                            <View key={comment.id} style={styles.commentCard}>
+                                <View style={styles.commentHeader}>
+                                    <View style={{ flexDirection: 'row' }}>
+                                        <Image style={styles.image} source={{ uri: comment.customer.pathImage }} />
+                                        <Text style={styles.commentAuthor}>{comment.customer.name}</Text>
+                                    </View>
+                                    <View style={styles.commentRating}>{renderStars(comment.rate)}</View>
                                 </View>
-                                <View style={styles.commentRating}>{renderStars(comment.rate)}</View>
+                                <Text style={styles.commentAuthor}>{comment.title}</Text>
+                                <Text style={styles.commentText}>{comment.message}</Text>
+                                <Text style={styles.commentDate}>{comment.activationStatus.creationDate}</Text>
                             </View>
-                            <Text style={styles.commentAuthor}>{comment.title}</Text>
-                            <Text style={styles.commentText}>{comment.message}</Text>
-                            <Text style={styles.commentDate}>{comment.activationStatus.creationDate}</Text>
-                        </View>
-                    ))}
-                        {error && <Text style={{ color: 'red', marginBottom: 8 }}>{error}</Text>}
+                        ))}
+                    </TouchableOpacity>
+                    {error && <Text style={{ color: 'red', marginBottom: 8 }}>{error}</Text>}
 
                     <View style={styles.commentContainer}>
                         <Text style={styles.titleComment}>Deixe seu comentário</Text>
@@ -223,9 +231,6 @@ export const DetailsProduct = () => {
                         {error ? (
                             <View style={{ marginVertical: 10, alignSelf: 'center' }}>
                                 <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
-                                {fields.map((field, index) => (
-                                    <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
-                                ))}
                             </View>
                         ) : null}
                     </View>

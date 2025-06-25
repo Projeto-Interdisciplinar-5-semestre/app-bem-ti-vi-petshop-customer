@@ -1,72 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, View, Text, TouchableOpacity, Image, ToastAndroid } from 'react-native';
-import { FontAwesome } from '@expo/vector-icons';
-import { styles } from './style';
-import { NavigationBar } from '../../components/NavigationBar/index'; // Adicione isso
+import { ScrollView, View, Text, TouchableOpacity, Image, ToastAndroid, BackHandler } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { styles } from './style';
+import { NavigationBar } from '../../components/NavigationBar';
 import { NavigationProps } from '../../routes/AppRoute';
 import { CustomerId, validateTokenCustomer } from '../../api/auth/validateTokenCustomer/validateTokenCustomer';
-import { Appointment, Customer, Error, Paginacao } from '../../utils/Types';
+import { Appointment, Customer, Error, Paginacao, Product } from '../../utils/Types';
 import { search } from '../../api/appointment/search/search';
 import { GLOBAL_VAR } from '../../api/config/globalVar';
 import { findById } from '../../api/customer/search/findById';
-
-type Product = {
-    name: string;
-    rating: number;
-    price: string;
-    image: any;
-};
+import { searchProduct } from '../../api/product/search/searchProduct';
 
 type SectionProps = {
     title: string;
     products: Product[];
 };
-
-const products1: Product[] = [
-    {
-        name: 'Kit Shampoo + Condicionador',
-        rating: 4.5,
-        price: 'R$ 39,99',
-        image: require('../../assets/images/produto.png'),
-    },
-    {
-        name: 'Casinha para transportes de gato e cachorro',
-        rating: 5,
-        price: 'R$ 129,99',
-        image: require('../../assets/images/produto.png'),
-    },
-    {
-        name: 'Kit Brinquedos para Cães filhotes e adultos',
-        rating: 5,
-        price: 'R$ 49,99',
-        image: require('../../assets/images/produto.png'),
-    },
-    {
-        name: 'Ração Seca Golden Formula adulta',
-        rating: 4,
-        price: 'R$ 69,99',
-        image: require('../../assets/images/produto.png'),
-    },
-];
-
-const products2: Product[] = [
-    {
-        name: 'Casinha para transportes de gato e cachorro',
-        rating: 4.7,
-        price: 'R$ 129,99',
-        image: require('../../assets/images/produto.png'),
-    },
-];
-
-const products3: Product[] = [
-    {
-        name: 'Kit Brinquedos para Cães infantis e adultos',
-        rating: 4,
-        price: 'R$ 49,99',
-        image: require('../../assets/images/produto.png'),
-    },
-];
 
 const formatDateTime = (date: Date) =>
     date.toLocaleString('pt-BR', {
@@ -85,40 +33,33 @@ type AppointmentProps = {
 };
 
 const AppointmentCard = ({ title, petName, date, status }: AppointmentProps) => {
-    if (status != "WAITING_PAYMENT") {
-        return <></>
-    }
+    if (status !== "WAITING_PAYMENT") return null;
 
     return (
         <View style={styles.appointmentCard}>
             <Text style={styles.appointmentTitle}>{title}</Text>
             <Text style={styles.appointmentPet}>Pet: {petName}</Text>
             <Text style={styles.appointmentDate}>Data: {formatDateTime(date)}</Text>
-            <Text style={[styles.appointmentStatus, styles.statusPending]}>
-                {status}
-            </Text>
+            <Text style={[styles.appointmentStatus, styles.statusPending]}>{status}</Text>
         </View>
     );
 };
 
 const ProductCard = ({ product }: { product: Product }) => {
+    const { navigate } = useNavigation<NavigationProps>();
+
     return (
-        <View style={styles.productCard}>
-            <Image source={product.image} style={styles.productImage} />
+        <TouchableOpacity style={styles.productCard} onPress={() => navigate("DetailsProduct", { id: product.id })}>
+            <Image source={{ uri: product.pathImage }} style={styles.productImage} />
             <Text style={styles.productName}>{product.name}</Text>
             <View style={styles.ratingContainer}>
-                <Text style={styles.ratingText}>{product.rating.toFixed(1)}</Text>
-                {[...Array(5)].map((_, i) => (
-                    <FontAwesome
-                        key={i}
-                        name="star"
-                        size={14}
-                        color={i < Math.round(product.rating) ? '#ffc107' : '#ccc'}
-                    />
-                ))}
+                <View style={styles.ratingStarsContainer}>
+                    {renderStars(product.rate)}
+                    <Text style={styles.ratingText}>{product.rate.toFixed(1)}</Text>
+                </View>
             </View>
-            <Text style={styles.productPrice}>{product.price}</Text>
-        </View>
+            <Text style={styles.productPrice}>R$ {product.price.toFixed(2)}</Text>
+        </TouchableOpacity>
     );
 };
 
@@ -135,7 +76,6 @@ const Section = ({ title, products }: SectionProps) => {
                     <ProductCard key={index} product={product} />
                 ))}
             </ScrollView>
-            <BlueButton title='VER MAIS' size={8} onpress={() => { }} />
         </View>
     );
 };
@@ -143,7 +83,7 @@ const Section = ({ title, products }: SectionProps) => {
 type BlueButtonProps = {
     title: string;
     size: number;
-    onpress: () => void
+    onpress: () => void;
 };
 
 const BlueButton = ({ title, size, onpress }: BlueButtonProps) => {
@@ -157,21 +97,55 @@ const BlueButton = ({ title, size, onpress }: BlueButtonProps) => {
     );
 };
 
+const renderStars = (rating: number) => {
+    const stars = [];
+    const fullStars = Math.floor(rating);
+    const hasHalfStar = rating - fullStars >= 0.5;
+    for (let i = 1; i <= 5; i++) {
+        let source;
+        if (i <= fullStars) {
+            source = require('../../assets/images/star.png');
+        } else if (i === fullStars + 1 && hasHalfStar) {
+            source = require('../../assets/images/halfstar.png');
+        } else {
+            source = require('../../assets/images/emptystar.png');
+        }
+        stars.push(<Image key={i} source={source} style={styles.starIcon} />);
+    }
+    return stars;
+};
+
 export const Home = () => {
     const { navigate } = useNavigation<NavigationProps>();
     const [appointments, setAppointments] = useState<Appointment[]>([]);
-
+    const [products, setProducts] = useState<Product[]>([]);
     const [customerId, setCustomerId] = useState('');
     const [name, setName] = useState<string>('');
-
     const [error, setError] = useState<string>('');
+    const [counter, setCounter] = useState<number>(0);
 
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            setCounter(prev => {
+                const newCount = prev + 1;
+                if (newCount >= 2) {
+                    BackHandler.exitApp();
+                    return 0;
+                } else {
+                    ToastAndroid.show('Pressione novamente para sair', ToastAndroid.SHORT);
+                }
+                return newCount;
+            });
+            return true;
+        });
+
+        return () => backHandler.remove();
+    }, []);
 
     useEffect(() => {
         const loadCustomerData = async () => {
             try {
                 const customerIdResult: CustomerId | Error = await validateTokenCustomer();
-
                 if ('code' in customerIdResult) {
                     ToastAndroid.show('Você foi deslogado!', ToastAndroid.SHORT);
                     navigate("ClientLogin");
@@ -180,7 +154,6 @@ export const Home = () => {
                 setCustomerId(customerIdResult.id);
 
                 const customer: Customer | Error = await findById(customerIdResult.id);
-
                 if ('code' in customer) {
                     ToastAndroid.show('Você foi deslogado!', ToastAndroid.SHORT);
                     navigate("ClientLogin");
@@ -208,7 +181,6 @@ export const Home = () => {
                 }
 
                 const data: Paginacao<Appointment> | Error = await search(0, customerId.id, "");
-
                 if ('content' in data && 'totalPages' in data) {
                     setAppointments(data.content);
                     setError('');
@@ -225,32 +197,86 @@ export const Home = () => {
         loadAppointments();
     }, []);
 
+    useEffect(() => {
+        async function loadProducts() {
+            try {
+                const customerId = await validateTokenCustomer();
+                if ('code' in customerId) {
+                    navigate('ClientLogin');
+                    return;
+                }
+
+                const data = await searchProduct("", 0);
+                if ('content' in data && 'totalPages' in data) {
+                    setProducts(data.content);
+                    setError('');
+                } else {
+                    setProducts([]);
+                    setError(data.message || 'Erro desconhecido.');
+                }
+            } catch {
+                setProducts([]);
+                setError('Não foi possível carregar os produtos. Verifique sua conexão.');
+            }
+        }
+
+        loadProducts();
+    }, []);
+
+    const getNewProducts = () => {
+        const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+        const now = new Date();
+
+        return products.filter(product => {
+            const creationDate = new Date(product.activationStatus.creationDate);
+            return now.getTime() - creationDate.getTime() <= THIRTY_DAYS_MS;
+        });
+    };
 
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContainer}>
-                <Text style={styles.greeting}>Seja bem-vindo, {name}!</Text>
+                <View style={styles.greetingContainer}>
+                    <Text style={styles.greeting}>Olá, {name}!</Text>
+                    <Text style={styles.subGreeting}>Veja seus agendamentos e aproveite nossas ofertas!</Text>
+                </View>
+
                 <Text style={styles.sectionTitle}>Agendamentos pendentes</Text>
 
-                {appointments.map(appointment => (
-                    <AppointmentCard
-                        key={appointment.id}
-                        title={appointment.service.name}
-                        petName={appointment.pet.name}
-                        date={appointment.dateTime}
-                        status={appointment.paymentStatus}
-                    />
-                ))}
+                {appointments.length > 0 ? (
+                    appointments.map(appointment => (
+                        <AppointmentCard
+                            key={appointment.id}
+                            title={appointment.service.name}
+                            petName={appointment.pet.name}
+                            date={appointment.dateTime}
+                            status={appointment.paymentStatus}
+                        />
+                    ))
+                ) : (
+                    <Text style={{ color: '#7f8c8d', marginBottom: 10 }}>Nenhum agendamento pendente.</Text>
+                )}
 
                 <BlueButton
                     title='VER TODOS OS AGENDAMENTOS'
-                    size={12}
+                    size={14}
                     onpress={() => navigate("SearchAppointment")}
                 />
 
-                <Section title="Produtos que você pode gostar" products={products1} />
-                <Section title="De acordo com a sua pesquisa" products={products2} />
-                <Section title="Produtos que você já comprou" products={products3} />
+
+                {getNewProducts().length > 0 && (
+                    <Section
+                        title="Novidades"
+                        products={getNewProducts()}
+                    />
+                )}
+
+                {products.filter(p => p.rate >= 4.5).length > 0 && (
+                    <Section
+                        title="Mais bem avaliados"
+                        products={products.filter(p => p.rate >= 4.0)}
+                    />
+                )}
             </ScrollView>
 
             <NavigationBar />

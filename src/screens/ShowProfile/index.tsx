@@ -109,7 +109,7 @@ export const ShowProfile = () => {
                         <ItemProfile
                             icon="eye"
                             label="Ver Meus Dados"
-                            onPress={() => { }}
+                            onPress={() => navigate("CustomerScreen", { id: customerId })}
                         />
 
                         <ItemProfile
@@ -146,6 +146,12 @@ export const ShowProfile = () => {
                             icon="calendar-check"
                             label="Ver meus agendamentos"
                             onPress={() => navigate('SearchAppointment')}
+                        />
+
+                        <ItemProfile
+                            label="Excluir conta"
+                            icon="account-remove-outline"
+                            onPress={() => navigate("DeleteProfile")}
                         />
                     </View>
 

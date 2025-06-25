@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ScrollView, SafeAreaView, View, Text, ActivityIndicator } from 'react-native';
+import { ScrollView, SafeAreaView, View, Text, ActivityIndicator, BackHandler, Touchable, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import hardwareBackPress from '../../utils/hardwareBackPress/hardwareBackPress';
@@ -16,7 +16,7 @@ import { NavigationProps } from '../../routes/AppRoute';
 import { styles } from './style';
 
 export function SearchAppointment() {
-    const { navigate } = useNavigation<NavigationProps>();
+    const { navigate, goBack } = useNavigation<NavigationProps>();
 
     const [paymentStatus, setPaymentStatus] = useState<string>('');
     const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -26,7 +26,14 @@ export function SearchAppointment() {
     const [fields, setFields] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
 
-    hardwareBackPress(navigate, 'ShowProfile');
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            goBack();
+            return true;
+        });
+
+        return () => backHandler.remove();
+    }, []);
 
     const formatDateTime = (date: Date) =>
         date.toLocaleString('pt-BR', {
@@ -86,9 +93,8 @@ export function SearchAppointment() {
     return (
         <SafeAreaView style={styles.safeArea}>
             <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
-
                 <InputPaymentStatus
-                    label='Status de pagamento'
+                    label="Status de pagamento"
                     paymentStatus={paymentStatus}
                     setPaymentStatus={setPaymentStatus}
                 />
@@ -98,32 +104,29 @@ export function SearchAppointment() {
                         <ActivityIndicator size="large" color="#256489" style={{ marginTop: 20 }} />
                     ) : appointments.length > 0 ? (
                         appointments.map(appointment => (
-                            <View key={appointment.id} style={styles.card}>
-                                <Text style={styles.cardTitle}>Cliente: {appointment.customer.name}</Text>
-                                <Text style={styles.cardSubtitle}>Email: {appointment.customer.email}</Text>
-                                <Text style={styles.cardSubtitle}>Serviço: {appointment.service.name}</Text>
-                                <Text style={styles.cardSubtitle}>Descrição: {appointment.service.description}</Text>
-                                <Text style={styles.cardSubtitle}>
-                                    Data/Hora: {formatDateTime(new Date(appointment.dateTime))}
+                            <TouchableOpacity key={appointment.id} style={styles.card} onPress={() => navigate("AppointmentScreen", {id: appointment.id})}>
+                                <Text style={styles.clientName}>Cliente: {appointment.customer.name}</Text>
+                                <Text style={styles.info}>Email: {appointment.customer.email}</Text>
+                                <Text style={styles.info}>Pet: {appointment.pet.name}</Text>
+                                <Text style={styles.info}>Serviço: {appointment.service.name}</Text>
+                                <Text style={styles.info}>Descrição: {appointment.service.description}</Text>
+                                <Text style={styles.info}>
+                                    Data e hora: {formatDateTime(new Date(appointment.dateTime))}
                                 </Text>
-                                <Text style={styles.cardSubtitle}>Preço: R$ {appointment.price.toFixed(2)}</Text>
-                                <Text style={styles.cardSubtitle}>
-                                    Status de Pagamento: {appointment.paymentStatus}
-                                </Text>
-                            </View>
+                                <Text style={styles.info}>Preço: R$ {appointment.price.toFixed(2)}</Text>
+                                <Text style={styles.info}>Status de pagamento: {appointment.paymentStatus}</Text>
+                            </TouchableOpacity>
                         ))
                     ) : (
-                        <Text style={{ textAlign: 'center', marginTop: 20 }}>
-                            Nenhum agendamento encontrado.
-                        </Text>
+                        <Text style={styles.noResult}>Nenhum agendamento encontrado.</Text>
                     )}
                 </View>
 
                 {error ? (
-                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
-                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
+                    <View style={styles.errorContainer}>
+                        <Text style={styles.errorText}>{error}</Text>
                         {fields.map((field, index) => (
-                            <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
+                            <Text key={index} style={styles.errorText}>• {field}</Text>
                         ))}
                     </View>
                 ) : null}

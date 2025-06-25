@@ -105,13 +105,6 @@ type Owner = {
     id: string,
 }
 
-export interface OrderItem {
-    id: string,
-    price: number,
-    quantity: number,
-    product: Product
-}
-
 export interface OrderItemForCar {
     id: string,
     quantity: number,
@@ -143,6 +136,13 @@ export interface Order {
         qrCode: string,
         qrCodeBase64: string
     } | null
+}
+
+export interface OrderItem {
+    id: string,
+    price: number,
+    quantity: number,
+    product: Product
 }
 
 export interface Paginacao<T> {

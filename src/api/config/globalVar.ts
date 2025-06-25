@@ -6,4 +6,10 @@ export const GLOBAL_VAR = {
     TOKEN_JWT: "",
     USER_EMAIL: "",
     CART_ITEMS: 0,
+    PRODUCT_ID: "",
+    SERVICE_ID: "",
+    TOTAL_COMMENTS_PRODUCT: 0,
+    TOTAL_COMMENTS_SERVICE: 0,
+    RATE_SERVICE: 0,
+    RATE_PRODUCT: 0,
 }

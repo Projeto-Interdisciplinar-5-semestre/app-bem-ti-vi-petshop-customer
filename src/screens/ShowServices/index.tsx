@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView, Alert } from 'react-native';
-
+import { View, Text, TouchableOpacity, Image, ScrollView, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import { Error, Paginacao, Service } from '../../utils/Types';
@@ -11,7 +10,6 @@ import { Title } from '../../components/Title';
 import { SearchInput } from '../../components/SearchInput';
 
 import { search } from '../../api/service/search/search';
-
 import { NavigationProps } from '../../routes/AppRoute';
 
 import { styles } from './style';
@@ -33,15 +31,13 @@ export const ShowServices = () => {
         const buscarCategorias = async () => {
             try {
                 const data: Paginacao<Service> | Error = await search(searchText, pageIndex);
-
                 if ('code' in data) {
                     setError(data.message);
                     return;
                 }
-
-                setServicos(data.content)
-                setTotalPages(data.totalPages)
-            } catch (erro) {
+                setServicos(data.content);
+                setTotalPages(data.totalPages);
+            } catch {
                 setError('Não foi possível atualizar. Verifique sua conexão.');
             }
         };
@@ -73,7 +69,6 @@ export const ShowServices = () => {
 
     return (
         <SafeAreaView style={styles.safeArea}>
-
             <ScrollView>
                 <Title text="Veja nossos serviços" />
 
@@ -85,24 +80,34 @@ export const ShowServices = () => {
 
                 <View style={styles.servicosContainer}>
                     {filteredServicos.map((servico) => (
-                        <TouchableOpacity onPress={() => navigate('DetailsService', { id: servico.id })} key={servico.id} style={styles.servicoCard}>
+                        <TouchableOpacity
+                            onPress={() => navigate('DetailsService', { id: servico.id })}
+                            key={servico.id}
+                            style={styles.servicoCard}
+                        >
                             <View style={styles.cardContent}>
                                 <Image
                                     source={{ uri: servico.pathImage }}
                                     style={styles.servicoImage}
                                 />
+
                                 <View style={styles.servicoInfo}>
                                     <Text style={styles.servicoNome} numberOfLines={2}>{servico.name}</Text>
+
                                     <View style={styles.ratingStarsContainer}>
                                         {renderStars(servico.rate)}
                                         <Text style={styles.ratingText}>{servico.rate.toFixed(1)}</Text>
                                     </View>
+
                                     <View style={styles.precoContainer}>
                                         <Text style={styles.precoLabel}>A partir de</Text>
                                         <Text style={styles.servicoPreco}>R$ {servico.price}</Text>
                                     </View>
                                 </View>
-                                <Text style={styles.date}>{new Date(servico.activationStatus.creationDate).toLocaleDateString('pt-BR')}</Text>
+
+                                <Text style={styles.date}>
+                                    {new Date(servico.activationStatus.creationDate).toLocaleDateString('pt-BR')}
+                                </Text>
                             </View>
                         </TouchableOpacity>
                     ))}

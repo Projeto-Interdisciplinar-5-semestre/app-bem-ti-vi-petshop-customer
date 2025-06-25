@@ -1,55 +1,76 @@
-import React, { useEffect, useState } from 'react';
-import { View, Alert, ScrollView, SafeAreaView, Text, Touchable, TouchableOpacity, ToastAndroid } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+    View,
+    Alert,
+    ScrollView,
+    SafeAreaView,
+    Text,
+    TouchableOpacity,
+    ToastAndroid,
+    TextInput,
+    BackHandler,
+} from 'react-native';
 
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 import { Title } from '../../../components/Title';
-
 import { NavigationProps } from '../../../routes/AppRoute';
-
-import { styles } from './style';
 import { ButtonLarge } from '../../../components/ButtonLarge';
+import { Input } from '../../../components/Input';
+
 import hardwareBackPress from '../../../utils/hardwareBackPress/hardwareBackPress';
 import { CustomerId, validateTokenCustomer } from '../../../api/auth/validateTokenCustomer/validateTokenCustomer';
 import { Error } from '../../../utils/Types';
 import { updateEmail } from '../../../api/customer/update/updateEmail';
-import { Input } from '../../../components/Input';
+
+import { styles } from './style';
 
 export default function UpdateEmail() {
     const { navigate } = useNavigation<NavigationProps>();
     const route = useRoute();
     const { email: emailUser } = route.params as { email: string };
 
-    const [code, setCode] = useState<string>('');
+    const [newEmail, setNewEmail] = useState<string>(emailUser);
 
+    const [codeParts, setCodeParts] = useState(['', '', '', '', '', '']);
+    const codeInputRefs = useRef<(TextInput | null)[]>([]);
+
+    const [code, setCode] = useState<string>('');
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
     const [customerId, setCustomerId] = useState<string>('');
 
-    hardwareBackPress(navigate, "SendRequestChangeEmail");
-    
+    useEffect(() => {
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+            navigate("SendRequestChangeEmail", { email: newEmail });
+            return true;
+        });
+
+        return () => backHandler.remove();
+    }, []);
+
     useEffect(() => {
         async function loadCustomerId() {
             try {
                 const customerId: CustomerId | Error = await validateTokenCustomer();
                 if ('code' in customerId) {
                     ToastAndroid.show('Você foi deslogado!', ToastAndroid.SHORT);
-                    navigate("ClientLogin");
+                    navigate('ClientLogin');
                 } else {
                     setCustomerId(customerId.id);
                 }
-            } catch (error) {
+            } catch {
                 ToastAndroid.show('Você foi deslogado!', ToastAndroid.SHORT);
-                navigate("ClientLogin");
+                navigate('ClientLogin');
             }
         }
         loadCustomerId();
-    }, []);
+    }, [navigate]);
 
     const sendRequestEmail = async () => {
         try {
             const success = await updateEmail(customerId, code);
-            if (typeof success === "boolean") {
+            if (typeof success === 'boolean') {
                 if (success) {
                     setCode('');
                     setError('');
@@ -58,12 +79,26 @@ export default function UpdateEmail() {
                     navigate('ClientLogin');
                 }
             } else {
-                setError(success.message || "Erro desconhecido.");
-
+                setError(success.message || 'Erro desconhecido.');
                 setFields(success.errorFields?.map(field => field.description) || []);
             }
-        } catch (error) {
+        } catch {
             setError('Não foi possível atualizar. Verifique sua conexão.');
+        }
+    };
+
+    const handleCodeChange = (text: string, index: number) => {
+        const newCodeParts = [...codeParts];
+        newCodeParts[index] = text;
+        setCodeParts(newCodeParts);
+        setCode(newCodeParts.join(''));
+
+        if (text.length === 1 && index < codeParts.length - 1) {
+            codeInputRefs.current[index + 1]?.focus();
+        }
+
+        if (text.length === 0 && index > 0) {
+            codeInputRefs.current[index - 1]?.focus();
         }
     };
 
@@ -76,39 +111,52 @@ export default function UpdateEmail() {
             >
                 <Title text="Trocar e-mail" />
 
-                <View style={styles.formContainer}>
-
-                    <Input
-                        label="Insira o código de cofirmação"
-                        placeholder="Ex: 123456"
-                        keyboardType="numeric"
-                        value={code}
-                        onChangeText={setCode}
-                    />
-
-                </View>
-
-                <View style={styles.buttonsContainer}>
-                    <ButtonLarge
-                        icon={require('../../../assets/icons/edit.png')}
-                        text="ATUALIZAR E-MAIL"
-                        color="#006316"
-                        action={sendRequestEmail}
-                    />
-                </View>
-                <TouchableOpacity onPress={() => navigate("SendRequestChangeEmail", { email: emailUser })}>
-                    <Text style={styles.confirmText}>Não recebi o código</Text>
-                </TouchableOpacity>
-                {error ? (
-                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
-                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
-                        {fields.map((field, index) => (
-                            <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
+                <View style={styles.card}>
+                    <View style={styles.codeContainer}>
+                        {[0, 1, 2, 3, 4, 5].map((index) => (
+                            <TextInput
+                                key={index}
+                                ref={(ref) => { codeInputRefs.current[index] = ref; }}
+                                style={styles.codeInput}
+                                maxLength={1}
+                                keyboardType="number-pad"
+                                value={codeParts[index]}
+                                onChangeText={(text) => handleCodeChange(text, index)}
+                                selectTextOnFocus
+                            />
                         ))}
                     </View>
-                ) : null}
-            </ScrollView>
 
+                    {error ? (
+                        <View style={styles.errorContainer}>
+                            <Text style={styles.errorText}>{error}</Text>
+                            {fields.map((field, index) => (
+                                <Text key={index} style={styles.errorText}>
+                                    • {field}
+                                </Text>
+                            ))}
+                        </View>
+                    ) : null}
+
+                    <View style={styles.buttonsContainer}>
+                        <ButtonLarge
+                            icon={require('../../../assets/icons/edit.png')}
+                            text="ATUALIZAR E-MAIL"
+                            color="#006316"
+                            action={sendRequestEmail}
+                            disabled={code.trim().length !== 6}
+                            width="100%"
+                        />
+                    </View>
+
+                    <TouchableOpacity
+                        onPress={() => navigate('SendRequestChangeEmail', { email: newEmail })}
+                        style={styles.resendContainer}
+                    >
+                        <Text style={styles.resendText}>Não recebi o código</Text>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
         </SafeAreaView>
     );
 }

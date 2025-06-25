@@ -14,13 +14,19 @@ type HeaderProps = {
     iconName: string;
     backScreen: any;
     needProps: boolean;
-    props: any | null; 
+    props: any | null;
+    goBackChoose: boolean;
 };
 
-export const Header = ({ title, activateBackButton, iconName, backScreen, needProps, props }: HeaderProps) => {
-    const { navigate } = useNavigation<NavigationProps>();
-
+export const Header = ({ title, activateBackButton, iconName, backScreen, needProps, props, goBackChoose }: HeaderProps) => {
+    const { navigate, goBack } = useNavigation<NavigationProps>();
+    
     const back = () => {
+        if (goBackChoose != null) {
+            goBack()
+            return;
+        }
+
         if (backScreen != null) {
             if (needProps) {
                 navigate(backScreen, props);

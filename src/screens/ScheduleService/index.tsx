@@ -10,7 +10,6 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { Appointment, Customer, Error, Pet, Service } from '../../utils/Types';
 import { findById } from '../../api/customer/search/findById';
 import { InputPets } from '../../components/InputPets';
-import hardwareBackPress from '../../utils/hardwareBackPress/hardwareBackPress';
 
 export const ScheduleService = () => {
     const { navigate } = useNavigation<NavigationProps>();
@@ -50,11 +49,17 @@ export const ScheduleService = () => {
                     setCustomerId(customerId.id);
 
                     const data: Customer | Error = await findById(customerId.id);
+
                     if ('code' in data) {
-                        throw new Error("Erro ao buscar dados do usuário");
+                        ToastAndroid.show('Você foi deslogado!', ToastAndroid.SHORT);
+                        navigate("ClientLogin");
+                        return;
                     }
+                    
                     setPetsToSelect(data.pets);
-                    setPetId(data.pets[0].id);
+                    if (data.pets.length > 0) {
+                        setPetId(data.pets[0].id);
+                    }
                 }
             } catch (error) {
                 ToastAndroid.show('Você foi deslogado!', ToastAndroid.SHORT);
@@ -100,7 +105,7 @@ export const ScheduleService = () => {
                 methodPaymentByPix: methodPaymentByPix,
                 pet: { id: petId } as Pet
             } as Appointment;
-            
+
             const result = await createAppointment(appointment);
             if ('code' in result) {
                 setError(result.message);
