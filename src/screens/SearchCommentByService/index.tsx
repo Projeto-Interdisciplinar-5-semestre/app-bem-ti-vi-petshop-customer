@@ -14,6 +14,7 @@ import { Comment } from '../../utils/Types';
 
 import { styles } from './style';
 import { searchByService } from '../../api/comments/search/searchByService';
+import { ErrorModal } from '../../components/ErrorModal';
 
 export function SearchCommentByService() {
     const { navigate, goBack } = useNavigation<NavigationProps>();
@@ -25,6 +26,7 @@ export function SearchCommentByService() {
     const [totalPages, setTotalPages] = useState<number>(1);
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [totalComments, setTotalComments] = useState<number>(total);
 
@@ -59,10 +61,12 @@ export function SearchCommentByService() {
                     setComments([]);
                     setError(data.message || 'Erro desconhecido.');
                     setFields(data.errorFields?.map(field => field.description) || []);
+                    setErrorModalVisible(true);
                 }
             } catch {
                 setComments([]);
                 setError('Não foi possível carregar os comentários. Verifique sua conexão.');
+                setErrorModalVisible(true);
             } finally {
                 setLoading(false);
             }
@@ -134,14 +138,12 @@ export function SearchCommentByService() {
                     )}
                 </View>
 
-                {error ? (
-                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
-                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
-                        {fields.map((field, index) => (
-                            <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
-                        ))}
-                    </View>
-                ) : null}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    fields={fields}
+                    onClose={() => setErrorModalVisible(false)}
+                />
             </ScrollView>
 
             <PaginationControls

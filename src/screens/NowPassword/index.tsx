@@ -5,6 +5,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { NavigationProps } from '../../routes/AppRoute';
 import hardwareBackPress from '../../utils/hardwareBackPress/hardwareBackPress';
 import { retrievePassword } from '../../api/customer/update/retrievePassword';
+import { ErrorModal } from '../../components/ErrorModal';
 
 export const NowPassword = () => {
     const { navigate } = useNavigation<NavigationProps>();
@@ -18,6 +19,7 @@ export const NowPassword = () => {
     const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [code, setCode] = useState<string>('');
     const [codeParts, setCodeParts] = useState(['', '', '', '', '', '']);
 
@@ -59,9 +61,11 @@ export const NowPassword = () => {
             } else {
                 setError(success.message || 'Erro desconhecido.');
                 setFields(success.errorFields?.map(field => field.description) || []);
+                setErrorModalVisible(true);
             }
         } catch (error) {
             setError('Não foi possível realizar esta solicitação. Verifique sua conexão.');
+            setErrorModalVisible(true);
         }
     };
 
@@ -153,14 +157,12 @@ export const NowPassword = () => {
                 />
             </View>
 
-            {error ? (
-                <View style={{ marginVertical: 10, alignSelf: 'center' }}>
-                    <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
-                    {fields.map((field, index) => (
-                        <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
-                    ))}
-                </View>
-            ) : null}
+            <ErrorModal
+                visible={errorModalVisible}
+                error={error}
+                fields={fields}
+                onClose={() => setErrorModalVisible(false)}
+            />
 
             <TouchableOpacity
                 style={styles.confirmButton}

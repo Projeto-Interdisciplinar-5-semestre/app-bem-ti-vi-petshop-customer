@@ -17,6 +17,7 @@ import { findById } from '../../api/order/search/findById';
 import { Order } from '../../utils/Types';
 
 import { styles } from './style';
+import { ErrorModal } from '../../components/ErrorModal';
 
 export default function OrderScreen() {
     const { navigate } = useNavigation<NavigationProps>();
@@ -26,6 +27,7 @@ export default function OrderScreen() {
     const [order, setOrder] = useState<Order>({} as Order);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string>('');
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     hardwareBackPress(navigate, "SearchOrder");
 
@@ -35,11 +37,13 @@ export default function OrderScreen() {
             const orderResult = await findById(orderId);
             if ('code' in orderResult) {
                 setError(orderResult.message);
+                setErrorModalVisible(true);
                 return;
             }
             setOrder(orderResult);
         } catch (error) {
             setError('Erro ao carregar pedido. Verifique a conexão.');
+            setErrorModalVisible(true);
         } finally {
             setLoading(false);
         }
@@ -117,11 +121,11 @@ export default function OrderScreen() {
                             </View>
                         )}
 
-                        {error ? (
-                            <View style={{ marginVertical: 10, alignSelf: 'center' }}>
-                                <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
-                            </View>
-                        ) : null}
+                        <ErrorModal
+                            visible={errorModalVisible}
+                            error={error}
+                            onClose={() => setErrorModalVisible(false)}
+                        />
                     </View>
                 </View>
 

@@ -20,6 +20,7 @@ import { Pet } from '../../utils/Types';
 import { NavigationProps } from '../../routes/AppRoute';
 
 import {styles} from './style';
+import { ErrorModal } from '../../components/ErrorModal';
 
 type PorteType = {
     label: string;
@@ -57,6 +58,7 @@ export const ManagePet = () => {
 
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     useValidateToken();
 
@@ -70,6 +72,7 @@ export const ManagePet = () => {
 
                 if ('code' in data) {
                     setError(data.message);
+                    setErrorModalVisible(true);
                     return;
                 }
 
@@ -83,6 +86,7 @@ export const ManagePet = () => {
                 setImagemPet(data.pathImage)
             } catch (erro) {
                 setError('Erro ao buscar dados. Verifique sua conexão.');
+                setErrorModalVisible(true);
             }
         };
 
@@ -118,6 +122,7 @@ export const ManagePet = () => {
             if ('code' in success) {
                 setError(success.message);
                 setFields(success.errorFields?.map(field => field.description) || []);
+                setErrorModalVisible(true);
                 return;
             }
             
@@ -129,6 +134,7 @@ export const ManagePet = () => {
 
         } catch (error) {
             setError('Não foi possível atualizar. Verifique sua conexão.');
+            setErrorModalVisible(true);
         }
     };
 
@@ -157,6 +163,7 @@ export const ManagePet = () => {
             }
         } catch (error) {
             setError('Não foi possível excluir. Verifique sua conexão.');
+            setErrorModalVisible(true);
         }
     };
 
@@ -295,14 +302,12 @@ export const ManagePet = () => {
                     />
                 </View>
 
-                {error ? (
-                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
-                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
-                        {fields.map((field, index) => (
-                            <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
-                        ))}
-                    </View>
-                ) : null}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    fields={fields}
+                    onClose={() => setErrorModalVisible(false)}
+                />
 
                 <View style={styles.submitButtonsContainer}>
                     <TouchableOpacity style={styles.deleteButton} onPress={handleDelete}>

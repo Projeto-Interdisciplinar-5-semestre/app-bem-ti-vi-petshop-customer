@@ -15,12 +15,14 @@ import { PaginationControls } from '../../components/PaginationControls';
 import hardwareBackPress from '../../utils/hardwareBackPress/hardwareBackPress';
 import { CustomerId, validateTokenCustomer } from '../../api/auth/validateTokenCustomer/validateTokenCustomer';
 import { Title } from '../../components/Title';
+import { ErrorModal } from '../../components/ErrorModal';
 
 export const SearchPet = () => {
     const { navigate } = useNavigation<NavigationProps>();
     const [searchText, setSearchText] = useState('');
     const [pets, setPets] = useState<Pet[]>();
     const [error, setError] = useState<string>('');
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [pageIndex, setPageIndex] = useState<number>(0);
     const [totalPages, setTotalPages] = useState<number>(1);
     const [customerId, setCustomerId] = useState<string>('');
@@ -39,6 +41,7 @@ export const SearchPet = () => {
                 }
             } catch (error) {
                 setError('Não foi possível atualizar. Verifique sua conexão.');
+                setErrorModalVisible(true);
                 navigate("ClientLogin");
             }
         }
@@ -52,11 +55,13 @@ export const SearchPet = () => {
                 const data = await findByCustomer(pageIndex, customerId);
                 if ('code' in data) {
                     setError(data.message);
+                    setErrorModalVisible(true);
                     return;
                 }
                 setPets(data.content)
             } catch (erro) {
                 setError('Não foi possível atualizar. Verifique sua conexão.');
+                setErrorModalVisible(true);
             }
         };
 
@@ -135,6 +140,11 @@ export const SearchPet = () => {
                         </View>
                     ))}
                 </View>
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    onClose={() => setErrorModalVisible(false)}
+                />
             </ScrollView>
             <PaginationControls
                 pageIndex={pageIndex}

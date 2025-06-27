@@ -14,6 +14,7 @@ import { search } from '../../api/appointment/search/search';
 
 import { NavigationProps } from '../../routes/AppRoute';
 import { styles } from './style';
+import { ErrorModal } from '../../components/ErrorModal';
 
 export function SearchAppointment() {
     const { navigate, goBack } = useNavigation<NavigationProps>();
@@ -24,6 +25,7 @@ export function SearchAppointment() {
     const [totalPages, setTotalPages] = useState<number>(1);
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
@@ -70,10 +72,12 @@ export function SearchAppointment() {
                     setAppointments([]);
                     setError(data.message || 'Erro desconhecido.');
                     setFields(data.errorFields?.map(field => field.description) || []);
+                    setErrorModalVisible(true);
                 }
             } catch {
                 setAppointments([]);
                 setError('Não foi possível carregar os agendamentos. Verifique sua conexão.');
+                setErrorModalVisible(true);
             } finally {
                 setLoading(false);
             }
@@ -122,14 +126,12 @@ export function SearchAppointment() {
                     )}
                 </View>
 
-                {error ? (
-                    <View style={styles.errorContainer}>
-                        <Text style={styles.errorText}>{error}</Text>
-                        {fields.map((field, index) => (
-                            <Text key={index} style={styles.errorText}>• {field}</Text>
-                        ))}
-                    </View>
-                ) : null}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    fields={fields}
+                    onClose={() => setErrorModalVisible(false)}
+                />
             </ScrollView>
 
             <PaginationControls

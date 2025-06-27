@@ -18,6 +18,7 @@ import hardwareBackPress from "../../utils/hardwareBackPress/hardwareBackPress";
 import { NavigationProps } from "../../routes/AppRoute";
 
 import { styles } from "./style";
+import { ErrorModal } from "../../components/ErrorModal";
 
 type EstadoType = {
     label: string;
@@ -76,6 +77,7 @@ export default function UpdateProfile() {
 
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     hardwareBackPress(navigate, "ShowProfile");
 
@@ -139,6 +141,7 @@ export default function UpdateProfile() {
 
             } catch (erro) {
                 setError('Erro ao buscar dados. Verifique sua conexão.');
+                setErrorModalVisible(true);
             }
         };
 
@@ -171,6 +174,7 @@ export default function UpdateProfile() {
             if ('code' in success) {
                 setError(success.message);
                 setFields(success.errorFields?.map(field => field.description) || []);
+                setErrorModalVisible(true);
                 return;
             }
 
@@ -178,6 +182,7 @@ export default function UpdateProfile() {
             navigate("ShowProfile");
         } catch (error) {
             setError('Não foi possível atualizar. Verifique sua conexão.');
+            setErrorModalVisible(true);
         }
     };
 
@@ -366,14 +371,12 @@ export default function UpdateProfile() {
                     />
                 </View>
 
-                {error ? (
-                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
-                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
-                        {fields.map((field, index) => (
-                            <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
-                        ))}
-                    </View>
-                ) : null}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    fields={fields}
+                    onClose={() => setErrorModalVisible(false)}
+                />
 
                 <View style={styles.submitButtonWrapper}>
                     <TouchableOpacity style={styles.submitButton} onPress={handleUpdate}>

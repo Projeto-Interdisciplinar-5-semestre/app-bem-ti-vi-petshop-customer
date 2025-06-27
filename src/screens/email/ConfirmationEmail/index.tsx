@@ -14,6 +14,7 @@ import { CustomerId, validateTokenCustomer } from '../../../api/auth/validateTok
 import { Error } from '../../../utils/Types';
 import { updateConfirmationEmail } from '../../../api/customer/update/updateConfirmation';
 import { Input } from '../../../components/Input';
+import { ErrorModal } from '../../../components/ErrorModal';
 
 export default function ConfirmationEmail() {
     const { navigate } = useNavigation<NavigationProps>();
@@ -24,6 +25,7 @@ export default function ConfirmationEmail() {
 
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [customerId, setCustomerId] = useState<string>('');
 
     hardwareBackPress(navigate, "SendRequestConfirmationEmail");
@@ -61,9 +63,11 @@ export default function ConfirmationEmail() {
                 setError(success.message || "Erro desconhecido.");
 
                 setFields(success.errorFields?.map(field => field.description) || []);
+                setErrorModalVisible(true);
             }
         } catch (error) {
             setError('Não foi possível atualizar. Verifique sua conexão.');
+            setErrorModalVisible(true);
         }
     };
 
@@ -99,14 +103,12 @@ export default function ConfirmationEmail() {
                 <TouchableOpacity onPress={() => navigate("SendRequestConfirmationEmail", { email: emailUser})}>
                     <Text style={styles.confirmText}>Não recebi o código</Text>
                 </TouchableOpacity>
-                {error ? (
-                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
-                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
-                        {fields.map((field, index) => (
-                            <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
-                        ))}
-                    </View>
-                ) : null}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    fields={fields}
+                    onClose={() => setErrorModalVisible(false)}
+                />
             </ScrollView>
         </SafeAreaView>
     );

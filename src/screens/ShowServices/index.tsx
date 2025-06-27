@@ -15,6 +15,7 @@ import { NavigationProps } from '../../routes/AppRoute';
 import { styles } from './style';
 import hardwareBackPress from '../../utils/hardwareBackPress/hardwareBackPress';
 import { useValidateToken } from '../../utils/UseValidateToken/UseValidateToken';
+import { ErrorModal } from '../../components/ErrorModal';
 
 export const ShowServices = () => {
     const { navigate } = useNavigation<NavigationProps>();
@@ -23,6 +24,7 @@ export const ShowServices = () => {
     const [servicos, setServicos] = useState<Service[]>([]);
     const [searchText, setSearchText] = useState<string>('');
     const [error, setError] = useState<string>('');
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     useValidateToken();
     hardwareBackPress(navigate, "Home");
@@ -39,6 +41,7 @@ export const ShowServices = () => {
                 setTotalPages(data.totalPages);
             } catch {
                 setError('Não foi possível atualizar. Verifique sua conexão.');
+                setErrorModalVisible(true);
             }
         };
 
@@ -112,6 +115,11 @@ export const ShowServices = () => {
                         </TouchableOpacity>
                     ))}
                 </View>
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    onClose={() => setErrorModalVisible(false)}
+                />
             </ScrollView>
 
             <PaginationControls

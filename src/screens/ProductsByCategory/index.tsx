@@ -15,6 +15,7 @@ import { useValidateToken } from "../../utils/UseValidateToken/UseValidateToken"
 import hardwareBackPress from "../../utils/hardwareBackPress/hardwareBackPress";
 
 import { styles } from "./style";
+import { ErrorModal } from "../../components/ErrorModal";
 
 export const ProductsByCategory = () => {
     const { navigate } = useNavigation<NavigationProps>();
@@ -26,6 +27,7 @@ export const ProductsByCategory = () => {
 
     const [error, setError] = useState<string>('');
     const [errorComment, setErrorComment] = useState<string>('');
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     useValidateToken();
     hardwareBackPress(navigate, "ShopScreen");
@@ -37,14 +39,15 @@ export const ProductsByCategory = () => {
 
                 if ('code' in data) {
                     setError(data.message);
+                    setErrorModalVisible(true);
                     return;
                 }
 
                 setProducts(data.products);
                 setCategoryName(data.name);
             } catch (error) {
-                console.error("Erro ao buscar produtos:", error);
-                Alert.alert("Erro", "Não foi possível carregar os produtos.");
+                setError("Não foi possível carregar os produtos");
+                setErrorModalVisible(true);
             }
         };
 
@@ -102,6 +105,11 @@ export const ProductsByCategory = () => {
                     ListEmptyComponent={
                         <Text style={styles.emptyText}>Nenhum produto encontrado.</Text>
                     }
+                />
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    onClose={() => setErrorModalVisible(false)}
                 />
             </View>
             <NavigationBar initialTab="loja" />

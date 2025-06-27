@@ -13,6 +13,7 @@ import { styles } from './style';
 import { CustomerId, validateTokenCustomer } from '../../../api/auth/validateTokenCustomer/validateTokenCustomer';
 import { Error } from '../../../utils/Types';
 import { sendRequestEmail } from '../../../api/customer/update/sendRequestEmail';
+import { ErrorModal } from '../../../components/ErrorModal';
 
 export default function SendRequestChangeEmail() {
     const { navigate } = useNavigation<NavigationProps>();
@@ -23,6 +24,7 @@ export default function SendRequestChangeEmail() {
 
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [customerId, setCustomerId] = useState<string>('');
 
     hardwareBackPress(navigate, "ShowProfile");
@@ -58,9 +60,11 @@ export default function SendRequestChangeEmail() {
             } else {
                 setError(success.message || "Erro desconhecido.");
                 setFields(success.errorFields?.map(field => field.description) || []);
+                setErrorModalVisible(true);
             }
         } catch {
             setError('Não foi possível atualizar. Verifique sua conexão.');
+            setErrorModalVisible(true);
         }
     };
 
@@ -81,15 +85,12 @@ export default function SendRequestChangeEmail() {
                         value={newEmail}
                         onChangeText={setNewEmail}
                     />
-
-                    {error ? (
-                        <View style={styles.errorContainer}>
-                            <Text style={styles.errorText}>{error}</Text>
-                            {fields.map((field, index) => (
-                                <Text key={index} style={styles.errorText}>• {field}</Text>
-                            ))}
-                        </View>
-                    ) : null}
+                    <ErrorModal
+                        visible={errorModalVisible}
+                        error={error}
+                        fields={fields}
+                        onClose={() => setErrorModalVisible(false)}
+                    />
 
                     <View style={styles.buttonsContainer}>
                         <ButtonLarge

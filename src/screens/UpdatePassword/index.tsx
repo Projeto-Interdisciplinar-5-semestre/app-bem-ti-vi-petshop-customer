@@ -21,6 +21,7 @@ import { CustomerId, validateTokenCustomer } from '../../api/auth/validateTokenC
 import { Error, Passwords } from '../../utils/Types';
 import { updatePassword } from '../../api/customer/update/updatePassword';
 import { ButtonLarge } from '../../components/ButtonLarge';
+import { ErrorModal } from '../../components/ErrorModal';
 
 export default function UpdatePassword() {
     const { navigate } = useNavigation<NavigationProps>();
@@ -31,6 +32,7 @@ export default function UpdatePassword() {
     const [showPasswordNew, setShowPasswordNew] = useState(false);
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [customerId, setCustomerId] = useState<string>('');
 
     hardwareBackPress(navigate, 'ShowProfile');
@@ -82,9 +84,11 @@ export default function UpdatePassword() {
             } else {
                 setError(result.message || 'Erro desconhecido.');
                 setFields(result.errorFields?.map(field => field.description) || []);
+                setErrorModalVisible(true);
             }
         } catch (error) {
             setError('Não foi possível atualizar. Verifique sua conexão.');
+            setErrorModalVisible(true);
         }
     };
 
@@ -122,25 +126,12 @@ export default function UpdatePassword() {
                     />
                 </View>
 
-                {error ? (
-                    <View style={{ marginTop: 20, alignItems: 'center' }}>
-                        <Text style={{ color: 'red', fontSize: 14, marginBottom: 4, textAlign: 'center' }}>
-                            {error}
-                        </Text>
-                        {fields.map((field, index) => (
-                            <Text
-                                key={index}
-                                style={{
-                                    color: 'red',
-                                    fontSize: 13,
-                                    textAlign: 'center',
-                                }}
-                            >
-                                • {field}
-                            </Text>
-                        ))}
-                    </View>
-                ) : null}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    fields={fields}
+                    onClose={() => setErrorModalVisible(false)}
+                />
             </ScrollView>
         </SafeAreaView>
     );

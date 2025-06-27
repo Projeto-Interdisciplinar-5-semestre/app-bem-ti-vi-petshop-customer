@@ -17,6 +17,7 @@ import { searchProduct } from '../../api/product/search/searchProduct';
 import { search } from '../../api/category/search/search';
 
 import { style } from './style';
+import { ErrorModal } from '../../components/ErrorModal';
 
 const bannerImages = [
     require('../../assets/images/banner.png'),
@@ -37,6 +38,7 @@ export default function ShopScreen() {
     const [totalPages, setTotalPages] = useState<number>(1);
 
     const [error, setError] = useState<string>('');
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     const { width } = Dimensions.get('window');
 
@@ -59,6 +61,7 @@ export default function ShopScreen() {
 
                 if ('code' in categories) {
                     setError(categories.message);
+                    setErrorModalVisible(true);
                     return;
                 }
 
@@ -66,6 +69,7 @@ export default function ShopScreen() {
 
             } catch {
                 setError('Não foi possível atualizar. Verifique sua conexão.');
+                setErrorModalVisible(true);
             }
         }
         carregarCategorias();
@@ -77,6 +81,7 @@ export default function ShopScreen() {
             const dados: Paginacao<Product> | Error = await searchProduct(searchText, pageIndex);
             if ('code' in dados) {
                 setError(dados.message);
+                setErrorModalVisible(true);
                 return;
             }
 
@@ -85,6 +90,7 @@ export default function ShopScreen() {
         } catch {
             setProducts([]);
             setError('Erro ao carregar produtos. Verifique sua conexão.');
+            setErrorModalVisible(true);
         }
     }, []);
 
@@ -220,6 +226,11 @@ export default function ShopScreen() {
                     {produtosFiltrados.map(renderProductCard)}
                 </View>
                 </View>
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    onClose={() => setErrorModalVisible(false)}
+                />
             </ScrollView>
 
             <PaginationControls

@@ -16,6 +16,7 @@ import hardwareBackPress from '../../utils/hardwareBackPress/hardwareBackPress';
 import { findById } from '../../api/appointment/search/findById';
 
 import { styles } from './style';
+import { ErrorModal } from '../../components/ErrorModal';
 
 export default function AppointmentScreen() {
     const { navigate } = useNavigation<NavigationProps>();
@@ -25,6 +26,7 @@ export default function AppointmentScreen() {
     const [appointment, setAppointment] = useState<Appointment>({} as Appointment);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string>('');
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     hardwareBackPress(navigate, "SearchAppointment");
 
@@ -34,11 +36,13 @@ export default function AppointmentScreen() {
             const appointmentResult = await findById(appointmentId);
             if ('code' in appointmentResult) {
                 setError(appointmentResult.message);
+                setErrorModalVisible(true);
                 return;
             }
             setAppointment(appointmentResult);
         } catch (error) {
             setError('Erro ao carregar serviço. Verifique a conexão.');
+            setErrorModalVisible(true);
         } finally {
             setLoading(false);
         }
@@ -125,11 +129,11 @@ export default function AppointmentScreen() {
                             </View>
                         )}
 
-                        {error ? (
-                            <View style={{ marginVertical: 10, alignSelf: 'center' }}>
-                                <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
-                            </View>
-                        ) : null}
+                        <ErrorModal
+                            visible={errorModalVisible}
+                            error={error}
+                            onClose={() => setErrorModalVisible(false)}
+                        />
                     </View>
                 </View>
             </ScrollView>

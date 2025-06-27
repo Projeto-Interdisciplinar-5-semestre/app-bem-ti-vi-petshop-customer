@@ -14,6 +14,7 @@ import { validateTokenCustomer } from '../../api/auth/validateTokenCustomer/vali
 import { NavigationProps } from '../../routes/AppRoute';
 import { styles } from './style';
 import { search } from '../../api/order/search/search';
+import { ErrorModal } from '../../components/ErrorModal';
 
 export function SearchOrder() {
     const { navigate } = useNavigation<NavigationProps>();
@@ -24,6 +25,7 @@ export function SearchOrder() {
     const [totalPages, setTotalPages] = useState<number>(1);
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [loading, setLoading] = useState<boolean>(false);
 
     hardwareBackPress(navigate, 'ShowProfile');
@@ -63,10 +65,12 @@ export function SearchOrder() {
                     setOrders([]);
                     setError(data.message || 'Erro desconhecido.');
                     setFields(data.errorFields?.map(field => field.description) || []);
+                    setErrorModalVisible(true);
                 }
             } catch {
                 setOrders([]);
                 setError('Não foi possível carregar os agendamentos. Verifique sua conexão.');
+                setErrorModalVisible(true);
             } finally {
                 setLoading(false);
             }
@@ -129,14 +133,12 @@ export function SearchOrder() {
                     )}
                 </View>
 
-                {error ? (
-                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
-                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
-                        {fields.map((field, index) => (
-                            <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
-                        ))}
-                    </View>
-                ) : null}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    fields={fields}
+                    onClose={() => setErrorModalVisible(false)}
+                />
             </ScrollView>
 
             <PaginationControls

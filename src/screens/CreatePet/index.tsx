@@ -17,6 +17,7 @@ import { NavigationProps } from '../../routes/AppRoute';
 
 import { styles } from './style';
 import { create } from '../../api/pet/create/create';
+import { ErrorModal } from '../../components/ErrorModal';
 
 
 type PorteType = {
@@ -55,6 +56,7 @@ export const CreatePet = () => {
 
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     useValidateToken();
 
@@ -96,6 +98,7 @@ export const CreatePet = () => {
             if ('code' in success) {
                 setError(success.message);
                 setFields(success.errorFields?.map(field => field.description) || []);
+                setErrorModalVisible(true);
                 return;
             }
 
@@ -113,6 +116,7 @@ export const CreatePet = () => {
             }
         } catch (error) {
             setError('Não foi possível cadastrar. Verifique sua conexão.');
+            setErrorModalVisible(true);
         }
     };
 
@@ -242,14 +246,12 @@ export const CreatePet = () => {
                         onChangeText={setNotasPet}
                     />
                 </View>
-                {error ? (
-                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
-                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
-                        {fields.map((field, index) => (
-                            <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
-                        ))}
-                    </View>
-                ) : null}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    fields={fields}
+                    onClose={() => setErrorModalVisible(false)}
+                />
                 <View style={styles.submitButtonWrapper}>
                     <TouchableOpacity style={styles.submitButton} onPress={sendRequestCreate}>
                         <Text style={styles.submitButtonText}>SALVAR</Text>

@@ -14,6 +14,7 @@ import { search } from "../../api/category/search/search";
 import { styles } from "./style";
 import { useValidateToken } from "../../utils/UseValidateToken/UseValidateToken";
 import hardwareBackPress from "../../utils/hardwareBackPress/hardwareBackPress";
+import { ErrorModal } from "../../components/ErrorModal";
 
 export const ShowCategories = () => {
     const { navigate } = useNavigation<NavigationProps>();
@@ -23,6 +24,7 @@ export const ShowCategories = () => {
     const [totalPages, setTotalPages] = useState<number>(1);
     const [categories, setCategories] = useState<Category[]>([]);
     const [error, setError] = useState<string>('');
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     useValidateToken();
     hardwareBackPress(navigate, 'ShopScreen');
@@ -39,8 +41,8 @@ export const ShowCategories = () => {
             setTotalPages(data.totalPages);
             setError('');
         } catch (err) {
-            console.error("Erro ao buscar categorias:", err);
             setError("Não foi possível carregar as categorias.");
+            setErrorModalVisible(true);
         }
     };
 
@@ -90,6 +92,11 @@ export const ShowCategories = () => {
                     )}
                 />
             )}
+            <ErrorModal
+                visible={errorModalVisible}
+                error={error}
+                onClose={() => setErrorModalVisible(false)}
+            />
 
             <PaginationControls
                 pageIndex={pageIndex}

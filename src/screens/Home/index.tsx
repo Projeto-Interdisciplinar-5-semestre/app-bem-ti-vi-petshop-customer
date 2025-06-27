@@ -10,6 +10,7 @@ import { search } from '../../api/appointment/search/search';
 import { GLOBAL_VAR } from '../../api/config/globalVar';
 import { findById } from '../../api/customer/search/findById';
 import { searchProduct } from '../../api/product/search/searchProduct';
+import { ErrorModal } from '../../components/ErrorModal';
 
 type SectionProps = {
     title: string;
@@ -122,6 +123,7 @@ export const Home = () => {
     const [customerId, setCustomerId] = useState('');
     const [name, setName] = useState<string>('');
     const [error, setError] = useState<string>('');
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [counter, setCounter] = useState<number>(0);
 
     useEffect(() => {
@@ -187,10 +189,12 @@ export const Home = () => {
                 } else {
                     setAppointments([]);
                     setError(data.message || 'Erro desconhecido.');
+                    setErrorModalVisible(true);
                 }
             } catch {
                 setAppointments([]);
                 setError('Não foi possível carregar os agendamentos. Verifique sua conexão.');
+                setErrorModalVisible(true);
             }
         }
 
@@ -213,10 +217,12 @@ export const Home = () => {
                 } else {
                     setProducts([]);
                     setError(data.message || 'Erro desconhecido.');
+                    setErrorModalVisible(true);
                 }
             } catch {
                 setProducts([]);
                 setError('Não foi possível carregar os produtos. Verifique sua conexão.');
+                setErrorModalVisible(true);
             }
         }
 
@@ -277,6 +283,12 @@ export const Home = () => {
                         products={products.filter(p => p.rate >= 4.0)}
                     />
                 )}
+
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    onClose={() => setErrorModalVisible(false)}
+                />
             </ScrollView>
 
             <NavigationBar />

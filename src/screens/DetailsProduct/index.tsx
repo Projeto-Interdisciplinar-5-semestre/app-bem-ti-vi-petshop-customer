@@ -21,6 +21,7 @@ import { NavigationProps } from '../../routes/AppRoute';
 
 import { styles } from './style';
 import { GLOBAL_VAR } from '../../api/config/globalVar';
+import { ErrorModal } from '../../components/ErrorModal';
 
 export const DetailsProduct = () => {
     const { navigate, replace, goBack } = useNavigation<NavigationProps>();
@@ -40,6 +41,7 @@ export const DetailsProduct = () => {
 
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     useValidateToken();
 
@@ -58,6 +60,7 @@ export const DetailsProduct = () => {
             const productResult = await findById(productId);
             if ('code' in productResult) {
                 setError(productResult.message);
+                setErrorModalVisible(true);
                 return;
             }
             setProduct(productResult);
@@ -65,6 +68,7 @@ export const DetailsProduct = () => {
             const commentsResult = await searchByProduct(productId, 0);
             if ('code' in commentsResult) {
                 setError(commentsResult.message);
+                setErrorModalVisible(true);
                 return;
             }
 
@@ -72,6 +76,7 @@ export const DetailsProduct = () => {
             setTotalComments(commentsResult.totalElements);
         } catch (error) {
             setError('Erro ao carregar serviço. Verifique a conexão.');
+            setErrorModalVisible(true);
         } finally {
             setLoadingProduct(false);
         }
@@ -121,8 +126,10 @@ export const DetailsProduct = () => {
             }
             setError(result.message);
             setFields(result.errorFields?.map(field => field.description) || []);
+            setErrorModalVisible(true);
         } catch (error) {
             setError('Erro ao carregar serviço. Verifique a conexão.');
+            setErrorModalVisible(true);
         } finally {
             setLoadingSendComment(false);
         }
@@ -212,7 +219,6 @@ export const DetailsProduct = () => {
                             </View>
                         ))}
                     </TouchableOpacity>
-                    {error && <Text style={{ color: 'red', marginBottom: 8 }}>{error}</Text>}
 
                     <View style={styles.commentContainer}>
                         <Text style={styles.titleComment}>Deixe seu comentário</Text>
@@ -228,11 +234,12 @@ export const DetailsProduct = () => {
                             action={sendComment}
                         />
 
-                        {error ? (
-                            <View style={{ marginVertical: 10, alignSelf: 'center' }}>
-                                <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
-                            </View>
-                        ) : null}
+                        <ErrorModal
+                            visible={errorModalVisible}
+                            error={error}
+                            fields={fields}
+                            onClose={() => setErrorModalVisible(false)}
+                        />
                     </View>
                 </View>
             </ScrollView>

@@ -10,6 +10,7 @@ import { sendRequestRetrievePassword } from '../../api/customer/update/sendReque
 import { NavigationProps } from '../../routes/AppRoute';
 
 import { styles } from './styles';
+import { ErrorModal } from '../../components/ErrorModal';
 
 export const ResetPassword = () => {
     const { navigate } = useNavigation<NavigationProps>();
@@ -19,6 +20,7 @@ export const ResetPassword = () => {
     const [email, setEmail] = useState(emailUser);
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     hardwareBackPress(navigate, 'ClientLogin');
 
@@ -36,9 +38,11 @@ export const ResetPassword = () => {
                 setError(success.message || "Erro desconhecido.");
 
                 setFields(success.errorFields?.map(field => field.description) || []);
+                setErrorModalVisible(true);
             }
         } catch (error) {
             setError('Não foi possível realizar está solicitação. Verifique sua conexão.');
+            setErrorModalVisible(true);
         }
     };
 
@@ -70,14 +74,12 @@ export const ResetPassword = () => {
                 />
             </View>
 
-            {error ? (
-                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
-                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
-                        {fields.map((field, index) => (
-                            <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
-                        ))}
-                    </View>
-            ) : null}
+            <ErrorModal
+                visible={errorModalVisible}
+                error={error}
+                fields={fields}
+                onClose={() => setErrorModalVisible(false)}
+            />
 
             <TouchableOpacity style={styles.loginButton} onPress={sendRequestCreate} >
                 <Text style={styles.loginButtonText}>Continuar</Text>

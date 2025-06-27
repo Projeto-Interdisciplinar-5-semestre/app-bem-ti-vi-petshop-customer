@@ -15,6 +15,7 @@ import { Error } from '../../../utils/Types';
 import { sendRequestConfirmationEmail } from '../../../api/customer/update/sendRequestConfirmationEmail';
 import { Input } from '../../../components/Input';
 import { GLOBAL_VAR } from '../../../api/config/globalVar';
+import { ErrorModal } from '../../../components/ErrorModal';
 
 export default function SendRequestConfirmationEmail() {
     const { navigate } = useNavigation<NavigationProps>();
@@ -25,6 +26,7 @@ export default function SendRequestConfirmationEmail() {
 
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
     const [customerId, setCustomerId] = useState<string>('');
 
     hardwareBackPress(navigate, "ShowProfile");
@@ -62,9 +64,11 @@ export default function SendRequestConfirmationEmail() {
                 setError(success.message || "Erro desconhecido.");
 
                 setFields(success.errorFields?.map(field => field.description) || []);
+                setErrorModalVisible(true);
             }
         } catch (error) {
             setError('Não foi possível atualizar. Verifique sua conexão.');
+            setErrorModalVisible(true);
         }
     };
 
@@ -97,14 +101,12 @@ export default function SendRequestConfirmationEmail() {
                         action={sendRequestCreate}
                     />
                 </View>
-                {error ? (
-                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
-                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
-                        {fields.map((field, index) => (
-                            <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
-                        ))}
-                    </View>
-                ) : null}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    fields={fields}
+                    onClose={() => setErrorModalVisible(false)}
+                />
             </ScrollView>
         </SafeAreaView>
     );

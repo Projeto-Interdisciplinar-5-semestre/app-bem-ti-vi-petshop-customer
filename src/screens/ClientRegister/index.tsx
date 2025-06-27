@@ -21,6 +21,7 @@ import { AdressByCEP, Error } from '../../utils/Types';
 import getViaCep from '../../api/customer/search/getViaCep';
 import { InputPassword } from '../../components/InputPassword';
 import hardwareBackPress from '../../utils/hardwareBackPress/hardwareBackPress';
+import { ErrorModal } from '../../components/ErrorModal';
 
 export default function Cadastro() {
     const { goBack, navigate } = useNavigation<NavigationProps>()
@@ -48,6 +49,7 @@ export default function Cadastro() {
 
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     hardwareBackPress(navigate, "ClientLogin");
     
@@ -110,9 +112,11 @@ export default function Cadastro() {
             } else {
                 setError(success.message || "Erro desconhecido.");
                 setFields(success.errorFields?.map(field => field.description) || []);
+                setErrorModalVisible(true);
             }
         } catch (error) {
             setError('Não foi possível atualizar. Verifique sua conexão.');
+            setErrorModalVisible(true);
         }
     }
 
@@ -277,14 +281,12 @@ export default function Cadastro() {
                 </View>
             </View>
 
-            {error ? (
-                <View style={{ marginVertical: 10, alignSelf: 'center' }}>
-                    <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
-                    {fields.map((field, index) => (
-                        <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
-                    ))}
-                </View>
-            ) : null}
+            <ErrorModal
+                visible={errorModalVisible}
+                error={error}
+                fields={fields}
+                onClose={() => setErrorModalVisible(false)}
+            />
 
             <TouchableOpacity style={styles.button} onPress={sendRequestRegister}>
                 <Text style={styles.buttonText}>Cadastre-se</Text>

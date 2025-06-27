@@ -14,6 +14,7 @@ import hardwareBackPress from '../../utils/hardwareBackPress/hardwareBackPress';
 import { findById } from '../../api/customer/search/findById';
 
 import { styles } from './style';
+import { ErrorModal } from '../../components/ErrorModal';
 
 export default function CustomerScreen() {
     const { navigate } = useNavigation<NavigationProps>();
@@ -23,6 +24,7 @@ export default function CustomerScreen() {
     const [client, setClient] = useState<Customer>({} as Customer);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string>('');
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     hardwareBackPress(navigate, "ShowProfile");
     
@@ -33,11 +35,13 @@ export default function CustomerScreen() {
             const clientResult = await findById(customerId);
             if ('code' in clientResult) {
                 setError(clientResult.message);
+                setErrorModalVisible(true);
                 return;
             }
             setClient(clientResult);
         } catch (error) {
             setError('Erro ao carregar serviço. Verifique a conexão.');
+            setErrorModalVisible(true);
         } finally {
             setLoading(false);
         }
@@ -146,7 +150,11 @@ export default function CustomerScreen() {
                         </View>
                     </View>
                 </View>
-
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    onClose={() => setErrorModalVisible(false)}
+                />
             </ScrollView>
 
             <NavigationBar initialTab='perfil' />

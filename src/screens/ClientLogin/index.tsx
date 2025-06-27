@@ -8,6 +8,7 @@ import { login, UserAuth } from '../../api/auth/login/login';
 import { NavigationProps } from '../../routes/AppRoute';
 
 import { styles } from './style';
+import { ErrorModal } from '../../components/ErrorModal';
 
 export const ClientLogin = () => {
     const { replace, navigate } = useNavigation<NavigationProps>();
@@ -17,6 +18,7 @@ export const ClientLogin = () => {
     const [error, setError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [counter, setCounter] = useState<number>(0);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     useEffect(() => {
         const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -57,9 +59,11 @@ export const ClientLogin = () => {
                 replace('Home');
             } else {
                 setError(response.message);
+                setErrorModalVisible(true);
             }
         } catch (error) {
             setError('Erro ao tentar logar. Verifique sua conexão.');
+            setErrorModalVisible(true);
         }
     };
 
@@ -113,7 +117,11 @@ export const ClientLogin = () => {
                     />
                 </View>
 
-                {error ? <Text style={{ color: 'red', marginBottom: 8 }}>{error}</Text> : null}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    onClose={() => setErrorModalVisible(false)}
+                />
 
                 <TouchableOpacity onPress={() => navigate('ResetPassword', {email: userEmail})}>
                     <Text style={styles.forgotPassword}>Esqueceu a senha?</Text>

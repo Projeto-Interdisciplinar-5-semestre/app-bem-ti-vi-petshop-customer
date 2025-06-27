@@ -10,6 +10,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { Appointment, Customer, Error, Pet, Service } from '../../utils/Types';
 import { findById } from '../../api/customer/search/findById';
 import { InputPets } from '../../components/InputPets';
+import { ErrorModal } from '../../components/ErrorModal';
 
 export const ScheduleService = () => {
     const { navigate } = useNavigation<NavigationProps>();
@@ -22,6 +23,7 @@ export const ScheduleService = () => {
 
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     const [moment, setMoment] = useState<Date>(new Date());
     const [showStartDatePicker, setShowStartDatePicker] = useState(false);
@@ -109,6 +111,7 @@ export const ScheduleService = () => {
             const result = await createAppointment(appointment);
             if ('code' in result) {
                 setError(result.message);
+                setErrorModalVisible(true);
                 return;
             }
 
@@ -116,6 +119,7 @@ export const ScheduleService = () => {
             navigate("AppointmentPayment", { appointment: result });
         } catch (error) {
             setError('Erro ao criar agendamento.');
+            setErrorModalVisible(true);
         }
     };
 
@@ -233,14 +237,12 @@ export const ScheduleService = () => {
                 </View>
 
 
-                {error ? (
-                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
-                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
-                        {fields.map((field, index) => (
-                            <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
-                        ))}
-                    </View>
-                ) : null}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    fields={fields}
+                    onClose={() => setErrorModalVisible(false)}
+                />
 
                 <View style={styles.confirmButtonContainer}>
                     <TouchableOpacity style={styles.confirmButton} onPress={handleAgendar}>

@@ -10,6 +10,7 @@ import { validateTokenCustomer } from '../../api/auth/validateTokenCustomer/vali
 import { create } from '../../api/order/create/create';
 import { useValidateToken } from '../../utils/UseValidateToken/UseValidateToken';
 import { GLOBAL_VAR } from '../../api/config/globalVar';
+import { ErrorModal } from '../../components/ErrorModal';
 
 export const CartProduct = () => {
     const { navigate } = useNavigation<NavigationProps>();
@@ -22,6 +23,7 @@ export const CartProduct = () => {
 
     const [error, setError] = useState<string>('');
     const [fields, setFields] = useState<string[]>([]);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     useValidateToken();
     useEffect(() => {
@@ -146,6 +148,7 @@ export const CartProduct = () => {
 
             if ('code' in result) {
                 setError(result.message);
+                setErrorModalVisible(true);
                 return;
             }
 
@@ -155,6 +158,7 @@ export const CartProduct = () => {
             navigate("OrderPayment", { order: result });
         } catch (error) {
             setError('Erro ao carregar serviço. Verifique a conexão.');
+            setErrorModalVisible(true);
         }
     };
 
@@ -290,14 +294,12 @@ export const CartProduct = () => {
                 </View>
 
 
-                {error ? (
-                    <View style={{ marginVertical: 10, alignSelf: 'center' }}>
-                        <Text style={{ color: 'red', textAlign: 'center' }}>{error}</Text>
-                        {fields.map((field, index) => (
-                            <Text key={index} style={{ color: 'red', textAlign: 'center' }}>• {field}</Text>
-                        ))}
-                    </View>
-                ) : null}
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    fields={fields}
+                    onClose={() => setErrorModalVisible(false)}
+                />
 
                 <View style={styles.confirmButtonContainer}>
                     <TouchableOpacity style={styles.confirmButton} onPress={handleSendOrder}>

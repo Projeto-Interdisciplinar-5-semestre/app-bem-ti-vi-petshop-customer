@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Image, ScrollView, TouchableOpacity, Share, ToastAndroid } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -7,11 +7,15 @@ import { Appointment } from '../../utils/Types';
 import hardwareBackPress from '../../utils/hardwareBackPress/hardwareBackPress';
 import { NavigationProps } from '../../routes/AppRoute';
 import { styles } from './style';
+import { ErrorModal } from '../../components/ErrorModal';
 
 export const AppointmentPayment = () => {
     const { navigate } = useNavigation<NavigationProps>();
     const route = useRoute();
     const { appointment } = route.params as { appointment: Appointment };
+    const [error, setError] = useState<string>('');
+    const [fields, setFields] = useState<string[]>([]);
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
 
     hardwareBackPress(navigate, "Home");
 
@@ -23,6 +27,8 @@ export const AppointmentPayment = () => {
                 });
             } catch (error) {
                 ToastAndroid.show('Erro ao compartilhar o QR Code!', ToastAndroid.SHORT);
+                setError("Erro ao compartilhar o QR Code!");
+                setErrorModalVisible(true);
             }
         }
     };
@@ -92,6 +98,12 @@ export const AppointmentPayment = () => {
                 <TouchableOpacity style={styles.confirmButton} onPress={() => navigate('Home')}>
                     <Text style={styles.confirmButtonText}>🏠 Voltar para o Início</Text>
                 </TouchableOpacity>
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    fields={fields}
+                    onClose={() => setErrorModalVisible(false)}
+                />
             </ScrollView>
         </View>
     );

@@ -29,6 +29,7 @@ import { NavigationProps } from '../../routes/AppRoute';
 import { styles } from './style';
 import { useValidateToken } from '../../utils/UseValidateToken/UseValidateToken';
 import { GLOBAL_VAR } from '../../api/config/globalVar';
+import { ErrorModal } from '../../components/ErrorModal';
 
 export const DetailsService = () => {
     const { navigate, replace } = useNavigation<NavigationProps>();
@@ -47,6 +48,9 @@ export const DetailsService = () => {
     const [ratingComment, setRatingComment] = useState<number>(3);
 
     const [errors, setErrors] = useState<{ service?: string; comments?: string; sendComment?: string; fields?: string[] }>({});
+    const [errorModalVisible, setErrorModalVisible] = useState(false);
+    const [error, setError] = useState('');
+    const [fields, setFields] = useState<string[]>([]);
 
     useValidateToken();
     hardwareBackPress(navigate, "ShowServices");
@@ -56,14 +60,18 @@ export const DetailsService = () => {
         try {
             const serviceResult = await findById(serviceId);
             if ('code' in serviceResult) {
-                setErrors(prev => ({ ...prev, service: serviceResult.message }));
+                setError("Erro ao buscar serviço");
+                setFields([serviceResult.message]);
+                setErrorModalVisible(true);
                 return;
             }
             setService(serviceResult);
 
             const commentsResult = await searchByService(serviceId, 0);
             if ('code' in commentsResult) {
-                setErrors(prev => ({ ...prev, comments: commentsResult.message }));
+                setError("Erro ao buscar serviço");
+                setFields([commentsResult.message]);
+                setErrorModalVisible(true);
                 return;
             }
 
@@ -71,7 +79,8 @@ export const DetailsService = () => {
             setTotalComments(commentsResult.totalElements);
 
         } catch (error) {
-            setErrors(prev => ({ ...prev, service: 'Erro ao carregar serviço. Verifique a conexão.' }));
+            setError("Erro ao carregar serviço. Verifique a conexão.")
+            setErrorModalVisible(true);
         } finally {
             setLoadingService(false);
         }
@@ -106,9 +115,17 @@ export const DetailsService = () => {
                 replace("DetailsService", { id: serviceId });
                 return;
             }
-            setErrors({ sendComment: result.message, fields: result.errorFields?.map(f => f.description) });
+            setError(result.message || "Erro ao enviar comentário");
+            setFields(
+                Array.isArray(result.errorFields)
+                    ? result.errorFields.map(field => field.description)
+                    : []
+            );
+            setErrorModalVisible(true);
         } catch (error) {
-            setErrors({ sendComment: 'Erro ao enviar comentário. Tente novamente.' });
+            setError("Erro ao enviar comentário");
+            setFields(["Tente novamente mais tarde."]);
+            setErrorModalVisible(true);
         } finally {
             setLoadingSendComment(false);
         }
@@ -169,7 +186,6 @@ export const DetailsService = () => {
                                 <Text style={styles.reviewsText}>{totalComments} avaliações</Text>
                             </View>
                         </View>
-                        {errors.service && <Text style={{ color: 'red', marginBottom: 8 }}>{errors.service}</Text>}
                     </View>
                 )}
 
@@ -198,7 +214,6 @@ export const DetailsService = () => {
                             </View>
                         ))}
                     </TouchableOpacity>
-                    {errors.comments && <Text style={{ color: 'red', marginBottom: 8 }}>{errors.comments}</Text>}
 
                     <View style={styles.commentContainer}>
                         <Text style={styles.titleComment}>Deixe seu comentário</Text>
@@ -215,6 +230,12 @@ export const DetailsService = () => {
                         />
                     </View>
                 </View>
+                <ErrorModal
+                    visible={errorModalVisible}
+                    error={error}
+                    fields={fields}
+                    onClose={() => setErrorModalVisible(false)}
+                />
             </ScrollView>
             <NavigationBar initialTab='servicos' />
         </SafeAreaView>
