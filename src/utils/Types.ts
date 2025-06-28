@@ -214,4 +214,5 @@ export interface ChatMessage {
     userName: string
     sender: 'ADMINISTRATOR' | 'CUSTOMER';
     content: string;
+    moment: string;
 }

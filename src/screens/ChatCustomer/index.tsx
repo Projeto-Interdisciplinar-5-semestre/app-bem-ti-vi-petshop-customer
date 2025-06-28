@@ -93,12 +93,13 @@ export default function ChatCustomer() {
 
     const sendMessage = () => {
         if (clientRef.current && userId && message.trim()) {
-            const chatMessage = {
+            const chatMessage: ChatMessage = {
                 userId,
                 userName: customerName,
                 sender: 'CUSTOMER',
                 content: message.trim(),
-            } as ChatMessage;
+                moment: new Date().toISOString(), 
+            };
             clientRef.current.publish({
                 destination: '/app/client-message',
                 body: JSON.stringify(chatMessage),
@@ -124,6 +125,9 @@ export default function ChatCustomer() {
             >
                 <Text style={styles.name}>{item.userName}</Text>
                 <Text style={styles.content}>{item.content}</Text>
+                <Text style={styles.moment}>
+                    {item.moment ? new Date(item.moment).toLocaleString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : ''}
+                </Text>
             </View>
         );
     };

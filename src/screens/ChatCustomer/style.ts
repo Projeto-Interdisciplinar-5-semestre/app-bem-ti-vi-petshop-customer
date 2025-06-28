@@ -49,5 +49,9 @@ export const styles = StyleSheet.create({
     content: {
         fontFamily: 'Montserrat-Medium',
         fontSize: 16
+    },
+    moment: {
+        fontFamily: 'Montserrat-Medium',
+        fontSize: 14
     }
 });
