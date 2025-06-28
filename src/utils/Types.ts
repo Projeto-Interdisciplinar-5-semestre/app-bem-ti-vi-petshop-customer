@@ -208,3 +208,10 @@ export interface AdressByCEP {
     localidade: string,
     estado: string
 }
+
+export interface ChatMessage {
+    userId: string;
+    userName: string
+    sender: 'ADMINISTRATOR' | 'CUSTOMER';
+    content: string;
+}

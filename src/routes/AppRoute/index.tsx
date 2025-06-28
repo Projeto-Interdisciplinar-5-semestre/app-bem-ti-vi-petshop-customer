@@ -41,6 +41,7 @@ import { SearchCommentByService } from "../../screens/SearchCommentByService";
 import AppointmentScreen from "../../screens/AppointmentScreen";
 import CustomerScreen from "../../screens/CustomerScreen";
 import OrderScreen from "../../screens/OrderScreen";
+import ChatCustomer from "../../screens/ChatCustomer";
 
 
 type RootStackParamList = {
@@ -79,6 +80,7 @@ type RootStackParamList = {
     AppointmentScreen: { id: string };
     CustomerScreen: { id: string };
     OrderScreen: { id: string };
+    ChatCustomer: { id: string, name: string };
 };
 
 export type NavigationProps = NativeStackNavigationProp<RootStackParamList, "Home">;
@@ -343,6 +345,14 @@ export default function AppRoute() {
                     })}
                 />
                 
+                <Stack.Screen
+                    name="ChatCustomer"
+                    component={ChatCustomer}
+                    options={() => ({
+                        header: () => <Header title="ChatCustomer" activateBackButton={true} iconName="shopping-bag" backScreen="ShowProfile" needProps={false} props={null} goBackChoose={false} />
+                    })}
+                />
+
                 <Stack.Screen
                     name="ShopScreen"
                     component={ShopScreen}
