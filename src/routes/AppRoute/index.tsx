@@ -349,7 +349,7 @@ export default function AppRoute() {
                     name="ChatCustomer"
                     component={ChatCustomer}
                     options={() => ({
-                        header: () => <Header title="ChatCustomer" activateBackButton={true} iconName="shopping-bag" backScreen="ShowProfile" needProps={false} props={null} goBackChoose={false} />
+                        header: () => <Header title="CHAT" activateBackButton={true} iconName="message" backScreen="ShowProfile" needProps={false} props={null} goBackChoose={false} />
                     })}
                 />
 

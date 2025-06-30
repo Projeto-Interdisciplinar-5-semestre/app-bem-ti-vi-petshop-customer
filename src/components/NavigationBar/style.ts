@@ -1,43 +1,51 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
-  bottomNavigation: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    height: 80,
-    paddingBottom: 10,
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: "#eee",
-    elevation: 10,
-  },
-  navItem: {
-    alignItems: "center",
-    justifyContent: "center",
-    width: "25%",
-  },
-  navIconContainer: {
-    position: "relative",
-    alignItems: "center",
-    marginBottom: 4,
-  },
-  activeIndicator: {
-    position: "absolute",
-    top: -8,
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: "#256489",
-  },
-  navIcon: {
-    width: 24,
-    height: 24,
-  },
-  navLabel: {
-    fontSize: 12,
-    color: "#256489",
-    fontFamily: "Montserrat-Medium",
-  },
+    bottomNavigation: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        backgroundColor: '#fff',
+        paddingVertical: 8,
+        borderTopWidth: 1,
+        borderTopColor: '#e0e0e0',
+        height: 70,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 5
+    },
+    navItem: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1,
+        padding: 4,
+    },
+    navIconContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 40,
+        height: 30,
+        marginBottom: 2,
+        position: 'relative'
+    },
+    navIcon: {
+        width: 24,
+        height: 24,
+        resizeMode: 'contain',
+    },
+    navLabel: {
+        fontSize: 10,
+        fontFamily: 'Montserrat-Medium',
+        marginTop: 2,
+        textAlign: 'center'
+    },
+    activeIndicator: {
+        position: 'absolute',
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: 'rgba(37, 100, 137, 0.1)',
+        top: -5,
+    }
 });

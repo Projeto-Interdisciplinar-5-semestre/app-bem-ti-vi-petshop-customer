@@ -27,12 +27,14 @@ export const styles = StyleSheet.create({
         fontSize: 20,
         color: '#4CAF50',
         textAlign: 'left',
+        lineHeight: 24, // Added for vertical alignment
     },
 
     precoContainer: {
-        alignSelf: 'center',
+        flexDirection: 'row',
+        alignItems: 'center', // Added to align items vertically
+        justifyContent: 'center',
         marginVertical: 10,
-        flexDirection: 'row'
     },
 
     precoLabel: {
@@ -40,6 +42,7 @@ export const styles = StyleSheet.create({
         fontSize: 16,
         color: '#666',
         marginRight: 8,
+        lineHeight: 24, // Match line height with price
     },
 
     sectionHeader: {
@@ -100,6 +103,7 @@ export const styles = StyleSheet.create({
     nameText: {
         fontFamily: 'Montserrat-Bold',
         fontSize: 16,
+        textAlign: 'center',
         color: '#256489'
     },
 
@@ -210,7 +214,7 @@ export const styles = StyleSheet.create({
         backgroundColor: '#258952',
         borderRadius: 35,
         width: '90%',
-        maxWidth: 300,
+        maxWidth: 400,
         height: 55,
         paddingHorizontal: 16,
         elevation: 3,

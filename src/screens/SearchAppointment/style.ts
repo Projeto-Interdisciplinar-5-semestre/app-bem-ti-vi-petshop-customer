@@ -39,9 +39,10 @@ export const styles = StyleSheet.create({
     },
     noResult: {
         textAlign: 'center',
+        fontFamily: 'Montserrat-Medium',
         marginTop: 20,
         color: '#777',
-        fontSize: 16,
+        fontSize: 14,
     },
     errorContainer: {
         marginTop: 10,

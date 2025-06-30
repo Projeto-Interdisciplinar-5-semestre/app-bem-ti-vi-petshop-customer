@@ -13,6 +13,7 @@ export const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 12,
         color: '#333',
+        fontFamily: 'Montserrat-Bold',
     },
     sectionBox: {
         backgroundColor: '#fff',
@@ -22,20 +23,21 @@ export const styles = StyleSheet.create({
         elevation: 2,
     },
     sectionTitle: {
-        fontWeight: 'bold',
         fontSize: 16,
         marginBottom: 4,
         color: '#444',
+        fontFamily: 'Montserrat-SemiBold',
     },
     text: {
         fontSize: 14,
         color: '#555',
         marginBottom: 6,
+        fontFamily: 'Montserrat-Regular',
     },
     price: {
         fontSize: 16,
         color: '#28a745',
-        fontWeight: 'bold',
+        fontFamily: 'Montserrat-Bold',
     },
     itemBox: {
         flexDirection: 'row',
@@ -48,10 +50,12 @@ export const styles = StyleSheet.create({
     itemName: {
         fontSize: 14,
         fontWeight: '600',
+        fontFamily: 'Montserrat-SemiBold',
     },
     itemPrice: {
         fontSize: 14,
         color: '#888',
+        fontFamily: 'Montserrat-Regular',
     },
     productImage: {
         width: 50,
@@ -77,6 +81,7 @@ export const styles = StyleSheet.create({
     shareButtonText: {
         color: '#fff',
         marginLeft: 6,
+        fontFamily: 'Montserrat-Medium',
     },
     infoBox: {
         padding: 12,
@@ -92,8 +97,9 @@ export const styles = StyleSheet.create({
     },
     paymentStatus: {
         fontSize: 16,
-        fontWeight: 'bold',
+        marginLeft: 25,
         marginTop: 6,
+        fontFamily: 'Montserrat-Bold',
     },
     statusApproved: {
         color: '#28a745',
@@ -112,6 +118,7 @@ export const styles = StyleSheet.create({
     reloadButtonText: {
         color: '#fff',
         marginLeft: 5,
+        fontFamily: 'Montserrat-Medium',
     },
     confirmButton: {
         backgroundColor: '#28a745',
@@ -122,7 +129,7 @@ export const styles = StyleSheet.create({
     },
     confirmButtonText: {
         color: '#fff',
-        fontWeight: 'bold',
         fontSize: 16,
+        fontFamily: 'Montserrat-Bold',
     },
 });

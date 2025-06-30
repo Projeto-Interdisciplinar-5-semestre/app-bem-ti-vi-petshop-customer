@@ -154,11 +154,17 @@ export const ShowProfile = () => {
                             onPress={() => navigate("DeleteProfile")}
                         />
 
-                        <ItemProfile
-                            label="Chat"
-                            icon="account-remove-outline"
+                        <TouchableOpacity
+                            style={styles.menuItem}
+                            activeOpacity={0.7}
                             onPress={() => navigate("ChatCustomer", {id: customerId, name: name})}
-                        />
+                        >
+                            <Image 
+                                source={require('../../assets/images/chat.png')} 
+                                style={{ width: 24, height: 24, tintColor: '#256489', marginLeft: 4, marginRight: 13 }}
+                            />
+                            <Text style={styles.menuItemText}>Chat</Text>
+                        </TouchableOpacity>
                     </View>
 
                     <TouchableOpacity style={styles.logoutButton} onPress={() => logoutRequest(navigate)}>

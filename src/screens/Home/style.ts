@@ -23,16 +23,17 @@ export const styles = StyleSheet.create({
     greeting: {
         color: '#fff',
         fontSize: 22,
-        fontWeight: 'bold',
+        fontFamily: 'Montserrat-Bold',
         marginBottom: 4,
     },
     subGreeting: {
         color: '#e0e0e0',
         fontSize: 14,
+        fontFamily: 'Montserrat-Regular',
     },
     sectionTitle: {
         fontSize: 18,
-        fontWeight: '600',
+        fontFamily: 'Montserrat-SemiBold',
         marginBottom: 10,
         color: '#333',
     },
@@ -49,22 +50,25 @@ export const styles = StyleSheet.create({
     },
     appointmentTitle: {
         fontSize: 16,
-        fontWeight: '600',
+        fontFamily: 'Montserrat-SemiBold',
         color: '#2c3e50',
         marginBottom: 4,
     },
     appointmentPet: {
         fontSize: 14,
+        fontFamily: 'Montserrat-Regular',
         color: '#7f8c8d',
         marginBottom: 4,
     },
     appointmentDate: {
         fontSize: 14,
+        fontFamily: 'Montserrat-Medium',
         color: '#3498db',
         marginBottom: 4,
     },
     appointmentStatus: {
         fontSize: 12,
+        fontFamily: 'Montserrat-Bold',
         paddingVertical: 2,
         paddingHorizontal: 8,
         alignSelf: 'flex-start',
@@ -82,7 +86,7 @@ export const styles = StyleSheet.create({
     },
     buttonText: {
         color: '#fff',
-        fontWeight: 'bold',
+        fontFamily: 'Montserrat-Bold',
         fontSize: 14,
     },
     section: {
@@ -111,14 +115,14 @@ export const styles = StyleSheet.create({
     },
     productName: {
         fontSize: 14,
-        fontWeight: '600',
+        fontFamily: 'Montserrat-SemiBold',
         color: '#2c3e50',
         marginBottom: 4,
     },
     productPrice: {
         fontSize: 13,
+        fontFamily: 'Montserrat-Bold',
         color: '#27ae60',
-        fontWeight: 'bold',
     },
     ratingContainer: {
         flexDirection: 'row',
@@ -131,11 +135,18 @@ export const styles = StyleSheet.create({
     },
     ratingText: {
         fontSize: 12,
+        fontFamily: 'Montserrat-Medium',
         color: '#f1c40f',
     },
     starIcon: {
         width: 12,
         height: 12,
         marginRight: 2,
+    },
+    emptyText: {
+        fontFamily: 'Montserrat-Regular',
+        textAlign: 'center',
+        marginTop: 20,
+        color: '#7f8c8d',
     },
 });

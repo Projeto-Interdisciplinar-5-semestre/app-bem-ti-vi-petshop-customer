@@ -182,14 +182,14 @@ export const styles = StyleSheet.create({
 
     warningText: {
         color: 'red',
-        fontWeight: 'bold',
+        fontFamily: 'Montserrat-Bold',
         textAlign: 'center',
         marginVertical: 8,
     },
 
     confirmText: {
         color: 'green',
-        fontWeight: 'bold',
+        fontFamily: 'Montserrat-Bold',
         textAlign: 'center',
         marginVertical: 8,
     },

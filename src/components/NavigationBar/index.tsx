@@ -52,17 +52,33 @@ export const NavigationBar = ({ initialTab = 'home' }: NavigationBarProps) => {
     )
 }
 
-
 function NavItem(props: any) {
     return (
-        <TouchableOpacity style={styles.navItem} onPress={() => { props.setActiveTab(); props.onPress() }}>
+        <TouchableOpacity 
+            style={styles.navItem} 
+            onPress={() => { 
+                props.setActiveTab(); 
+                props.onPress(); 
+            }}
+        >
             <View style={styles.navIconContainer}>
-                {props.activeTab === props.type &&
+                {props.activeTab === props.type && (
                     <View style={styles.activeIndicator} />
-                }
-                <Image source={props.icon} style={styles.navIcon} />
+                )}
+                <Image 
+                    source={props.icon} 
+                    style={[
+                        styles.navIcon,
+                        { tintColor: props.activeTab === props.type ? '#256489' : '#000000' }
+                    ]} 
+                />
             </View>
-            <Text style={styles.navLabel}> {props.text} </Text>
+            <Text style={[
+                styles.navLabel,
+                { color: props.activeTab === props.type ? '#256489' : '#000000' }
+            ]}>
+                {props.text}
+            </Text>
         </TouchableOpacity>
     )
 }

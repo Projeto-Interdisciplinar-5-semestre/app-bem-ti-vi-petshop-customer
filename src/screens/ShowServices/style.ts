@@ -41,7 +41,7 @@ export const styles = StyleSheet.create({
     },
     servicoNome: {
         fontSize: 16,
-        fontWeight: '600',
+        fontFamily: 'Montserrat-SemiBold',
         color: '#111827',
         marginBottom: 4,
     },
@@ -58,6 +58,7 @@ export const styles = StyleSheet.create({
     },
     ratingText: {
         fontSize: 14,
+        fontFamily: 'Montserrat-Regular',
         color: '#6B7280',
         marginLeft: 4,
     },
@@ -68,11 +69,12 @@ export const styles = StyleSheet.create({
     },
     precoLabel: {
         fontSize: 12,
+        fontFamily: 'Montserrat-Regular',
         color: '#6B7280',
     },
     servicoPreco: {
         fontSize: 14,
-        fontWeight: 'bold',
+        fontFamily: 'Montserrat-Bold',
         color: '#10B981',
     },
     date: {
@@ -80,6 +82,7 @@ export const styles = StyleSheet.create({
         right: 12,
         bottom: 12,
         fontSize: 12,
+        fontFamily: 'Montserrat-Regular',
         color: '#9CA3AF',
     },
 });

@@ -260,7 +260,7 @@ export const Home = () => {
                         />
                     ))
                 ) : (
-                    <Text style={{ color: '#7f8c8d', marginBottom: 10 }}>Nenhum agendamento pendente.</Text>
+                    <Text style={styles.emptyText}>Nenhum agendamento pendente.</Text>
                 )}
 
                 <BlueButton
